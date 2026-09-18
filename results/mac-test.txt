@@ -1,0 +1,8 @@
+./build/selftest
+PASS 9479 differential cases; 92 frozen vectors; backend=pmull; verification=0xAA4E2A3B
+./build/portable
+PASS 9479 differential cases; 92 frozen vectors; backend=portable; verification=0xAA4E2A3B
+./build/c99
+PASS C99 API
+./build/c99-portable
+PASS C99 API

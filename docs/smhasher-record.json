@@ -1,0 +1,124 @@
+{
+  "source": "/Users/ahle/repos/website/blog/adversarial-examples-for-hashes/data.json",
+  "sha256": "01b91741d5a51a5247eea21f63cfda66a947c982babe4d17181566dffb42a836",
+  "record": {
+    "id": "chain256",
+    "code_url": "https://gitlab.com/lobais/smhasher3/-/blob/mr/chainhash/hashes/chainhash.cpp",
+    "name": "ChainHash (ours), 256 B blocks",
+    "bound": "(ceil(L/32)+2)/q",
+    "score_lower_guarantee": 62.415037499278846,
+    "key_words_64bit": "41",
+    "output_bits": 64,
+    "domain": "Byte strings shorter than 2^64 bytes; 41 independent field words and the audited finalizer. Timed SplitMix64 seed expansion is outside this theorem.",
+    "m2_paper_gbps_16KB_512B": [
+      67.7,
+      37.6
+    ],
+    "reference_url": "https://github.com/thomasahle/fast-polynomials",
+    "notes": "Byte strings shorter than 2^64 bytes; 41 independent field words and the audited finalizer. Timed SplitMix64 seed expansion is outside this theorem.",
+    "provenance": [
+      "data/provable.json#/result/table/rows/1",
+      "data/paper_injective.tex, tab:injective:adversarial when M2 figures supplied"
+    ],
+    "source_bound": "(ceil(L/32)+2)/q",
+    "version": "256 B blocks; W=32, S=1",
+    "label": "ChainHash (ours) | 256 B blocks",
+    "anchor": "proofs",
+    "mechanism": "(ceil(L/32)+2)/q",
+    "family": "proven",
+    "bits": 62.415037499278846,
+    "bits_kind": "audited lower guarantee",
+    "speeds": {
+      "m2_gbps_16k": {
+        "value": 67.7,
+        "source": "paper harness, Apple M2 Pro",
+        "record": "records/provable.json#/result/table/rows/1/speed_m2_gbps",
+        "source_short": "paper harness / Apple M2 Pro",
+        "url": "records/provable.json"
+      },
+      "m2_gbps_512": {
+        "value": 37.6,
+        "source": "paper harness, Apple M2 Pro",
+        "record": "records/provable.json#/result/table/rows/1/speed_m2_gbps",
+        "source_short": "paper harness / Apple M2 Pro",
+        "url": "records/provable.json"
+      },
+      "smh_m2_bulk_Bpc": {
+        "value": 21.47,
+        "source": "SMHasher3 bulk, bytes/cycle, Apple M2 Pro",
+        "source_short": "SMHasher3 bulk, bytes/cycle, Apple M2 Pro",
+        "url": "records/speeds.json",
+        "record": "records/speeds.json#/chainhash-256/M2Pro",
+        "host": "M2Pro",
+        "registered_name": "chainhash-256",
+        "binary_sha256": "33670275b735a33de9384d74d970cac932e1d5019ab505f7564c42bc1532b541",
+        "selected_run": 2,
+        "registration": "chainhash-256                  64     hwpmull          ChainHash (GF(2^64) carry-less PH with strided word pairing + three-key injective chain + degree-5 finalizer behind an additive twist), 256-byte blocks",
+        "backend_note": "hwpmull"
+      },
+      "smh_xeon_bulk_Bpc": {
+        "value": 14.42,
+        "source": "SMHasher3 bulk, bytes/cycle, Intel Xeon 8375C",
+        "source_short": "SMHasher3 bulk, bytes/cycle, Intel Xeon 8375C",
+        "url": "records/speeds.json",
+        "record": "records/speeds.json#/chainhash-256/Xeon8375C",
+        "host": "Xeon8375C",
+        "registered_name": "chainhash-256",
+        "binary_sha256": "03c2ff9f38cc564400eeb1906da90cb74ea6efcff2bea6c660626fdbe1571a99",
+        "selected_run": 1,
+        "registration": "chainhash-256                  64     hwclmul          ChainHash (GF(2^64) carry-less PH with strided word pairing + three-key injective chain + degree-5 finalizer behind an additive twist), 256-byte blocks",
+        "backend_note": "hwclmul"
+      },
+      "smh_m2_small_cycles": {
+        "value": 75.09,
+        "source": "SMHasher3 small keys 1-31 B, cycles per hash, M2 Pro",
+        "source_short": "SMHasher3 small keys 1-31 B, cycles per hash, M2 Pro",
+        "url": "records/speeds.json",
+        "record": "records/speeds.json#/chainhash-256/M2Pro",
+        "host": "M2Pro",
+        "registered_name": "chainhash-256",
+        "binary_sha256": "33670275b735a33de9384d74d970cac932e1d5019ab505f7564c42bc1532b541",
+        "selected_run": 2,
+        "registration": "chainhash-256                  64     hwpmull          ChainHash (GF(2^64) carry-less PH with strided word pairing + three-key injective chain + degree-5 finalizer behind an additive twist), 256-byte blocks"
+      }
+    },
+    "qualification": "Byte strings shorter than 2^64 bytes; 41 independent field words and the audited finalizer. Timed SplitMix64 seed expansion is outside this theorem.",
+    "hover": {
+      "scope": "Byte strings shorter than 2^64 bytes; 41 independent field words and the audited finalizer. Timed SplitMix64 seed expansion is outside this theorem."
+    },
+    "smhasher3": {
+      "verdict": "PASS",
+      "passed": 200,
+      "total": 200,
+      "failed_tests": [],
+      "provenance": "data/provable.json#/result/table/rows/1/smhasher3",
+      "url": "https://gitlab.com/lobais/smhasher3/-/tree/mr/chainhash",
+      "suite_note": "author fork; no --extra",
+      "suite_context": "200 = without --extra plus the default SeedDifferential tier; author local combined tree, not the upstream 250-test suite."
+    },
+    "speed_registration": "chainhash-256",
+    "chart_eligible": true,
+    "score_minimizer_L": 1,
+    "score_derivation": "min_L log2(L/max(2^-64,min(1,epsilon(L)))); minimizing L=1",
+    "proof_status": "proved (audited)",
+    "proof_source": "records/AUDIT_REVIEW.md",
+    "score_display": "\u2265 62.41",
+    "score": {
+      "calculated": 62.415037499278846,
+      "display": 62.41,
+      "display_text": "\u2265 62.41",
+      "direction": "lower_bound",
+      "minimizer_L": 1,
+      "formula": "(ceil(L/32)+2)/q"
+    },
+    "mechanism_family": "this paper",
+    "rurban_alias": null,
+    "key_free_definition": "A fixed seed-independent pair that collides for every API seed, with the stated public constants.",
+    "masking": {
+      "label": "Yes, ideal keys and the finalizer.",
+      "note": "If e is the intermediate collision bound, masked collision \u2264 e+(1\u2212e)2^\u2212t; the coarser 2^(64\u2212t)\u03b5 bound is also valid.",
+      "audit_url": "records/AUDIT.md#14-chainhash-complete-audit-of-the-stated-composition"
+    },
+    "domain_short": "byte strings <2^64 bytes; ideal keys"
+  }
+}

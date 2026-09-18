@@ -1,0 +1,63 @@
+{
+  "date": "2026-09-18",
+  "sources": [
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/chainhash/chainhash.h",
+      "sha256": "f3c4e96de48970528c5b20d3e760bac84ba0063e67610c0d595fce07e3c578bb"
+    },
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/chainhash/chainhash_ref.h",
+      "sha256": "18bc8491c920da31e9892b5f268137c72e4f0a997c918106814501a4550b9fd5"
+    },
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/chainhash/test_chainhash.cpp",
+      "sha256": "88fd5575407088ee6dabe2b93f4193cea460f68b7466dfdaf7901abc582433f7"
+    },
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/chainhash/verify5.py",
+      "sha256": "758f064712eef791e68293586027cb226f8635e824968eb62d5dab4df50233fe"
+    },
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/chainhash/anf_check.py",
+      "sha256": "59f686e8961e7c8ae6cfdb58c9db128490fde7d41c37dc39da20f3227613cd87"
+    },
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/chainhash/twist_results.md",
+      "sha256": "af02ab7e24bb8912f3d5eec4eb1a6425df74664fe5d9d08da0f9c94bba82373b"
+    },
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/framework/fast_hashing.h",
+      "sha256": "6866ceb5fd5fa3968fa05da21af4d4daa47886da88be53bbe742bea6df7dee25"
+    },
+    {
+      "path": "/Users/ahle/repos/fast-polynomials/tools/bench/framework/fast_hashing_arm.h",
+      "sha256": "34f37200ce34162bc7af594ede821408bf8c85569a45949c37a013e31c93694b"
+    },
+    {
+      "path": "/Users/ahle/repos/smhasher3/hashes/chainhash.cpp",
+      "sha256": "0bb191c1f4d36534e7ed87cda4374d3c1638e07caf0724b63af9d77ce2242f7d"
+    },
+    {
+      "path": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-repo/appendix_chainhash.tex",
+      "sha256": "43970e4098e1a74ec0823f9eee9424d32ebedc1cd5d653aec63e473b805fd232"
+    },
+    {
+      "path": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-repo/LEAN_STATUS.md",
+      "sha256": "642a7e771b38fa50ac29c06dd384220be388f97690e3c9f47ab559541fa64442"
+    }
+  ],
+  "repositories": [
+    {
+      "path": "/Users/ahle/repos/fast-polynomials",
+      "HEAD": "04c73a79a47f6107ed20ae1d4792e3e24ca6bc6f",
+      "status": " M FastPoly/ROADMAP.md\n M coordination.md\n M references.bib\n M sections/appendix_adversarial.tex\n M sections/experiments.tex\n M tools/bench/adversarial/Makefile\n M tools/bench/adversarial/adversarial.cpp\n M tools/bench/adversarial/hashes.h\n M tools/bench/adversarial/selftest.cpp\n M tools/bench/adversarial/speed.cpp\n M tools/bench/adversarial/speed_assemble.py\n M tools/bench/adversarial/speed_hashes.h\n M tools/bench/results/MANIFEST.md\n M website/index.html\n M website/test/ui-smoke.test.js\n?? ALL_N_COORDINATION.md\n?? FastPoly/LowerBound/FourGate.lean\n?? arxiv.zip\n?? exit_sm3.txt\n?? out_sm3.txt\n?? run_2p26.txt\n?? s2_cans2019.json\n?? sweep.err\n?? time_2p26.txt\n",
+      "note": "Read only; working-tree source used, not necessarily HEAD."
+    },
+    {
+      "path": "/Users/ahle/repos/smhasher3",
+      "HEAD": "3de870c7ab449ad11cf450848d9270e3f54102d1",
+      "status": " M CMakeLists.txt\n M hashes/Hashsrc.cmake\n M main.cpp\n M util/Random.cpp\n?? CLAUDE.md\n?? doc/\n?? hashes/chainhash.cpp\n?? hashes/chainhash_goldi_exp.cpp\n?? hashes/injective_hash.cpp\n?? misc/a5hash64_constrained_sat_search.py\n?? misc/a5hash64_eval.cpp\n?? misc/a5hash64_family_coverage.cpp\n?? misc/a5hash64_family_smhasher_eval.cpp\n?? misc/a5hash64_seed_collision.cpp\n?? misc/a5hash_b_len2_template_scan.cpp\n?? misc/a5hash_b_neighbor_family.cpp\n?? misc/a5hash_b_pair_scan.cpp\n?? misc/a5hash_b_ref.py\n?? misc/find_a5hash64_trunc_collisions.cpp\n?? misc/find_a5hash64_trunc_collisions.py\n?? misc/find_a5hash_b_colliding_family.cpp\n?? misc/find_a5hash_b_collisions.cpp\n?? misc/find_a5hash_b_collisions.py\n?? misc/fold_commute_sweep.cpp\n?? misc/gen_a5hash64_len16_collision.py\n?? misc/key32_collision.cpp\n?? misc/mum_colliding_family_search.cpp\n?? misc/mum_collision_search.cpp\n?? misc/odd_even_family_collision.cpp\n?? misc/rapid_bbit_reference.cpp\n?? misc/rapid_mix_commute.cpp\n?? misc/rapid_mix_mapstats.cpp\n?? misc/rapidhash_adversarial.cpp\n?? misc/rapidhash_collision_test.cpp\n?? misc/rapidhash_permutation_test\n?? misc/rapidhash_permutation_test.cpp\n?? misc/rapidhash_random_secret_collision.cpp\n?? results/a5hash64_attack1_algebraic_notes.txt\n?? results/a5hash64_constrained_bruteforce_results.txt\n?? results/a5hash64_constrained_sat_results.txt\n?? results/a5hash64_family_search_round2.txt\n?? results/a5hash64_family_smhasher_ranking.txt\n?? results/a5hash64_len2_template_probe_add_D58_seed20_out20.txt\n?? results/a5hash64_len2_template_probe_xor_D58_seed20_out20.txt\n?? results/a5hash_b12_len1_family32.txt\n?? results/a5hash_b12_len1_family64.txt\n?? results/a5hash_b_candidate_scoreboard.tsv\n?? results/a5hash_b_family_b17_24_probe.tsv\n?? results/a5hash_b_len1_mix_best_b11.txt\n?? results/a5hash_b_len1_mix_best_b12.txt\n?? results/a5hash_b_len1_mix_ratio_sweep.tsv\n?? results/a5hash_b_len1_parametric_eval.tsv\n?? results/a5hash_b_len2_b14_16_quick.tsv\n?? results/a5hash_b_len2_best_b12_add_40_40.txt\n?? results/a5hash_b_len2_best_b13_xor_80_80.txt\n?? results/a5hash_b_len2_dxpow2_top_restarts.tsv\n?? results/a5hash_b_len2_dy_sweep_dxpow2.tsv\n?? results/a5hash_b_len2_template_round4_notes.txt\n?? results/a5hash_b_len2_template_sweep_b10_12.tsv\n?? results/a5hash_b_len2_template_top_restarts.tsv\n?? results/a5hash_b_len4_sweep.txt\n?? results/a5hash_b_new_candidates_collisions.txt\n?? results/a5hash_b_pair_delta_scan.tsv\n?? results/a5hash_b_small_family_round2_notes.txt\n?? results/a5hash_b_small_family_round3_notes.txt\n?? results/a5hash_b_small_sweep_round2.tsv\n?? results/a5hash_b_small_top_restarts.tsv\n?? results/a5hash_notes_so_far.md\n?? results/mum_collision_comp_suffix_xempty_bits8-16_len2-32_pow2_exact_s5_top5_seed1.txt\n?? results/mum_collision_comp_suffix_xempty_bits8-20_len2-32_pow2_sample16384_s5_top5_seed1.txt\n?? results/mum_collision_comp_suffix_xempty_m8-20_len2-10_exact_top5.txt\n?? results/mum_collision_comp_suffix_xempty_m8-20_len2-20_exact_top1_s1.txt\n?? results/mum_collision_eval_zero_prefix_last_comp_sample_m16-64_len2-1024_q0-1-3.txt\n?? results/mum_collision_family_zero_prefix_last_comp_q0-1-3_m8-20_len2-32.txt\n?? results/mum_collision_heuristic_any_xor_horner_x_m1-10_len2-5_top3.txt\n?? results/mum_collision_heuristic_comp_suffix_k1_xor_horner_x_m16-24_len2-5_top3.txt\n?? results/mum_collision_notes.md\n?? results/mum_collision_search_bits20_len128_comp_suffix_k1_sample8192_s10_top5_seed1_final_exact.txt\n?? results/mum_collision_search_xor_horner_m1-10_len1-5_exact.txt\n?? results/mum_collision_search_xor_horner_m1-20_len1-5_exact.txt\n?? results/mum_collision_search_xor_horner_xempty_m1-10_len1-5_exact.txt\n?? results/mum_collision_sweep_q_xor_horner_x_m1-10_len2-5_top10.txt\n?? results/mum_collision_sweep_q_xor_horner_x_m1-12_len2-5_top10.txt\n?? results/mum_collision_sweep_q_xor_horner_x_m11-12_len2-5_top10.txt\n?? results/passers_adversarial_analysis.md\n?? results/passers_adversarial_scan.tsv\n?? tests/LargeKeysetTest.cpp\n?? tests/LargeKeysetTest.h\n?? tests/SeedDifferentialTest.cpp\n?? tests/SeedDifferentialTest.h\n",
+      "note": "Read only; working-tree source used, not necessarily HEAD."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+mkdir -p build
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -mpclmul test/selftest.cpp -o build/selftest
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -DCHAINHASH_FORCE_PORTABLE test/selftest.cpp -o build/portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -mpclmul test/c99.c -o build/c99
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_FORCE_PORTABLE test/c99.c -o build/c99-portable
+./build/selftest
+PASS 9479 differential cases; 92 frozen vectors; backend=pclmul; verification=0xAA4E2A3B
+./build/portable
+PASS 9479 differential cases; 92 frozen vectors; backend=portable; verification=0xAA4E2A3B
+./build/c99
+PASS C99 API
+./build/c99-portable
+PASS C99 API
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -mpclmul test/speed.c -o build/speed

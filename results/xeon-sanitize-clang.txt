@@ -1,0 +1,3 @@
+clang++ -Iinclude -std=c++11 -O1 -g -mpclmul -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
+./build/sanitize
+PASS 9479 differential cases; 92 frozen vectors; backend=pclmul; verification=0xAA4E2A3B

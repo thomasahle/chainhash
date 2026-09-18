@@ -1,0 +1,6 @@
+backend=pclmul; 5 trials, 16 MiB/trial/size; hot reused buffer; key setup excluded
+cycle basis: invariant TSC reference cycles (not variable-frequency core cycles)
+bytes,bytes_per_cycle,GB_per_second,median_ns_per_hash
+256,2.6193,7.5956,33.7036
+4096,5.7931,16.7979,243.8398
+262144,6.5964,19.1267,13705.6875

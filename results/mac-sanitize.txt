@@ -1,0 +1,5 @@
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto test/speed.c -o build/speed
+c++ -Iinclude -std=c++11 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
+./build/sanitize
+
+ASSEMBLY NOTE: Apple Clang 17 ASan hung before main in runtime initialization; terminated. See mac-asan-startup-sample.txt. Full suite passed with Homebrew Clang 22 in mac-sanitize-llvm.txt.
