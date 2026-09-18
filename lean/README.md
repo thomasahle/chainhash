@@ -1,14 +1,13 @@
 # Machine-checked ChainHash proofs
 
 This Lake project ships the shared ProvenHashes work and the complete
-concrete **41-independent-word** ChainHash theorem used by the default
-constructor. The mathematical hash includes unreduced CLNH, strided byte
-encoding and length tags, the actual
+concrete **41-independent-word** ChainHash theorem. The mathematical hash
+includes unreduced CLNH, strided byte encoding and length tags, the actual
 irreducible modulus `X^64+X^4+X^3+X+1`, the recurrence, integer-add twist,
 and quintic circuit. There are no outstanding stage-bound or field
 hypotheses in the concrete collision theorem.
 
-The alternative **80-byte model A is also Lean-proved**, including the exact
+The default **80-byte model A is also Lean-proved**, including the exact
 fixed-length bound and at-most-length envelope `E_A(L)`. The ten words
 `s,u,y,z,c0..c4,tau` are independent and uniform; PH keys are powers of `s`.
 Model B has a [written proof](../docs/SEEDED_THEOREMS.md), but no complete

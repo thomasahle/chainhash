@@ -59,10 +59,12 @@ hoisting/dead-code removal. Key generation is outside the timed region.
 
 `make test` also checks the A/B/C/D schedules against archived key words and
 hash vectors, 10,000 independently computed field products, six edge seeds,
-and 744 native-vs-portable hashes per backend. The default 328-byte
-constructor is checked against all 41 expected words using unaligned input.
-C99 builds also check decoding of the first and last words. All constructors
-are exercised, and `make sanitize` also runs the key-constructor suite.
+and 744 native-vs-portable hashes per backend. The default 80-byte constructor
+is checked against all 41 expected expanded words using unaligned input, and
+compared with the explicit model A constructor. The 328-byte constructor also
+has an unaligned-input check. C99 builds check the first and last input words
+and agreement between the default and explicit model A constructors. All
+constructors are exercised, and `make sanitize` also runs the key-constructor suite.
 Deterministic fixture generation lives in `fixtures.h`, separate from the
 public API. It recreates the SMHasher3 keys for frozen-vector and source
 comparisons without changing the expected results.

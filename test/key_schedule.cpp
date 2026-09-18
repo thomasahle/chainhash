@@ -13,15 +13,13 @@ static void put64(uint8_t *p, uint64_t v) {
 static void verify_key(const chainhash_key& k, const uint64_t *expected) {
     assert(std::memcmp(k.words,expected,328)==0);
     auto copy=chainhash_key_from_words(expected);
-    uint8_t bytes[329]; // Both byte constructors must accept unaligned input.
+    uint8_t bytes[329]; // The full-key constructor must accept unaligned input.
     for (unsigned i=0;i<41;++i) put64(bytes+1+8*i,expected[i]);
     auto decoded=chainhash_key_from_328_bytes(bytes+1);
     assert(std::memcmp(&copy,&decoded,328)==0);
-    auto recommended=chainhash_key_from_bytes(bytes+1);
-    assert(std::memcmp(recommended.words,expected,328)==0);
 }
 int main(int argc,char**) {
-    static_assert(CHAINHASH_RANDOM_BYTES==328,"Default key needs 41 random words");
+    static_assert(CHAINHASH_RANDOM_BYTES==80,"Default key needs 10 random words");
     assert(sizeof(chainhash_key)==328);
     assert(chainhash_schedule_mul(UINT64_C(1)<<63,2)==27);
     for (unsigned i=0;i<10000;++i) {
@@ -43,9 +41,11 @@ int main(int argc,char**) {
         uint8_t bytes[81]; // Deliberately unaligned input.
         put64(bytes+1,s);
         for (unsigned i=1;i<10;++i) put64(bytes+1+8*i,UINT64_C(0x123456789abcdef)*i);
-        auto a=chainhash_key_from_80_bytes(bytes+1);
+        auto a=chainhash_key_from_bytes(bytes+1);
         for (unsigned i=0;i<9;++i) words[32+i]=ch_load64(bytes+1+8*(i+1));
         verify_key(a,words);
+        auto explicit_a=chainhash_key_from_80_bytes(bytes+1);
+        assert(std::memcmp(&a,&explicit_a,sizeof a)==0);
         auto b=chainhash_key_from_seed2(s,t,c);
         words[32]=ch_mul(t,t);words[33]=ch_mul(words[32],t);words[34]=t;
         for (unsigned i=0;i<5;++i) words[35+i]=c[i];

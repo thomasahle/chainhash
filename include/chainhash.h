@@ -1,5 +1,5 @@
 /* ChainHash, 256-byte blocks. Copyright 2026 Thomas Dybdahl Ahle. MIT.
- * C99 / C++11, header only. Default: 41 independent random 64-bit words.
+ * C99 / C++11, header only. Default: 80 random bytes (10 words), model A.
  * See docs/THEOREM.md for all key models.
  * Words and input bytes have canonical little-endian interpretation.
  * Baseline compile-time selection; x86 wide PH uses runtime CPUID/XGETBV:
@@ -17,7 +17,7 @@
 #include <string.h>
 
 #define CHAINHASH_KEY_BYTES 328 /* expanded resident key size */
-#define CHAINHASH_RANDOM_BYTES 328 /* default: 41 independent random words */
+#define CHAINHASH_RANDOM_BYTES 80 /* default: 10 independent random words */
 #define CHAINHASH_KEY_WORDS 41
 #define CHAINHASH_BLOCK_BYTES 256
 
@@ -133,13 +133,12 @@ static inline chainhash_key chainhash_key_from_single_word_reference(uint64_t s)
     return key;
 }
 
-/* Default: 328 independent uniform input bytes, decoded into 41 words.
- * Order: k[0..31],u,y,z,c0..c4,tau. The resident key is also 328 bytes.
- * Call chainhash_key_from_80_bytes explicitly for the reduced-randomness
- * model A. Its bound and generated keys differ from this default.
+/* Default, model A: 80 independent uniform input bytes (10 words).
+ * Input order: s,u,y,z,c0..c4,tau. The 32 PH words are derived from s;
+ * the expanded resident key occupies 328 bytes (41 words).
  */
 static inline chainhash_key chainhash_key_from_bytes(const uint8_t bytes[CHAINHASH_RANDOM_BYTES]) {
-    return chainhash_key_from_328_bytes(bytes);
+    return chainhash_key_from_80_bytes(bytes);
 }
 
 /* Portable definition: no intrinsics or nonstandard 128-bit integer type. */

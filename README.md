@@ -12,7 +12,7 @@ confidence based only on a test suite. The recommended key setup and its
 collision bounds have been checked by Lean, a mathematical proof checker.
 
 - **One C99/C++11 header:** no library to link and no memory allocation.
-- **41 independent random 64-bit words:** 328 bytes of random input and key storage.
+- **80 random bytes (10 words) to initialize a key:** it expands to 328 bytes (41 words).
 - **Hardware acceleration on ARM64 and x86-64**, with a portable C fallback.
 - **An explicit scope:** the guarantee covers the full 64-bit result and inputs
   chosen independently of the key. It does not establish security against an
@@ -23,7 +23,7 @@ The [guarantee](#guarantee) below explains what its proof does—and does not—
 
 ## Use
 
-Copy [include/chainhash.h](include/chainhash.h) into your project. Obtain 328
+Copy [include/chainhash.h](include/chainhash.h) into your project. Obtain 80
 random bytes from the operating system, create a key, and pass it to
 `chainhash()` along with the data and its length in bytes. Initialize the key
 once and reuse it for messages whose hashes you want to compare. The same key
@@ -39,7 +39,7 @@ Here is a complete **macOS** example. Save it as `example.c`:
 #include <stdlib.h>
 
 int main(void) {
-    uint8_t random_bytes[CHAINHASH_RANDOM_BYTES]; /* 328 bytes = 41 words */
+    uint8_t random_bytes[CHAINHASH_RANDOM_BYTES]; /* 80 bytes = 10 words */
     arc4random_buf(random_bytes, sizeof random_bytes);
 
     chainhash_key key = chainhash_key_from_bytes(random_bytes);
@@ -112,27 +112,31 @@ both messages with it. The theorem bounds the probability that their **complete
 64-bit outputs** agree. It applies to every fixed pair within the stated length
 limit, including empty messages and messages of different lengths.
 
-The default constructor takes 328 random bytes and reads them as **41 independent
-64-bit words**. A word is eight bytes, so the input fills the entire key directly.
-This is the original paper’s key setup; it needs no expansion from a smaller seed.
+The default constructor takes **80 random bytes: ten independent 64-bit words**.
+It derives the 41 words used by the hash from those ten, producing a 328-byte
+key object. The technical documents call this proved construction **model A**.
+You do not need to select a model or understand the derivation to use it.
 
 For that setup, some example bounds are:
 
 | Message lengths | Maximum collision probability |
 | --- | --- |
-| Each at most 256 bytes, possibly different lengths | `3 / 2^64` |
-| Each at most 1 MiB, possibly different lengths | `4098 / 2^64` |
+| Both exactly 256 bytes | `34 / 2^64` |
+| Each at most 256 bytes, possibly different lengths | `64 / 2^64` = `1 / 2^58` |
+| Both exactly 1 MiB | `4129 / 2^64` |
+| Each at most 1 MiB, possibly different lengths | `4159 / 2^64` |
 
 Here 1 MiB is 1,048,576 bytes. These are upper bounds, not measured collision
 rates or claims that an attack takes that many operations. The probability is
 over the random key. Repeating the same pair under the same key does not draw
 another chance: it either collides with that key or it does not.
 
-The default guarantee has a **length-adjusted score of about 62.415 bits**.
+The default guarantee has a **61-bit length-adjusted score**.
 If `L` is the longer message’s length in eight-byte units, rounded up with a
-minimum of 1, the collision bound is `min(1, (ceil(L/32) + 2) / 2^64)`.
-The score summarizes this bound across lengths; it is not a fixed collision
-probability or a measure of attack work. For the implementation-facing guarantee,
+minimum of 1, a simpler conservative bound is `min(1, L / 2^61)`. The exact
+formulas give the sharper bounds above. The score summarizes the guarantee
+across lengths; it is not a fixed collision probability or a measure of attack
+work. For the implementation-facing guarantee,
 use `8L + 255 < 2^64`, equivalently `L ≤ 2^61 − 32`.
 
 Two limits matter when applying this result:
@@ -284,9 +288,9 @@ source repositories untouched. See [REPORT.md](REPORT.md) for the recorded runs.
 ## Machine-checked
 
 Lean checks a mathematical proof step by step. The shipped
-[proof project](lean/README.md) establishes the default construction with 41
-independently random 64-bit key values, as well as the alternative 80-byte
-setup’s bounds. That includes the way bytes and lengths enter the
+[proof project](lean/README.md) establishes the default 80-byte key setup’s
+bounds, as well as the original construction with 41 independently random
+64-bit key values. That includes the way bytes and lengths enter the
 mathematical hash, the field arithmetic, and the composition of its stages.
 
 This verifies the **mathematical reference function**. It does not prove that
@@ -302,19 +306,18 @@ has a written mathematical proof but no complete Lean theorem in this repository
 
 ## Exact bounds and alternative keys
 
-Use `chainhash_key_from_bytes()` with 328 random bytes for the default guarantee.
-The explicit `chainhash_key_from_words()` constructor also accepts 41 independent
-random 64-bit integers. The alternative 80-byte constructor saves random input
-but expands it into the same 328-byte key object and has a weaker bound. It is
-useful when that reduction in random input matters.
-This section gives the alternatives and their precise assumptions.
+Use `chainhash_key_from_bytes()` with **80 random bytes (10 words)** for the
+default guarantee. Every constructor produces a **328-byte (41-word) key
+object**. The original paper setup draws all 41 words independently and gives
+stronger bounds, at the cost of more random input. This section gives the
+alternatives and their precise assumptions.
 
 <details>
 <summary>Key constructors and their assumptions</summary>
 
 ```c
-chainhash_key paper = chainhash_key_from_328_bytes(bytes328); /* alias of default */
-chainhash_key a = chainhash_key_from_80_bytes(bytes80); /* explicit model A */
+chainhash_key a = chainhash_key_from_80_bytes(bytes80); /* alias of default */
+chainhash_key paper = chainhash_key_from_328_bytes(bytes328);
 chainhash_key paper_words = chainhash_key_from_words(words41);
 chainhash_key b = chainhash_key_from_seed2(s, t, c5);
 chainhash_key c = chainhash_key_from_seed(s, c5); /* experimental */
@@ -322,12 +325,12 @@ chainhash_key c = chainhash_key_from_seed(s, c5); /* experimental */
 
 The names A, B, C and D label different ways to choose internal key values:
 
-- **Default, the original paper setup:** all 41 key words are chosen independently,
-  requiring 328 random bytes. Their order is `k[0..31],u,y,z,c0,c1,c2,c3,c4,tau`.
-- **A, the 80-byte alternative:** ten independent random 64-bit words, encoded
+- **A, the default:** ten independent random 64-bit words, encoded in 80 bytes
   in little-endian order `s,u,y,z,c0,c1,c2,c3,c4,tau`. The block-hashing key words
-  are calculated as `s,s²,…,s³²` in the finite field GF(2^64). Its collision
-  bounds are weaker than the default’s, although both have checked proofs.
+  are calculated as `s,s²,…,s³²` in the finite field GF(2^64).
+- **Original paper setup:** all 41 key words are chosen independently,
+  requiring 328 random bytes. Their order is `k[0..31],u,y,z,c0,c1,c2,c3,c4,tau`.
+  Its collision bounds are stronger than the default’s; both have checked proofs.
 - **B:** independent random `s,t,c0,…,c4`, totaling 56 bytes. The chain values are
   `(u,y,z)=(t²,t³,t)` and the final shift is `tau=s⁴`.
 - **C, experimental:** reuses `s` for `t`, requiring 48 random bytes. No useful
@@ -358,8 +361,8 @@ and empty inputs. Use `8L + 255 < 2^64` for the implementation-facing theorem.
 
 | Key setup / constructor | Random input | Equal fixed length ε(L) | Any lengths ≤8L: ε(L) | Fixed / at-most score |
 | --- | ---: | --- | --- | --- |
-| **Default (paper)** `chainhash_key_from_bytes`, `chainhash_key_from_328_bytes` or `chainhash_key_from_words` | **328 bytes (41 words)** | `min(1,(n+2)/q)` | `min(1,(n+2)/q)` | **62.4150374993 / 62.4150374993** |
-| A: `chainhash_key_from_80_bytes` | 80 bytes | `min(1,(d+n+1)/q)` | `min(1,E_A/q)` | 62.4150374993 / 61 |
+| **A (default)** `chainhash_key_from_bytes` or `chainhash_key_from_80_bytes` | **80 bytes (10 words)** | `min(1,(d+n+1)/q)` | `min(1,E_A/q)` | **62.4150374993 / 61** |
+| Paper: `chainhash_key_from_328_bytes` or `chainhash_key_from_words` | 328 bytes (41 words) | `min(1,(n+2)/q)` | `min(1,(n+2)/q)` | 62.4150374993 / 62.4150374993 |
 | B: `chainhash_key_from_seed2(s,t,c)` | 56 bytes (7 words) | `min(1,(d+3n)/q)` | `min(1,E_B/q)` | 62 / 60.8300749986 |
 | C: `chainhash_key_from_seed(s,c)` | 48 bytes (6 words) | `1` only established | `1` only established | 0 / 0 from trivial certificate |
 | D, reference: `chainhash_key_from_single_word_reference(s)` | 8 bytes | `1` only established | `1` only established | 0 / 0 from trivial certificate |
