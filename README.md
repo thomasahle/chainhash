@@ -1,99 +1,131 @@
 # ChainHash
 
-ChainHash is a 64-bit universal hash family: carry-less PH over GF(2^64)
-with strided word pairing, a three-key injective recurrence, and a degree-5
-finalizer behind an integer-add twist. This repository ships the **256-byte
-block variant only**, with **41 key words (328 bytes)** and a self-contained
-C99/C++ header. It computes the same function as the author's SMHasher3
-`chainhash_256` registration.
+ChainHash is a 64-bit universal hash family with 256-byte blocks, carry-less
+PH, a three-key injective recurrence, and a degree-5 finalizer behind an
+integer-add twist. The self-contained C99/C++11 header recommends **key
+model A: 80 random input bytes**, expanded to a 41-word (328-byte) resident
+key. The hashing operations are identical to the author's SMHasher3
+`chainhash_256`; constructors select different key distributions.
 
 ## Guarantee
 
-With **41 independent uniform 64-bit key words**, for every two fixed,
-distinct byte strings of at most `256n` bytes each, `n≥1`,
+**The default and the model cited by this write-up is A.** Its PH words are
+`s,s²,…,s³²` in GF(2^64). The word `s`, recurrence words `u,y,z`, five
+finalizer parameters `c0,…,c4`, and twist `tau` are mutually independent
+uniform words, including zero. B uses independent `s,t,c0,…,c4`, with
+`(u,y,z)=(t²,t³,t)` and `tau=s⁴`. C reuses `s` for `t`; its only uniform
+collision certificate currently established is the trivial bound one.
+The original 41-independent-word model remains available explicitly.
+
+All bounds concern equality of the **full 64-bit output** on two fixed,
+distinct byte strings chosen independently of the key. Use the implementation
+proof's length domain `8L+255<2^64` (`L≤2^61-32`). They do not cover
+truncated output or adaptively chosen inputs. ChainHash is for keyed hashing,
+not a cryptographic digest or MAC.
+
+| Key model / constructor | Random input | Equal fixed length ε(L) | Any lengths ≤8L: ε(L) | Fixed / at-most score |
+| --- | ---: | --- | --- | --- |
+| **A (default)** `chainhash_key_from_bytes` | **80 bytes** | `min(1,(d+n+1)/q)` | `min(1,E_A/q)` | **62.4150374993 / 61** |
+| Paper: `chainhash_key_from_328_bytes` or `chainhash_key_from_words` | 328 bytes (41 words) | `min(1,(n+2)/q)` | `min(1,(n+2)/q)` | 62.4150374993 / 62.4150374993 |
+| B: `chainhash_key_from_seed2(s,t,c)` | 56 bytes (7 words) | `min(1,(d+3n)/q)` | `min(1,E_B/q)` | 62 / 60.8300749986 |
+| C: `chainhash_key_from_seed(s,c)` | 48 bytes (6 words) | `1` only established | `1` only established | 0 / 0 from trivial certificate |
+| D, reference: `chainhash_key_from_single_word_reference(s)` | 8 bytes | `1` only established | `1` only established | 0 / 0 from trivial certificate |
+
+Here `q=2^64`, `L≥1` is a limit in eight-byte words, `n=ceil(L/32)`,
+`R=L-32(n-1)`, and `G=ceil(R/4)`. Fixed length means **both** strings
+have exactly `8L` bytes; the at-most column includes unequal lengths and
+empty inputs. The precise numerator functions from the
+[seeded theorem write-up](docs/SEEDED_THEOREMS.md) are:
 
 ```
-Pr[chainhash(key,m) == chainhash(key,m′)] ≤ (n+2)/2^64.
+d(1)=1, d(2)=2; for L≥3, M=min(L,32):
+d(L)=4*floor((M-1)/4) + (3 if M mod 4 = 1 else 4)
+E_A(L)=8G                         if n=1
+       n+62+indicator(R≥29)       if n≥2
+E_B(L)=8G+1                       if n=1
+       3n+59+3*indicator(R≥29)    if n≥2
 ```
 
-Messages must be shorter than `2^64` bytes. For a byte-length limit `ell`,
-take `n=max(1,ceil(ell/256))`, including the empty message. This is a bound
-on collision of the **full 64-bit output**, with probability over the key;
-it is not a bound for truncated output or an adaptive chosen-input claim.
+The score is `inf_{L≥1} log2(L / max(2^-64,ε(L)))`; all listed minima
+occur at `L=1`. These are guarantees from upper bounds, not measured attack
+costs. C/D's true worst-pair scores remain undetermined. SplitMix64 legacy
+expansion has no proved bound here and is not model C or D.
 
-In the write-up's metric, `L=ceil(max(len(m),len(m′))/8)≥1` is the rounded
-maximum length in 64-bit words:
+For model A, exactly 256-byte messages have bound `34/q`; arbitrary
+messages up to 256 bytes have bound `64/q`. At 1 MiB the corresponding
+bounds are `4129/q` and `4159/q`. The paper model instead gives `3/q`
+and `4098/q` for those at-most lengths. See [the theorem](docs/THEOREM.md)
+and the [complete seeded proofs](docs/SEEDED_THEOREMS.md).
 
-```
-epsilon(L) = (ceil(L/32)+2)/2^64
-score = inf_L log2(L / max(2^-64, min(1,epsilon(L))))
-      = 64-log2(3) = 62.415037499… bits (lower guarantee).
-```
+## Machine-checked
 
-For example, two inputs of at most 256 bytes collide with probability at
-most `3/2^64`; at most 1 MiB gives `4098/2^64`. The score normalizes a
-length-dependent bound; it is not a constant collision probability or an
-attack-work estimate. ChainHash is intended for keyed hashing, not as a
-cryptographic digest or MAC.
+The repository ships a [Lean/Lake project](lean/README.md), pinned to
+Lean 4.24.0 and Mathlib v4.24.0. The **concrete 41-independent-word theorem
+is proved**, including byte encoding, unreduced CLNH, irreducibility of the
+actual field modulus, recurrence, integer-add twist, finalizer, and key
+layout. The two concrete formulations are retained, with explicit source
+signatures and an axiom audit of every exported theorem. Build evidence is
+in [lean/VERIFICATION.txt](lean/VERIFICATION.txt).
 
-[The theorem and proof sketch](docs/THEOREM.md) include the exact statement
-and the qualified five-wise result. **The concrete ChainHash theorem is
-not yet Lean-checked.** The supplied [Lean status](docs/LEAN_STATUS.md)
-checks the recurrence and conditional composition; the unreduced CLNH
-byte-stream and concrete finalizer/twist obligations remain. A separate
-job is working on them. This repository does not claim its completion or
-formal verification of this C implementation.
+**A/B's seeded collision bounds above are written mathematical proofs,
+not yet complete Lean theorems.** The shipped seeded-PH algebra and root-bound lemmas are
+machine-checked; the remaining seeded statements are listed in
+[lean/README.md](lean/README.md). Five-output independence is conditional
+on distinct pre-finalizer values, not unconditional independence of the
+message hash. The Lean proofs describe the mathematical reference function;
+they do not verify C compilation, pointer safety, or SIMD lowering.
 
 ## Use
 
 Copy [include/chainhash.h](include/chainhash.h) into your project. Functions
-are `static inline`; there is no library to link and no allocation or
-mutable global state.
+are `static inline`; there is no allocation, library to link, or mutable
+global state. The default constructor takes **80 bytes** in little-endian
+order `s,u,y,z,c0,c1,c2,c3,c4,tau`:
 
 ```c
 #include "chainhash.h"
 
-uint8_t random_key_bytes[328];
+uint8_t random_key_bytes[CHAINHASH_RANDOM_BYTES]; /* 80 */
 /* Fill every byte with the operating system CSPRNG; handle errors. */
 chainhash_key key = chainhash_key_from_bytes(random_key_bytes);
 uint64_t h = chainhash(&key, "hello", 5);
 ```
 
-On macOS, a complete key initialization is:
+On macOS, initialize with `arc4random_buf(random_key_bytes,
+sizeof random_key_bytes)` from `<stdlib.h>`. On Linux, use `getrandom()`
+from `<sys/random.h>` in a loop handling short reads and `EINTR`, aborting
+on other errors. OS CSPRNG output is the practical approximation to the
+proof's independent uniform words. The constructors do not obtain randomness.
+
+Alternative constructors:
 
 ```c
-#include <stdlib.h>
-uint8_t bytes[CHAINHASH_KEY_BYTES];
-arc4random_buf(bytes, sizeof bytes);
-chainhash_key key = chainhash_key_from_bytes(bytes);
+chainhash_key a = chainhash_key_from_80_bytes(bytes80); /* alias of default */
+chainhash_key paper = chainhash_key_from_328_bytes(bytes328);
+chainhash_key paper_words = chainhash_key_from_words(words41);
+chainhash_key b = chainhash_key_from_seed2(s, t, c5);
+chainhash_key c = chainhash_key_from_seed(s, c5); /* experimental */
+chainhash_key legacy = chainhash_key_from_splitmix64_legacy(UINT64_C(123));
 ```
 
-On Linux, use `getrandom()` from `<sys/random.h>` in a loop that handles
-short reads and `EINTR`, and abort key initialization on other errors.
-OS CSPRNG generation is recommended in practice; the information-theoretic
-proof assumes truly independent uniform words. Keep the key secret when
-using its collision guarantee against independently chosen hostile inputs.
+For B, `s,t,c5[0..4]` must be independent uniform words. For C,
+`s,c5[0..4]` must be independent uniform words. Powers use **field**
+multiplication, never integer multiplication. A deterministic 64-bit
+expander cannot provide these distributions. The explicitly named legacy
+constructor preserves the original SplitMix64 vectors and SMHasher3 seeding,
+with no claim from the universal bounds. It emits 41 successive SplitMix64
+words in order `k[0..31],u,y,z,c[0..4],tau`.
 
-For reproducible tests or compatibility with SMHasher3:
+Migration from the original header: the old 328-byte `key_from_bytes`
+constructor is now `chainhash_key_from_328_bytes`; the old one-argument
+`key_from_seed` is now `chainhash_key_from_splitmix64_legacy` (both names
+have the `chainhash_` prefix). `CHAINHASH_KEY_BYTES` remains **328**, the
+resident size; `CHAINHASH_RANDOM_BYTES` is **80**, the recommended input size.
+Every model retains the same resident key and hashing path.
 
-```c
-chainhash_key key = chainhash_key_from_seed(UINT64_C(123));
-uint64_t h = chainhash(&key, data, len);
-```
-
-**The seed expansion has no guarantee from the proved bound.** It has only
-64 bits of seed entropy. It is precisely SplitMix64, initialized with the
-seed and advanced before each output: add `0x9E3779B97F4A7C15`, xor-shift
-by 30 and multiply by `0xBF58476D1CE4E5B9`, xor-shift by 27 and multiply
-by `0x94D049BB133111EB`, then xor-shift by 31. Arithmetic wraps modulo
-`2^64`. The 41 outputs are stored as `k[0..31],u,y,z,c[0..4],twist`.
-`chainhash_key_from_bytes` decodes 41 little-endian words in the same order.
-
-The key is exactly 328 bytes and needs no setup cache. Inputs may be
-unaligned; `data=NULL` is permitted when `len=0`. The output is a numerical
-`uint64_t`; serialize it little-endian to match SMHasher3's native output
-bytes on the two tested hosts. Both message and byte-key decoding are
-little-endian, independent of host byte order.
+Inputs may be unaligned; `data=NULL` is allowed for `len=0`. The numerical
+`uint64_t` output serializes little-endian to match SMHasher3 native bytes.
+Input and byte-key words decode little-endian on every host.
 
 ## Build and test
 
@@ -146,7 +178,10 @@ hardware-counter measurements. Corresponding GB/s were M2
 Raw results are in [results/](results/). The Mac runs are deliberately light;
 these numbers are indicative, not a comprehensive performance study.
 
-The compact key omits the benchmark's cached short-input constants. The
+The measurements used legacy SplitMix64 keys; key generation was excluded.
+The hashing path is unchanged by the constructor integration.
+
+The expanded key omits the benchmark's cached short-input constants. The
 last incomplete 32-byte group uses a bounded stack copy. These choices
 preserve the function while simplifying the C API; the table measures
 this header, not the more specialized SMHasher3 wrapper.

@@ -3899,6 +3899,86 @@ theorem phPoly_difference {F : Type*} [CommRing F] (a : Finset (Fin 16))
     phPoly a m - phPoly a m' - C t = differencePoly a m m' t
 ```
 
+`ProvenHashes.ChainHash.ModelA.differencePoly_coeff`
+
+```lean
+theorem differencePoly_coeff {F : Type*} [CommRing F] (a : Finset (Fin 16))
+    (m m' : Slot → F) (t : F) (j : Slot) (hj : j.1 ∈ a) :
+    (differencePoly a m m' t).coeff (exponent (partner j)) = m j - m' j
+```
+
+`ProvenHashes.ChainHash.ModelA.differencePoly_nonzero_degree`
+
+```lean
+theorem differencePoly_nonzero_degree {F : Type*} [Field F]
+    (a : Finset (Fin 16)) (m m' : Slot → F) (t : F) (D : ℕ)
+    (hne : ∃ j : Slot, j.1 ∈ a ∧ m j ≠ m' j)
+    (hD : ∀ j : Slot, j.1 ∈ a → m j ≠ m' j → exponent (partner j) ≤ D) :
+    differencePoly a m m' t ≠ 0 ∧ (differencePoly a m m' t).natDegree ≤ D
+```
+
+`ProvenHashes.ChainHash.ModelA.polynomial_probability_le`
+
+```lean
+theorem polynomial_probability_le {F : Type*} [Field F] [Fintype F]
+    (p : F[X]) (hp : p ≠ 0) (D : ℕ) (hd : p.natDegree ≤ D) :
+    uniformProb (fun s : F => p.eval s = 0) ≤ (D : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.ModelA.ph_equal_groups_bound`
+
+```lean
+theorem ph_equal_groups_bound {F : Type*} [Field F] [Fintype F]
+    (a : Finset (Fin 16)) (m m' : Slot → F) (t : F) (D : ℕ)
+    (hne : ∃ j : Slot, j.1 ∈ a ∧ m j ≠ m' j)
+    (hD : ∀ j : Slot, j.1 ∈ a → m j ≠ m' j → exponent (partner j) ≤ D) :
+    uniformProb (fun s : F => ph a m s - ph a m' s = t) ≤
+      (D : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.ModelA.pairPoly_monic_degree`
+
+```lean
+theorem pairPoly_monic_degree {F : Type*} [Field F] (m : Slot → F) (i : Fin 16) :
+    (pairPoly m i).Monic ∧
+      (pairPoly m i).natDegree = 8 * (i.val / 2) + 2 * (i.val % 2) + 4
+```
+
+`ProvenHashes.ChainHash.ModelA.phPoly_group_degree`
+
+```lean
+theorem phPoly_group_degree {F : Type*} [Field F] (g : ℕ) (hg : 0 < g)
+    (hg8 : g ≤ 8) (m : Slot → F) :
+    (phPoly (groupPairs g) m).natDegree = 8 * g - 2 ∧
+      (phPoly (groupPairs g) m).Monic
+```
+
+`ProvenHashes.ChainHash.ModelA.ph_unequal_groups_polynomial`
+
+```lean
+theorem ph_unequal_groups_polynomial {F : Type*} [Field F]
+    (g h : ℕ) (hgh : g < h) (hh : h ≤ 8) (m m' : Slot → F) (t : F) :
+    let p
+```
+
+`ProvenHashes.ChainHash.ModelA.ph_unequal_groups_bound`
+
+```lean
+theorem ph_unequal_groups_bound {F : Type*} [Field F] [Fintype F]
+    (g h : ℕ) (hgh : g < h) (hh : h ≤ 8) (m m' : Slot → F) (t : F) :
+    uniformProb (fun s : F => ph (groupPairs g) m s - ph (groupPairs h) m' s = t) ≤
+      ((8 * h - 2 : ℕ) : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.ModelA.cubic_linear_probability`
+
+```lean
+theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F]
+    (a b : F) (hne : a ≠ 0 ∨ b ≠ 0) :
+    uniformProb (fun s : F => s ^ 3 * (a + b * s) = 0) ≤
+      ((if b = 0 then 1 else 2 : ℕ) : ℚ≥0) / Fintype.card F
+```
+
 ## [Stream.lean](ProvenHashes/Stream.lean)
 
 `ProvenHashes.ChainHash.lengthMask_injective`

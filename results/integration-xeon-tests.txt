@@ -1,0 +1,25 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -mpclmul test/key_schedule_c99.c -o build/key-schedule-c99
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_FORCE_PORTABLE test/key_schedule_c99.c -o build/key-schedule-c99-portable
+./build/selftest
+PASS 9479 differential cases; 92 frozen vectors; backend=pclmul; verification=0xAA4E2A3B
+./build/portable
+PASS 9479 differential cases; 92 frozen vectors; backend=portable; verification=0xAA4E2A3B
+./build/c99
+PASS C99 API
+./build/c99-portable
+PASS C99 API
+./build/key-schedule vectors > build/key-schedule-vectors.txt
+python3 test/check_key_vectors.py
+PASS: 10000 field products; six edge seeds; 744 hash comparisons; backend=pclmul
+PASS: archived seeded key and hash vectors match
+./build/key-schedule-portable
+PASS: 10000 field products; six edge seeds; 744 hash comparisons; backend=portable
+./build/key-schedule-c99
+./build/key-schedule-c99-portable
+PASS: hashing source byte-identical to 6680c66bff52bb8b57d0bae18a09c98b528c7ff4
+Hashing source SHA256: 3edb24bcc45412b57112b2f0ec78d4870bc74b482a16702ae9465ebc27ae1d63
+PASS: compiled hashing .text byte-identical; flags: -mpclmul
+Compiled code SHA256: 00fbe7fbc9a14ccde53b8e776fe36de2038c7c0a79a4a05d0343c34e886b5b17

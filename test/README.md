@@ -51,3 +51,21 @@ estimated cycles; x86 uses invariant TSC reference cycles. It does not
 silently label ARM timer ticks as CPU cycles. Inputs are reused and hot,
 with a compiler barrier per hash call and a checksum sink to prevent
 hoisting/dead-code removal. Key generation is outside the timed region.
+
+## Integrated key-model checks
+
+`make test` also checks the A/B/C/D schedules against archived key words and
+hash vectors, 10,000 independently computed field products, six edge seeds,
+and 744 native-vs-portable hashes per backend. The recommended 80-byte
+constructor is compared with its explicit model A alias. C99 builds exercise
+all constructors. The old frozen vectors and SMHasher3 checks explicitly use
+`chainhash_key_from_splitmix64_legacy`; raw 41-word tests use
+`chainhash_key_from_328_bytes`.
+
+`ARCH_FLAGS=-mpclmul python3 test/check_hash_path.py` on x86, or
+`ARCH_FLAGS=-march=native+crypto python3 test/check_hash_path.py` on Apple ARM,
+checks the hashing source suffix byte-for-byte against the pre-integration
+commit. It also compiles an identical wrapper before/after: GNU objcopy
+compares the `.text` bytes when available; otherwise the assembly must match.
+GCC may renumber local assembly labels after extra inline constructors, so
+its assembly text alone is not a machine-code comparison.

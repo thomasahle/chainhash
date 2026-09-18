@@ -31,7 +31,7 @@ int main() {
     std::vector<uint8_t> data(262144+64);
     for(size_t i=0;i<data.size();++i) data[i]=(uint8_t)(i*131+17);
     for(const auto &v:vectors) {
-        chainhash_key k=chainhash_key_from_seed(v.seed);
+        chainhash_key k=chainhash_key_from_splitmix64_legacy(v.seed);
         uintptr_t s=chainhash_seed_init<32,5>(v.seed);
         check(k,data.data(),v.len,s);
         uint8_t out[8]; ChainHash<32,5,1,false>(data.data(),v.len,(seed_t)s,out);
@@ -46,7 +46,7 @@ int main() {
     for(unsigned ki=0;ki<6;++ki) {
         uint8_t raw[328];
         for(auto &v:raw) v=ki==0?0:ki==1?255:(uint8_t)ch_splitmix64(&rng);
-        chainhash_key k=chainhash_key_from_bytes(raw);
+        chainhash_key k=chainhash_key_from_328_bytes(raw);
         smh_key<32,5> sk;
         for(unsigned j=0;j<32;++j) sk.k[j]=k.words[j];
         sk.u=k.words[32];sk.y=k.words[33];sk.z=k.words[34];sk.t_in=k.words[40];

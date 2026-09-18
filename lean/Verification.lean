@@ -523,6 +523,15 @@ import ChainHash
 #print axioms ProvenHashes.ChainHash.ModelA.eval_phPoly
 #print axioms ProvenHashes.ChainHash.ModelA.partnerExponent_injective
 #print axioms ProvenHashes.ChainHash.ModelA.phPoly_difference
+#print axioms ProvenHashes.ChainHash.ModelA.differencePoly_coeff
+#print axioms ProvenHashes.ChainHash.ModelA.differencePoly_nonzero_degree
+#print axioms ProvenHashes.ChainHash.ModelA.polynomial_probability_le
+#print axioms ProvenHashes.ChainHash.ModelA.ph_equal_groups_bound
+#print axioms ProvenHashes.ChainHash.ModelA.pairPoly_monic_degree
+#print axioms ProvenHashes.ChainHash.ModelA.phPoly_group_degree
+#print axioms ProvenHashes.ChainHash.ModelA.ph_unequal_groups_polynomial
+#print axioms ProvenHashes.ChainHash.ModelA.ph_unequal_groups_bound
+#print axioms ProvenHashes.ChainHash.ModelA.cubic_linear_probability
 #print axioms ProvenHashes.ChainHash.lengthMask_injective
 #print axioms ProvenHashes.ChainHash.rawStream_length
 #print axioms ProvenHashes.ChainHash.rawStream_eq_digest

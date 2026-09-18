@@ -1,0 +1,14 @@
+Xeon source repository HEADs at collection (working-tree files were copied).
+Content hashes in PROVENANCE.json identify the exact integrated snapshots.
+
+lean-hash e70213feed3dac6280fe8d7ecdc35dcfd0cf1cc8
+lean-chainhash 618f1b6abdeee57c83a6b1fa2f00b84e687b61ea
+lean-chainhash-pieces 1a0c3d6402348ddf468e6dc674fafa09246151eb
+lean-chainhash-opus-1 a75022b7a907a62267e83ffe577b3c262671f4cb
+lean-chainhash-opus-2 f2cd7fb156473dac1e61df8ed35d5904d7b14672
+lean-chainhash-opus-3 e8ba4a1c51ea443eff10fc6adac4f9d177705f27
+lean-chainhash-modelA 618f1b6abdeee57c83a6b1fa2f00b84e687b61ea
+verify-chainhash-full 618f1b6abdeee57c83a6b1fa2f00b84e687b61ea
+verify-clnh a75022b7a907a62267e83ffe577b3c262671f4cb
+verify-encoding f2cd7fb156473dac1e61df8ed35d5904d7b14672
+verify-finalizer e8ba4a1c51ea443eff10fc6adac4f9d177705f27

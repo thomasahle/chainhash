@@ -1,4 +1,4 @@
-# ChainHash collision theorem
+# ChainHash key-model guarantees
 
 This is the 256-byte specialization (`W=32`, `S=1`) of Theorem
 `thm:ph:collision` in Thomas D. Ahle and Jakob B. T. Knudsen,
@@ -7,6 +7,50 @@ This is the 256-byte specialization (`W=32`, `S=1`) of Theorem
 [appendix_chainhash.tex](appendix_chainhash.tex). This document describes the
 mathematical family implemented here; equivalence tests are not a formal
 verification of the C implementation.
+
+## Recommended model A and alternatives
+
+This repository recommends and cites **model A**, with 80 independent random
+input bytes and a 328-byte expanded key. The PH words are powers `s¹…s³²`;
+`u,y,z,c0…c4,tau` remain independent uniform words. The table distinguishes
+fixed equal byte lengths from arbitrary lengths up to a limit. All probabilities
+refer to the full output and fixed messages independent of the key.
+
+| Key model / constructor | Random input | Equal fixed length ε(L) | Any lengths ≤8L: ε(L) | Fixed / at-most score |
+| --- | ---: | --- | --- | --- |
+| **A (default)** `chainhash_key_from_bytes` | **80 bytes** | `min(1,(d+n+1)/q)` | `min(1,E_A/q)` | **62.4150374993 / 61** |
+| Paper: `chainhash_key_from_328_bytes` or `chainhash_key_from_words` | 328 bytes (41 words) | `min(1,(n+2)/q)` | `min(1,(n+2)/q)` | 62.4150374993 / 62.4150374993 |
+| B: `chainhash_key_from_seed2(s,t,c)` | 56 bytes (7 words) | `min(1,(d+3n)/q)` | `min(1,E_B/q)` | 62 / 60.8300749986 |
+| C: `chainhash_key_from_seed(s,c)` | 48 bytes (6 words) | `1` only established | `1` only established | 0 / 0 from trivial certificate |
+| D, reference: `chainhash_key_from_single_word_reference(s)` | 8 bytes | `1` only established | `1` only established | 0 / 0 from trivial certificate |
+
+Here `q=2^64`, `L≥1` is a limit in eight-byte words, `n=ceil(L/32)`,
+`R=L-32(n-1)`, and `G=ceil(R/4)`. Fixed length means **both** strings
+have exactly `8L` bytes; the at-most column includes unequal lengths and
+empty inputs. The precise numerator functions from the
+[seeded theorem write-up](SEEDED_THEOREMS.md) are:
+
+```
+d(1)=1, d(2)=2; for L≥3, M=min(L,32):
+d(L)=4*floor((M-1)/4) + (3 if M mod 4 = 1 else 4)
+E_A(L)=8G                         if n=1
+       n+62+indicator(R≥29)       if n≥2
+E_B(L)=8G+1                       if n=1
+       3n+59+3*indicator(R≥29)    if n≥2
+```
+
+The score is `inf_{L≥1} log2(L / max(2^-64,ε(L)))`; all listed minima
+occur at `L=1`. These are guarantees from upper bounds, not measured attack
+costs. C/D's true worst-pair scores remain undetermined. SplitMix64 legacy
+expansion has no proved bound here and is not model C or D.
+
+The full derivations, schedules, pair-specific bounds, qualifications on
+five-wise independence, and the unresolved useful C/D bounds are in
+[SEEDED_THEOREMS.md](SEEDED_THEOREMS.md), preserved verbatim from the seeded
+proof work. Its [LaTeX version](SEEDED_THEOREMS.tex) is also included.
+For the implementation-facing guarantee use `8L+255<2^64`. The discussion
+below gives the original **41-word paper model**, whose bound does not
+transfer unchanged to the recommended model A.
 
 ## Domain and key distribution
 
@@ -159,17 +203,14 @@ variation distance at most that same bound from uniform.
 
 ## Machine-checked status
 
-The supplied [LEAN_STATUS.md](LEAN_STATUS.md) reports compiled explicit
-recurrence decoding, its degree/collision bounds (including unequal stream
-lengths), and conditional composition. **The concrete ChainHash theorem is
-not yet Lean-checked.** The composition still assumes the unreduced CLNH
-stream and concrete finalizer bounds. The byte encoding, length argument,
-concrete quintic and twist are not discharged there. A separate job is
-working on the concrete theorem; this repository preserves the supplied
-status snapshot and does not claim that job has completed.
+The concrete **41-independent-word** collision theorem is now Lean-checked,
+including all stage bounds, byte encoding, field irreducibility, finalizer and
+twist. See the [shipped Lake project](../lean/README.md), exact theorem
+signatures, and [build/axiom audit](../lean/VERIFICATION.txt). Model A/B
+seeded bounds have written proofs; their complete Lean corollaries remain
+open in the shipped snapshot. Twelve seeded-PH algebra and root-bound lemmas are included.
 
-The copied [symbolic checks](checks/verify5.py) and
-[ANF experiment](checks/anf_check.py) are supporting sanity checks, not the
-proof. In particular, small-field enumeration does not establish the
-64-bit theorem; the explicit decoders above do. Seed expansion via
-SplitMix64 is outside the theorem's key-distribution assumption.
+The Lean definitions transcribe the mathematical reference hash. They do
+not formally verify C compilation or SIMD/memory behavior. The copied
+[symbolic checks](checks/verify5.py) and [ANF experiment](checks/anf_check.py)
+remain supporting checks; finite tests are not substitutes for proofs.

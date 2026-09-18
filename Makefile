@@ -26,11 +26,16 @@ build/c99-portable: test/c99.c include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
 build/speed: test/speed.c include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
-test: build/selftest build/portable build/c99 build/c99-portable
+test: build/selftest build/portable build/c99 build/c99-portable build/key-schedule build/key-schedule-portable build/key-schedule-c99 build/key-schedule-c99-portable
 	./build/selftest
 	./build/portable
 	./build/c99
 	./build/c99-portable
+	./build/key-schedule vectors > build/key-schedule-vectors.txt
+	python3 test/check_key_vectors.py
+	./build/key-schedule-portable
+	./build/key-schedule-c99
+	./build/key-schedule-c99-portable
 speed: build/speed
 	./build/speed
 sanitize: | build
@@ -41,3 +46,12 @@ vectors: | build
 	./build/generate_vectors > test/vectors.h
 clean:
 	rm -rf build
+
+build/key-schedule: test/key_schedule.cpp include/chainhash.h | build
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) $< -o $@
+build/key-schedule-portable: test/key_schedule.cpp include/chainhash.h | build
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
+build/key-schedule-c99: test/key_schedule_c99.c include/chainhash.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
+build/key-schedule-c99-portable: test/key_schedule_c99.c include/chainhash.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@

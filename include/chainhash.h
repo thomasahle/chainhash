@@ -1,5 +1,5 @@
 /* ChainHash, 256-byte blocks. Copyright 2026 Thomas Dybdahl Ahle. MIT.
- * C99 / C++11, header only. See docs/THEOREM.md for the ideal-key bound.
+ * C99 / C++11, header only. Model A is the default; see docs/THEOREM.md for all key models.
  * Words and input bytes have canonical little-endian interpretation.
  * Compile-time dispatch, as in the original benchmark/SMHasher3 code:
  *   x86-64: -mpclmul; AArch64 GCC/Clang: -march=armv8-a+crypto
@@ -13,7 +13,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#define CHAINHASH_KEY_BYTES 328
+#define CHAINHASH_KEY_BYTES 328 /* expanded resident key size */
+#define CHAINHASH_RANDOM_BYTES 80 /* recommended model A input size */
 #define CHAINHASH_KEY_WORDS 41
 #define CHAINHASH_BLOCK_BYTES 256
 
@@ -28,10 +29,10 @@ static inline uint64_t ch_load64(const uint8_t *p) {
     return v;
 }
 /* Decode 328 bytes into 41 little-endian words. All byte strings are valid.
- * Recommended: fill bytes with the OS CSPRNG. The proof assumes all words
+ * Paper model: fill bytes with the OS CSPRNG. The proof assumes all words
  * independently uniform; using a CSPRNG is the practical approximation.
  */
-static inline chainhash_key chainhash_key_from_bytes(const uint8_t bytes[328]) {
+static inline chainhash_key chainhash_key_from_328_bytes(const uint8_t bytes[328]) {
     chainhash_key key;
     unsigned i;
     for (i = 0; i < 41; ++i) key.words[i] = ch_load64(bytes + 8 * i);
@@ -48,11 +49,110 @@ static inline uint64_t ch_splitmix64(uint64_t *state) {
  * only: a 64-bit seed does NOT provide 41 independent uniform key words,
  * and this expansion has no guarantee from the proved collision bound.
  */
-static inline chainhash_key chainhash_key_from_seed(uint64_t seed) {
+static inline chainhash_key chainhash_key_from_splitmix64_legacy(uint64_t seed) {
     chainhash_key key;
     unsigned i;
     for (i = 0; i < 41; ++i) key.words[i] = ch_splitmix64(&seed);
     return key;
+}
+
+/* FIELD multiplication, NOT integer multiplication. X^64 = 0x1b.
+ * Portable, fixed 64 iterations; used only during key construction.
+ */
+static inline uint64_t chainhash_schedule_mul(uint64_t a, uint64_t b) {
+    uint64_t r = 0;
+    unsigned i;
+    for (i = 0; i < 64; ++i) {
+        r ^= a & (UINT64_C(0) - (b & 1));
+        a = (a << 1) ^ (UINT64_C(0x1b) & (UINT64_C(0) - (a >> 63)));
+        b >>= 1;
+    }
+    return r;
+}
+
+/* Ideal-key entry point: numerical words, not an endian-dependent byte copy.
+ * Order: k[0..31], u, y, z, c[0..4], tau. All 41 words must be independent
+ * uniform for the original paper's ideal-key bound.
+ */
+static inline chainhash_key chainhash_key_from_words(const uint64_t words[41]) {
+    chainhash_key key;
+    unsigned i;
+    for (i = 0; i < 41; ++i) key.words[i] = words[i];
+    return key;
+}
+
+static inline void chainhash_schedule_ph(chainhash_key *key, uint64_t s) {
+    uint64_t power = s;
+    unsigned i;
+    for (i = 0; i < 32; ++i) {
+        key->words[i] = power;
+        if (i != 31) power = chainhash_schedule_mul(power, s);
+    }
+}
+
+/* A: 10 independent uniform words, encoded little endian:
+ * s, u, y, z, c0, c1, c2, c3, c4, tau. 80 random input bytes.
+ */
+static inline chainhash_key chainhash_key_from_80_bytes(const uint8_t bytes[80]) {
+    chainhash_key key;
+    unsigned i;
+    chainhash_schedule_ph(&key, ch_load64(bytes));
+    for (i = 0; i < 9; ++i) key.words[32+i] = ch_load64(bytes + 8*(i+1));
+    return key;
+}
+
+/* B: s, t, and all five c words independent uniform: 56 random bytes.
+ * (u,y,z)=(t^2,t^3,t); tau=s^4 is independent of c, as required.
+ * The five c words are the circuit parameters, NOT the expanded monic
+ * polynomial coefficients; their bijection is proved in the paper.
+ */
+static inline chainhash_key chainhash_key_from_seed2(uint64_t s, uint64_t t,
+                                                    const uint64_t c[5]) {
+    chainhash_key key;
+    unsigned i;
+    chainhash_schedule_ph(&key, s);
+    key.words[32] = chainhash_schedule_mul(t, t);
+    key.words[33] = chainhash_schedule_mul(key.words[32], t);
+    key.words[34] = t;
+    for (i = 0; i < 5; ++i) key.words[35+i] = c[i];
+    key.words[40] = key.words[3];
+    return key;
+}
+
+/* C: six independent uniform words, s and c[0..4]: 48 random bytes.
+ * (u,y,z)=(s^2,s^3,s); tau=s^4. The conditional finalizer theorem holds,
+ * but the reduced-PH degree argument DOES NOT prove a useful collision
+ * bound for the raw-split hash. Experimental; see THEOREMS.md.
+ */
+static inline chainhash_key chainhash_key_from_seed(uint64_t s, const uint64_t c[5]) {
+    return chainhash_key_from_seed2(s, s, c);
+}
+
+/* D: reference ONLY. One uniform word. k_i=s^(i+1), chain as in C,
+ * c_i=s^(33+i), tau=s^38. No five-wise or useful collision claim.
+ */
+static inline chainhash_key chainhash_key_from_single_word_reference(uint64_t s) {
+    chainhash_key key;
+    uint64_t power;
+    unsigned i;
+    chainhash_schedule_ph(&key, s);
+    key.words[32] = key.words[1];
+    key.words[33] = key.words[2];
+    key.words[34] = key.words[0];
+    power = chainhash_schedule_mul(key.words[31], s);
+    for (i = 0; i < 5; ++i) {
+        key.words[35+i] = power;
+        power = chainhash_schedule_mul(power, s);
+    }
+    key.words[40] = power;
+    return key;
+}
+
+/* Default/recommended model A: 80 independent uniform input bytes.
+ * s,u,y,z,c0..c4,tau; the expanded resident key is still 328 bytes.
+ */
+static inline chainhash_key chainhash_key_from_bytes(const uint8_t bytes[CHAINHASH_RANDOM_BYTES]) {
+    return chainhash_key_from_80_bytes(bytes);
 }
 
 /* Portable definition: no intrinsics or nonstandard 128-bit integer type. */
