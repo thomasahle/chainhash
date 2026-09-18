@@ -1,0 +1,344 @@
+Hashnames can be supplied using any case letters.
+
+Name                         Bits     Impl      Type   Description                                                 
+----                         ----  ----------  ------  -----------                                                 
+donothing-32                   32                MOCK  Do-Nothing function (measure call overhead)                 
+donothing-64                   64                MOCK  Do-Nothing function (measure call overhead)                 
+donothing-128                 128                MOCK  Do-Nothing function (measure call overhead)                 
+donothing-256                 256                MOCK  Do-Nothing function (measure call overhead)                 
+donothingOAAT-32               32                MOCK  Do-Nothing OAAT function (measure call+OAAT overhead)       
+donothingOAAT-64               64                MOCK  Do-Nothing OAAT function (measure call+OAAT overhead)       
+donothingOAAT-128             128                MOCK  Do-Nothing OAAT function (measure call+OAAT overhead)       
+badhash                        32                MOCK  very simple XOR shift                                       
+sum8hash                       32                MOCK  sum all 8-bit bytes                                         
+sum32hash                      32                MOCK  sum all 32-bit words                                        
+o1hash                         64                MOCK  o(1) hash, from wyhash                                      
+aesrng-32                      32       aesni    MOCK  32-bit RNG using AES in CTR mode; not a hash                
+aesrng-64                      64       aesni    MOCK  64-bit RNG using AES in CTR mode; not a hash                
+aesrng-128                    128       aesni    MOCK  128-bit RNG using AES in CTR mode; not a hash               
+aesrng-160                    160       aesni    MOCK  160-bit RNG using AES in CTR mode; not a hash               
+aesrng-224                    224       aesni    MOCK  224-bit RNG using AES in CTR mode; not a hash               
+aesrng-256                    256       aesni    MOCK  256-bit RNG using AES in CTR mode; not a hash               
+
+ascon-CXOF-32                  32              CRYPTO  ascon v1.3 (CXOF, 32 bits)                                  
+ascon-CXOFa-32                 32              CRYPTO  ascon v1.3 (CXOFa, 32 bits)                                 
+ascon-CXOF-64                  64              CRYPTO  ascon v1.3 (CXOF, 64 bits)                                  
+ascon-CXOFa-64                 64              CRYPTO  ascon v1.3 (CXOFa, 64 bits)                                 
+ascon-CXOF-128                128              CRYPTO  ascon v1.3 (CXOF, 128 bits)                                 
+ascon-CXOFa-128               128              CRYPTO  ascon v1.3 (CXOFa, 128 bits)                                
+ascon-CXOF-160                160              CRYPTO  ascon v1.3 (CXOF, 160 bits)                                 
+ascon-CXOFa-160               160              CRYPTO  ascon v1.3 (CXOFa, 160 bits)                                
+ascon-CXOF-224                224              CRYPTO  ascon v1.3 (CXOF, 224 bits)                                 
+ascon-CXOFa-224               224              CRYPTO  ascon v1.3 (CXOFa, 224 bits)                                
+ascon-CXOF-256                256              CRYPTO  ascon v1.3 (CXOF, 256 bits)                                 
+ascon-CXOFa-256               256              CRYPTO  ascon v1.3 (CXOFa, 256 bits)                                
+blake2b-256.64                 64        sse2  CRYPTO  BLAKE 2b, 256-bit digest, bits 0-63                         
+blake2s-256.64                 64        sse2  CRYPTO  BLAKE 2s, 256-bit digest, bits 0-63                         
+blake2b-128                   128        sse2  CRYPTO  BLAKE 2b, 128-bit digest                                    
+blake2s-128                   128        sse2  CRYPTO  BLAKE 2s, 128-bit digest                                    
+blake2b-160                   160        sse2  CRYPTO  BLAKE 2b, 160-bit digest                                    
+blake2s-160                   160        sse2  CRYPTO  BLAKE 2s, 160-bit digest                                    
+blake2b-224                   224        sse2  CRYPTO  BLAKE 2b, 224-bit digest                                    
+blake2s-224                   224        sse2  CRYPTO  BLAKE 2s, 224-bit digest                                    
+blake2b-256                   256        sse2  CRYPTO  BLAKE 2b, 256-bit digest                                    
+blake2s-256                   256        sse2  CRYPTO  BLAKE 2s, 256-bit digest                                    
+blake3                        256       sse41  CRYPTO  BLAKE 3, 256-bit digest                                     
+chaskey-8.32                   32              CRYPTO  Chaskey PRF (8 rounds, 32 bits)                             
+chaskey-12.32                  32              CRYPTO  Chaskey PRF (12 rounds, 32 bits)                            
+chaskey-8.64                   64              CRYPTO  Chaskey PRF (8 rounds, 64 bits)                             
+chaskey-12.64                  64              CRYPTO  Chaskey PRF (12 rounds, 64 bits)                            
+chaskey-8                     128              CRYPTO  Chaskey PRF (8 rounds, 128 bits)                            
+chaskey-12                    128              CRYPTO  Chaskey PRF (12 rounds, 128 bits)                           
+HighwayHash-64                 64       sse41  CRYPTO  HighwayHash, 64-bit version                                 
+HighwayHash-128               128       sse41  CRYPTO  HighwayHash, 128-bit version                                
+HighwayHash-256               256       sse41  CRYPTO  HighwayHash, 256-bit version                                
+MD5.32                         32              CRYPTO  MD5, bits 32-63                                             
+MD5.64                         64              CRYPTO  MD5, bits 32-95                                             
+MD5                           128              CRYPTO  MD5                                                         
+RIPEMD-128                    128              CRYPTO  RIPE-MD 128                                                 
+RIPEMD-160                    160              CRYPTO  RIPE-MD 160                                                 
+RIPEMD-256                    256              CRYPTO  RIPE-MD 256                                                 
+SHA-1.32                       32         x64  CRYPTO  SHA-1, bits 0-31                                            
+SHA-1.64                       64         x64  CRYPTO  SHA-1, bits 0-63                                            
+SHA-1                         128         x64  CRYPTO  SHA-1                                                       
+SHA-2-224.64                   64         x64  CRYPTO  SHA-224, bits 0-63                                          
+SHA-2-256.64                   64         x64  CRYPTO  SHA-256, bits 0-63                                          
+SHA-2-224                     224         x64  CRYPTO  SHA-224                                                     
+SHA-2-256                     256         x64  CRYPTO  SHA-256                                                     
+SHA-3-256.64                   64              CRYPTO  SHA-3, bits 0-63                                            
+SHA-3                         256              CRYPTO  SHA-3                                                       
+HalfSipHash                    32              CRYPTO  SipHash half-width version                                  
+SipHash-1-3.folded             32       ssse3  CRYPTO  SipHash 1-3, XOR folded down to 32 bits                     
+SipHash-2-4.folded             32       ssse3  CRYPTO  SipHash 2-4, XOR folded down to 32 bits                     
+SipHash-1-3                    64       ssse3  CRYPTO  SipHash 1-3                                                 
+SipHash-2-4                    64       ssse3  CRYPTO  SipHash 2-4                                                 
+VHASH.32                       32    portable  CRYPTO  VHASH low 32 bits, by Ted Krovetz and Wei Dai               
+VHASH                          64    portable  CRYPTO  VHASH, by Ted Krovetz and Wei Dai                           
+
+a5hash-32                      32                      a5hash v5.21, 32-bit version                                
+a5hash                         64                      a5hash v5.21, 64-bit version                                
+a5hash-128.64                  64                      a5hash v5.21, 128-bit version, 64-bit truncated (rh==NULL)  
+a5hash-128                    128                      a5hash v5.21, 128-bit version                               
+Abseil32                       64                      Abseil hash (for 32-bit environments)                       
+Abseil64-city                  64                      Abseil hash (for 64-bit environments, without 128-bit intrinsics)
+Abseil64-llh                   64                      Abseil hash (for 64-bit environments, with 128-bit intrinsics)
+aesnihash-majek                64       aesni          majek's aesnihash                                           
+aesnihash-peterrk             128       aesni          AESNI Hash by PeterRK                                       
+AquaHash                      128       aesni          AquaHash                                                    
+beamsplitter                   64                      A possibly universal hash made with a 10x64 s-box           
+chainhash-1k                   64  hwclmul+vpclmul-dispatch          ChainHash (GF(2^64) carry-less PH with strided word pairing + three-key injective chain + degree-5 finalizer behind an additive twist), 1024-byte blocks, 2 sub-blocks per block
+chainhash-256                  64  hwclmul+vpclmul-dispatch          ChainHash (GF(2^64) carry-less PH with strided word pairing + three-key injective chain + degree-5 finalizer behind an additive twist), 256-byte blocks
+chainhash-g4-256               64     hwclmul          ChainHash EXPERIMENT: carry-less PH + three-key injective chain + Goldilocks-field Motzkin quartic finalizer (2 mults, 4-wise), 256-byte blocks
+chainhash-g5-1k                64     hwclmul          ChainHash EXPERIMENT: carry-less PH + three-key injective chain + Goldilocks-field degree-5 finalizer (3 mults, 5-wise), 1024-byte blocks, 2 sub-blocks per block
+chainhash-g5-256               64     hwclmul          ChainHash EXPERIMENT: carry-less PH + three-key injective chain + Goldilocks-field degree-5 finalizer (3 mults, 5-wise), 256-byte blocks
+ChibiHash2                     64                      ChibiHash64, v2                                             
+CityHash-32                    32                      Google CityHash32 (modified seeding)                        
+CityHash-64                    64                      Google CityHash64WithSeed                                   
+CityHashCrc-128.seed1         128   hwcrc_x64          Google CityHashCrc128WithSeed (seeded low 64 bits)          
+CityHashCrc-128.seed2         128   hwcrc_x64          Google CityHashCrc128WithSeed (seeded high 64 bits)         
+CityHashCrc-128.seed3         128   hwcrc_x64          Google CityHashCrc128WithSeed (seeded low+high 64 bits)     
+CityHashCrc-256               256   hwcrc_x64          Google CityHashCrc256 (with modified seeding)               
+CLhash                         64     hwclmul          Carryless multiplication hash, without -DBITMIX             
+CLhash.bitmix                  64     hwclmul          Carryless multiplication hash, with -DBITMIX                
+Crap8                          32                      Noncryptohashzoo's Crap8 hash                               
+CrapWow                        32                      Noncryptohashzoo's CrapWow hash                             
+CrapWow-64                     64                      Noncryptohashzoo's CrapWow64 hash                           
+CRC-32C                        32   hwcrc_x64          CRC32-C (Castagnoli, 0x1EDC6F41 / 0x82F63B78)               
+Discohash1                     64                      Discohash (aka BEBB4185) v1                                 
+Discohash2                     64                      Discohash v2                                                
+Discohash1-128                128                      Discohash (aka BEBB4185) v1 - 128-bit                       
+Discohash2-128                128                      Discohash v2 - 128-bit                                      
+GoodOAAT                       32                      GoodOAAT (Small non-multiplicative OAAT by funny-falcon)    
+MicroOAAT                      32                      MicroOAAT (Small non-multiplicative OAAT by funny-falcon)   
+falkhash1                     128       aesni          Falkhash v1                                                 
+falkhash2                     128       aesni          Falkhash v2                                                 
+FarmHash-32.NT                 32       sse41          FarmHash Hash32WithSeed (NT version)                        
+FarmHash-32.MK                 32                      FarmHash Hash32WithSeed (MK version)                        
+FarmHash-32.SU                 32  x64crc+aes          FarmHash Hash32WithSeed (SU version)                        
+FarmHash-32.SA                 32      x64crc          FarmHash Hash32WithSeed (SA version)                        
+FarmHash-32.CC                 32                      FarmHash Hash32WithSeed (CC version)                        
+FarmHash-64.NA                 64                      FarmHash Hash64WithSeed (NA version)                        
+FarmHash-64.UO                 64                      FarmHash Hash64WithSeed (UO version)                        
+FarmHash-64.TE                 64       sse41          FarmHash Hash64WithSeed (TE version)                        
+FarmHash-128.CC.seed1         128                      FarmHash Hash128WithSeed (CC version, seeded low 64 bit)    
+FarmHash-128.CC.seed2         128                      FarmHash Hash128WithSeed (CC version, seeded high 64 bit)   
+FarmHash-128.CC.seed3         128                      FarmHash Hash128WithSeed (CC version, seeded low+high 64 bit)
+FarmHash-128.CM.seed1         128                      FarmHash CityMurmur (CM version, seeded low 64 bit)         
+FarmHash-128.CM.seed2         128                      FarmHash CityMurmur (CM version, seeded high 64 bit)        
+FarmHash-128.CM.seed3         128                      FarmHash CityMurmur (CM version, seeded low+high 64 bit)    
+FARSH-32                       32        avx2          FARSH 32-bit (1 hash output)                                
+FARSH-32.tweaked               32        avx2          FARSH 32-bit (1 hash output, tweaked to include key len)    
+FARSH-64                       64        avx2          FARSH 64-bit (2 hash outputs)                               
+FARSH-64.tweaked               64        avx2          FARSH 64-bit (2 hash outputs, tweaked to include key len)   
+FARSH-128                     128        avx2          FARSH 128-bit (4 hash outputs)                              
+FARSH-128.tweaked             128        avx2          FARSH 128-bit (4 hash outputs, tweaked to include key len)  
+FARSH-256                     256        avx2          FARSH 256-bit (8 hash outputs)                              
+FARSH-256.tweaked             256        avx2          FARSH 256-bit (8 hash outputs, tweaked to include key len)  
+fasthash-32                    32                      fast-hash, 32-bit version                                   
+fasthash-64                    64                      fast-hash, 64-bit version                                   
+Fletcher-32                    32                      Fletcher's checksum, 32-bit, IV == len                      
+Fletcher-64                    64                      Fletcher's checksum, 64-bit, IV == len                      
+fletcher2.64                   64                      fletcher2 from ZFS (one lane, best 64 bits)                 
+fletcher4.64                   64                      fletcher4 from ZFS (one lane, best 64 bits)                 
+fletcher2                     128                      fletcher2 from ZFS (one lane, all 128 bits)                 
+fletcher4                     256                      fletcher4 from ZFS (one lane, all 256 bits)                 
+floppsyhash                    64                      Floppsyhash v1.1.10 (floating-point hash using continued Egyptian fractions)
+floppsyhash.old                64                      Floppsyhash (old version, fka "tifuhash")                   
+fibonacci-32                   32                      32-bit wordwise Fibonacci hash (Knuth)                      
+FNV-1a-32                      32                      32-bit bytewise FNV-1a (Fowler-Noll-Vo)                     
+FNV-1a-32.wordwise             32                      32-bit wordwise hash based on FNV-1a                        
+FNV-Mulvey                     32                      FNV-Mulvey 32-bit                                           
+FNV-PippipYurii                32                      FNV-Pippip-Yurii 32-bit (sanmayce)                          
+FNV-Totenschiff                32                      FNV-Totenschiff 32-bit (sanmayce)                           
+FNV-YoshimitsuTRIAD            32                      FNV-YoshimitsuTRIAD 32-bit (sanmayce)                       
+fibonacci-64                   64                      64-bit wordwise Fibonacci hash (Knuth)                      
+FNV-1a-64                      64                      64-bit bytewise FNV-1a (Fowler-Noll-Vo)                     
+FNV-1a-64.wordwise             64                      64-bit wordwise hash based on FNV1-a                        
+FNV-1a-128                    128                      128-bit bytewise FNV-1a (Fowler-Noll-Vo), from Golang       
+GoodhartHash1                 128                      Goodhart Hash 1 (bad)                                       
+GoodhartHash2                 128                      Goodhart Hash 2 (bad)                                       
+GoodhartHash3                 128                      Goodhart Hash 3                                             
+GoodhartHash4                 128                      Goodhart Hash 4 (bad)                                       
+GoodhartHash5                 128                      Goodhart Hash 5 (bad)                                       
+GoodhartHash6                 128                      Goodhart Hash 6 (evil)                                      
+gxhash-64                      64  sse2+aesni          GxHash, lower 64 bits (ported from Rust)                    
+gxhash                        128  sse2+aesni          GxHash (ported from Rust)                                   
+HalftimeHash-64                64     avx512f          Halftime Hash (64-bit blocks)                               
+HalftimeHash-128               64     avx512f          Halftime Hash (128-bit blocks)                              
+HalftimeHash-256               64     avx512f          Halftime Hash (256-bit blocks)                              
+HalftimeHash-512               64     avx512f          Halftime Hash (512-bit blocks)                              
+hasshe2                       256        sse2          hasshe2 (SSE2-oriented hash)                                
+hasshe2.tweaked               256        sse2          hasshe2 (SSE2-oriented hash, tweaked to mix len into hash)  
+injective-hash.clhash          64                      Injective recursion hash (CLHASH mode)                      
+injective-hash.mersenne        64                      Injective recursion hash (Mersenne mode)                    
+injective-hash.mum             64                      Injective recursion hash (MUM mode)                         
+jodyhash-32                    32                      jodyhash v7.3, 32-bit                                       
+jodyhash-64                    64        avx2          jodyhash v7.3, 64-bit                                       
+khash-32                       32                      K-Hash 32 bit mixer-based hash                              
+khash-64                       64                      K-Hash 64 bit mixer-based hash                              
+khashv-32                      32       ssse3          K-Hashv vectorizable, 32-bit output                         
+khashv-64                      64       ssse3          K-Hashv vectorizable, 64-bit output                         
+komihash                       64                      komihash v5.27                                              
+lookup3.32                     32                      Bob Jenkins' lookup3 (32-bit output)                        
+lookup3                        64                      Bob Jenkins' lookup3 (64-bit output)                        
+MeowHash.32                    32       aesni          MeowHash (0.5/calico, low 32 bits)                          
+MeowHash.64                    64       aesni          MeowHash (0.5/calico, low 64 bits)                          
+MeowHash                      128       aesni          MeowHash (0.5/calico)                                       
+MetroHash-64                   64                      Metrohash v1 base variant, 64-bit version                   
+MetroHash-64.var1              64                      Metrohash v1 variant 1, 64-bit version                      
+MetroHash-64.var2              64                      Metrohash v1 variant 2, 64-bit version                      
+MetroHashCrc-64.var1           64      x64crc          Metrohash-crc v1 variant 1, 64-bit version (unofficial)     
+MetroHashCrc-64.var2           64      x64crc          Metrohash-crc v1 variant 2, 64-bit version (unofficial)     
+MetroHash-128                 128                      Metrohash v1 base variant, 128-bit version                  
+MetroHash-128.var1            128                      Metrohash v1 variant 1, 128-bit version                     
+MetroHash-128.var2            128                      Metrohash v1 variant 2, 128-bit version                     
+MetroHashCrc-128.var1         128      x64crc          Metrohash-crc v1 variant 1, 128-bit version                 
+MetroHashCrc-128.var2         128      x64crc          Metrohash-crc v1 variant 2, 128-bit version                 
+multiply-shift-32              32                      Dietzfelbinger Multiply-shift on strings, 32-bit blocks     
+pair-multiply-shift-32         32                      Dietzfelbinger Pair-multiply-shift strings, 32-bit blocks   
+multiply-shift                 64                      Dietzfelbinger Multiply-shift on strings, 64-bit blocks     
+pair-multiply-shift            64                      Dietzfelbinger Pair-multiply-shift strings, 64-bit blocks   
+mulxp1-hash32                  32                      mulxp1_hash, 32-bit version                                 
+mulxp3-hash32                  32                      mulxp3_hash, 32-bit version                                 
+mulxp1-hash                    64                      mulxp1_hash, 64-bit version                                 
+mulxp3-hash                    64                      mulxp3_hash, 64-bit version                                 
+mir.exact                      64                      MIR-hash, exact 128-bit mult                                
+mir.inexact                    64                      MIR-hash, inexact 128-bit mult                              
+mum1.exact.unroll1             64                      Mum-hash v1, unroll 2^1, exact mult                         
+mum1.exact.unroll2             64                      Mum-hash v1, unroll 2^2, exact mult                         
+mum1.exact.unroll3             64                      Mum-hash v1, unroll 2^3, exact mult                         
+mum1.exact.unroll4             64                      Mum-hash v1, unroll 2^4, exact mult                         
+mum1.inexact.unroll1           64                      Mum-hash v1, unroll 2^1, inexact mult                       
+mum1.inexact.unroll2           64                      Mum-hash v1, unroll 2^2, inexact mult                       
+mum1.inexact.unroll3           64                      Mum-hash v1, unroll 2^3, inexact mult                       
+mum1.inexact.unroll4           64                      Mum-hash v1, unroll 2^4, inexact mult                       
+mum2.exact.unroll1             64                      Mum-hash v2, unroll 2^1, exact mult                         
+mum2.exact.unroll2             64                      Mum-hash v2, unroll 2^2, exact mult                         
+mum2.exact.unroll3             64                      Mum-hash v2, unroll 2^3, exact mult                         
+mum2.exact.unroll4             64                      Mum-hash v2, unroll 2^4, exact mult                         
+mum2.inexact.unroll1           64                      Mum-hash v2, unroll 2^1, inexact mult                       
+mum2.inexact.unroll2           64                      Mum-hash v2, unroll 2^2, inexact mult                       
+mum2.inexact.unroll3           64                      Mum-hash v2, unroll 2^3, inexact mult                       
+mum2.inexact.unroll4           64                      Mum-hash v2, unroll 2^4, inexact mult                       
+mum3.exact.unroll1             64                      Mum-hash v3, unroll 2^1, exact mult                         
+mum3.exact.unroll2             64                      Mum-hash v3, unroll 2^2, exact mult                         
+mum3.exact.unroll3             64                      Mum-hash v3, unroll 2^3, exact mult                         
+mum3.exact.unroll4             64                      Mum-hash v3, unroll 2^4, exact mult                         
+mum3.inexact.unroll1           64                      Mum-hash v3, unroll 2^1, inexact mult                       
+mum3.inexact.unroll2           64                      Mum-hash v3, unroll 2^2, inexact mult                       
+mum3.inexact.unroll3           64                      Mum-hash v3, unroll 2^3, inexact mult                       
+mum3.inexact.unroll4           64                      Mum-hash v3, unroll 2^4, inexact mult                       
+MurmurHash1                    32                      MurmurHash v1                                               
+MurmurHash2-32                 32                      MurmurHash v2, 32-bit version                               
+MurmurHash2a                   32                      MurmurHash v2a, 32-bit version using variant mixing         
+MurmurHash2-64                 64                      MurmurHash v2, 64-bit version                               
+MurmurHash2-64.int32           64                      MurmurHash v2, 64-bit version using 32-bit variables        
+MurmurHash3-32                 32                      MurmurHash v3, 32-bit version                               
+MurmurHash3-128               128                      MurmurHash v3, 128-bit version using 64-bit variables       
+MurmurHash3-128.int32         128                      MurmurHash v3, 128-bit version using 32-bit variables       
+MurmurOAAT                     32                      OAAT hash based on Murmur's mix                             
+MuseAir                        64                      MuseAir v0.3                                                
+MuseAir.bfast                  64                      MuseAir v0.3, bfast version                                 
+MuseAir-128                   128                      MuseAir v0.3, 128 bits                                      
+MuseAir-128.bfast             128                      MuseAir v0.3, 128 bits, bfast version                       
+mx3.v1                         64                      mx3 (revision 1)                                            
+mx3.v2                         64                      mx3 (revision 2)                                            
+mx3.v3                         64                      mx3 (revision 3)                                            
+NMHASH                         32      avx512          nmhash32 v2                                                 
+NMHASHX                        32      avx512          nmhash32x v2                                                
+Pearson-64                     64       aesni          Pearson hash, 8 lanes using AES sbox                        
+Pearson-128                   128       aesni          Pearson hash, 16 lanes using AES sbox                       
+Pearson-256                   256       aesni          Pearson hash, 32 lanes using AES sbox                       
+PearsonBlock-64                64                      Pearson-inspired block hash, 64-bit state                   
+PearsonBlock-128              128                      Pearson-inspired block hash, 128-bit state                  
+PearsonBlock-256              256                      Pearson-inspired block hash, 256-bit state                  
+pengyhash                      64                      pengyhash v0.3                                              
+perl-djb2                      32                      djb2 OAAT hash (from old perl5 code)                        
+perl-jenkins                   32                      Bob Jenkins' OAAT hash (from old perl5 code)                
+perl-jenkins-hard              32                      Bob Jenkins' OAAT hash ("hard" version from old perl5 code) 
+perl-jenkins-old               32                      Bob Jenkins' OAAT hash ("old" version from old perl5 code)  
+perl-sdbm                      32                      sdbm OAAT hash (from old perl5 code)                        
+perl-zaphod32                  32                      Zaphod32 hash from perl5                                    
+perl-zaphod32.sbox128          32                      Zaphod32 hash with sbox32 and 128-bit seeding from perl5    
+perl-zaphod32.sbox128.old      32                      Zaphod32 hash with sbox32 and old 128-bit seeding from perl5
+perl-zaphod32.sbox96           32                      Zaphod32 hash with sbox32 and 96-bit seeding from perl5     
+perl-stadtx                    64                      Stadtx hash from perl5                                      
+poly-mersenne.deg0             32      int128          Degree 0 Hashing mod 2^61-1                                 
+poly-mersenne.deg1             32      int128          Degree 1 Hashing mod 2^61-1                                 
+poly-mersenne.deg2             32      int128          Degree 2 Hashing mod 2^61-1                                 
+poly-mersenne.deg3             32      int128          Degree 3 Hashing mod 2^61-1                                 
+poly-mersenne.deg4             32      int128          Degree 4 Hashing mod 2^61-1                                 
+polymurhash                    64                      Polymur Hash (using polymur_init_params_from_seed)          
+polymurhash-tweakseed          64                      Polymur Hash (using seed as tweak)                          
+prvhash-64                     64                      prvhash64 v4.3.4 64-bit output                              
+prvhash-64.incr                64                      prvhash64 v4.3.4 streaming mode 64-bit output               
+prvhash-128                   128                      prvhash64 v4.3.4 128-bit output                             
+prvhash-128.incr              128                      prvhash64 v4.3.4 streaming mode 128-bit output              
+rainbow                        64                      Rainbow v3.7.1                                              
+rainbow-128                   128                      Rainbow 128-bit v3.7.1                                      
+rainbow-256                   256                      Rainbow 256-bit v3.7.1                                      
+rainstorm                      64                      Rainstorm v3.7.1                                            
+rainstorm-128                 128                      Rainstorm 128-bit v3.7.1                                    
+rainstorm-256                 256                      Rainstorm 256-bit v3.7.1                                    
+rapidhash                      64                      rapidhash v3, 64-bit                                        
+rapidhash.protected            64                      rapidhash v3, 64-bit protected version                      
+rapidhash-micro                64                      rapidhashMicro v3, 64-bit                                   
+rapidhash-micro.protected      64                      rapidhashMicro v3, 64-bit protected version                 
+rapidhash-nano                 64                      rapidhashNano v3, 64-bit                                    
+rapidhash-nano.protected       64                      rapidhashNano v3, 64-bit protected version                  
+rust-ahash                     64       ssse3          aHash (ported from Rust, AES-based version)                 
+rust-ahash.noshuf              64                      aHash (ported from Rust, AES-based version, without shuffle)
+rust-ahash-fb                  64                      aHash (ported from Rust, fallback version)                  
+rust-ahash-fb.nofold           64                      aHash (ported from Rust, fallback version, folded_multiply disabled)
+rust-fxhash32                  32                      Rust FxHash v2.1.1 32-bit version                           
+rust-fxhash32.mix              32                      Rust FxHash v2.1.1 32-bit version, with unofficial extra mixing
+rust-fxhash64                  64                      Rust FxHash v2.1.1 64-bit version                           
+rust-fxhash64.mix              64                      Rust FxHash v2.1.1 64-bit version, with unofficial extra mixing
+rust-fxhash64.mult32           64                      Rust FxHash v2.1.1 64-bit version                           
+rust-fxhash64.mult32.mix       64                      Rust FxHash v2.1.1 64-bit version, with unofficial extra mixing
+rust-rapidhash                 64                      rapidhash rust, quality::RapidHasher::new()                 
+rust-rapidhash.seed            64                      rapidhash rust, quality::SeedableState::new()               
+rust-rapidhash.fast            64                      rapidhash rust, fast::RapidHasher::new()                    
+rust-rapidhash.fast.seed       64                      rapidhash rust, fast::SeedableState::new()                  
+rust-rapidhash.p               64                      rapidhash rust, quality::RapidHasher::new(), no wide mult   
+rust-rapidhash.p.seed          64                      rapidhash rust, quality::SeedableState::new(), no wide mult 
+rust-rapidhash.p.fast          64                      rapidhash rust, fast::RapidHasher::new(), no wide mult      
+rust-rapidhash.p.fast.seed     64                      rapidhash rust, fast::SeedableState::new(), no wide mult    
+seahash                        64                      seahash                                                     
+TinySipHash                    64                      Damian Gryski's Tiny SipHash variant                        
+SpookyHash1-32                 32                      SpookyHash v1, 32-bit result                                
+SpookyHash2-32                 32                      SpookyHash v2, 32-bit result                                
+SpookyHash1-64                 64                      SpookyHash v1, 64-bit result                                
+SpookyHash2-64                 64                      SpookyHash v2, 64-bit result                                
+SpookyHash1-128               128                      SpookyHash v1, 128-bit result                               
+SpookyHash2-128               128                      SpookyHash v2, 128-bit result                               
+SuperFastHash                  32                      Paul Hsieh's SuperFastHash                                  
+t1ha0                          64       1Y+a2          Fast Positive Hash #0 (portable, 32-bit core)               
+t1ha0.aesA                     64   1Y+a2+aes          Fast Positive Hash #0a (AES-NI)                             
+t1ha0.aesB                     64   1Y+a2+aes          Fast Positive Hash #0b (AES-NI)                             
+t1ha1                          64       1Y+a2          Fast Positive Hash #1 (portable, 64-bit core)               
+t1ha2-64                       64       1Y+a2          Fast Positive Hash #2 (portable, 64-bit core)               
+t1ha2-64.incr                  64       1Y+a2          Fast Positive Hash #2 (portable, 64-bit core, incremental version)
+t1ha2-128                     128       1Y+a2          Fast Positive Hash #2 (portable, 64-bit core)               
+t1ha2-128.incr                128       1Y+a2          Fast Positive Hash #2 (portable, 64-bit core, incremental version)
+tabulation-32                  32                      32-bit Tabulation with Multiply-Shift Mixer                 
+tabulation-64                  64      int128          64-bit Tabulation with Multiply-Shift Mixer                 
+TentHash                      160                      TentHash                                                    
+UMASH-64                       64     hwclmul          UMASH-64 (which == 0)                                       
+UMASH-64.reseed                64     hwclmul          UMASH-64 (which == 0, with full reseeding)                  
+UMASH-128                     128     hwclmul          UMASH-128                                                   
+UMASH-128.reseed              128     hwclmul          UMASH-128 (with full reseeding)                             
+w1hash                         64    ub_reads          w1hash                                                      
+wyhash-32                      32                      wyhash v4, 32-bit native version                            
+wyhash                         64                      wyhash v4.2, 64-bit non-strict version                      
+wyhash.strict                  64                      wyhash v4.2, 64-bit strict version                          
+x17                            32                      x17                                                         
+xmsx                           32                      xmsx (XOR - Multiply - Shift - XOR) Hash                    
+XXH-32                         32                      xxHash, 32-bit version                                      
+XXH-64                         64                      xxHash, 64-bit version                                      
+XXH3-64                        64      avx512          xxh3, 64-bit version                                        
+XXH3-64.regen                  64      avx512          xxh3, 64-bit version with secret regenerated per-seed       
+XXH3-64.reinit                 64      avx512          xxh3, 64-bit version with secret initialized per-seed       
+XXH3-128                      128      avx512          xxh3, 128-bit version                                       
+XXH3-128.regen                128      avx512          xxh3, 128-bit version with secret regenerated per-seed      
+XXH3-128.reinit               128      avx512          xxh3, 128-bit version with secret initialized per-seed      

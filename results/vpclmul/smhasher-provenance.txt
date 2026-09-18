@@ -1,0 +1,3 @@
+622010e95f1759610d3c2e5b6a1a89818956ad3a3bf24c47c5c84586b2a50564  smhasher3/chainhash.cpp
+622010e95f1759610d3c2e5b6a1a89818956ad3a3bf24c47c5c84586b2a50564  ../speedbench-chainhash/source/hashes/chainhash.cpp
+906d07e855853f918fa394f3040e5a681f2c3fbfad7faed00d50883c23ad8956  ../speedbench-chainhash/build/SMHasher3

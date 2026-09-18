@@ -1,0 +1,4 @@
+PASS: portable and baseline hardware source byte-identical to 6680c66bff52bb8b57d0bae18a09c98b528c7ff4
+Baseline source SHA256: d20c8446c11801c128e1c02dca8312d07a9719e8edc3ac44245ca24af486292b
+PASS: compiled hashing assembly byte-identical; flags: -march=native+crypto
+Compiled code SHA256: cc47318fade00d5b2a13eb5de3fcfb61cd7d7c17d0ea471b2a67c0139902d4cc

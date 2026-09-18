@@ -1,0 +1,15 @@
+Fri Sep 18 16:24:31 UTC 2026
+Linux hardware.normalcomputing.net 5.14.0-687.20.1.el9_8.x86_64 #1 SMP PREEMPT_DYNAMIC Sun Jun 28 21:16:58 EDT 2026 x86_64 x86_64 x86_64 GNU/Linux
+g++ (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14)
+clang version 21.1.8 (Red Hat, Inc. 21.1.8-2.el9)
+963b6000faaf0a0bc5430bfdad791f14ab056e9271c2163d3a4301233d1345f6  include/chainhash.h
+6ccbf47d273c1e6897089f0818d6a495d636565901b95ad037237b1c83e71413  test/selftest.cpp
+18bc8491c920da31e9892b5f268137c72e4f0a997c918106814501a4550b9fd5  test/vendor/chainhash_ref.h
+622010e95f1759610d3c2e5b6a1a89818956ad3a3bf24c47c5c84586b2a50564  smhasher3/chainhash.cpp
+016859082db8dfa04a0aab336cd8dd457fcbec4ac05d77cf45a6e2942b878bbb  build/registration/experiments/Hashlib.h
+376be9c85ea3099eb3fd99ed39607329bf7aa0b3db84ec246d9693f952f9f10e  build/registration/experiments/Intrinsics.h
+363dc7d7d05d54dedee3ac4a71d7c1692bc0f10ff8e961515a5f93b538527acc  build/registration/experiments/Platform.h
+e3ebe055d83b188d2b6e9a679b1e85fd269a551240d71dcb9535d16407ebe29a  build/registration/experiments/header_bridge.cpp
+74a9ee37219fde401e1cce44604cd2e284bfa1306d21a30c7ec638ec75469ad5  build/registration/experiments/original.cpp
+736f41f3a7afbe9e1ea3cd55afd23bdcdf281cbc4b1878bad89849dd02a02b69  build/registration/experiments/verify.cpp
+0bb191c1f4d36534e7ed87cda4374d3c1638e07caf0724b63af9d77ce2242f7d  build/registration/evidence/chainhash_original.cpp

@@ -78,9 +78,9 @@ they do not verify C compilation, pointer safety, or SIMD lowering.
 ## Use
 
 Copy [include/chainhash.h](include/chainhash.h) into your project. Functions
-are `static inline`; there is no allocation, library to link, or mutable
-global state. The default constructor takes **80 bytes** in little-endian
-order `s,u,y,z,c0,c1,c2,c3,c4,tau`:
+are header-only; there is no allocation or library to link. The x86 feature
+cache uses thread-safe atomics. The default constructor takes **80 bytes**
+in little-endian order `s,u,y,z,c0,c1,c2,c3,c4,tau`:
 
 ```c
 #include "chainhash.h"
@@ -135,56 +135,78 @@ make speed
 make sanitize
 ```
 
-Compile-time dispatch follows the original sources:
+Baseline compilation selects the following hardware support:
 
 | Target | Hardware flag | Backend |
 | --- | --- | --- |
 | Apple arm64, Clang | `-march=native+crypto` | PMULL / PMULL2, pinned inline asm |
 | Linux arm64, GCC/Clang | `-march=armv8-a+crypto` | PMULL / PMULL2, pinned inline asm |
-| x86-64, GCC/Clang | `-mpclmul` | PCLMULQDQ |
+| x86-64, GCC/Clang | `-mpclmul` | PCLMULQDQ with runtime VPCLMULQDQ dispatch |
 | Other targets / no feature flag | none | portable C99 |
 
 For example: `cc -O3 -std=c99 -Iinclude -mpclmul app.c -o app`.
 The Makefile selects the host architecture flags; override `ARCH_FLAGS=`
 for a portable build, or define `CHAINHASH_FORCE_PORTABLE`. Hardware builds
-require those CPU features at execution; there is no runtime feature probe.
+require those baseline CPU features at execution. CPUID/XGETBV dispatch selects
+ZMM VPCLMULQDQ, then YMM, with a PCLMULQDQ fallback; Ice Lake-SP uses the
+measured faster pipelined XMM loop for 256-byte blocks. GCC/Clang target
+attributes isolate the wide paths; `-march=native` still makes the whole
+executable specific to the build CPU.
 The portable entry point `chainhash_portable()` remains available in every
 build. Unsupported compiler/architecture combinations select portable C.
 
 Self-tests compare all available paths against the unchanged paper
 reference, including raw keys, seed expansion, 92 frozen vectors, all
 lengths through 1024, larger boundaries, zero inputs, unaligned data, and
-guard pages. [Original-source checks](test/check_sources.py) separately
+guard pages, plus 12,000 random messages/keys/lengths with over 10,000 bulk
+inputs checked directly on every available PCLMUL/XMM/YMM/ZMM path.
+[Original-source checks](test/check_sources.py) separately
 compile scratch copies of the actual SMHasher3 hash and, on ARM, benchmark
 header; they leave the input repositories untouched. See
 [REPORT.md](REPORT.md) for commands and provenance.
 
 ## Measured performance
 
-The bundled [speed program](test/speed.c), `-O3`, five short trials of
-16 MiB per size, median, hot reused buffer, excluding key generation:
+Bulk throughput by **block configuration** (not input length), in bytes/cycle:
 
-| Host / compiler | 256 B | 4 KiB | 256 KiB |
+| Host | 256 B blocks | 1 KB blocks |
+| --- | ---: | ---: |
+| Apple M2 Pro, PMULL; retained medians of five runs | **22.8** | **17.9** |
+| Xeon Platinum 8375C / GCC 11.5, optimized SMHasher3 | **15.40** (was 14.42) | **16.35** (was 12.28) |
+
+The M2 numbers are retained measurements, not rerun during this integration.
+The Xeon SMHasher3 Speed runs use 262,144-byte inputs: 15.40 / 15.36 for
+256-byte blocks and 16.36 / 16.34 for 1 KB blocks. The table reports the
+best 256-byte run and the two-run mean for 1 KB; the archived optimization
+report uses best-of-two (16.36 for 1 KB). Xeon units are invariant **TSC
+reference cycles**, not turbo core cycles; M2 uses calibrated estimated
+cycles, so the counter bases differ. Key generation is excluded.
+The [SMHasher3 adapter](smhasher3/chainhash.cpp) provides both configurations;
+the public C99 header provides 256-byte blocks only.
+
+The exact recurrence removes one reduction CLMUL using a 16-entry register
+shuffle. Measured feedback-only ceilings are **18.25 / 36.50 B/TSC cycle**
+for 256 B / 1 KB; pure-product PH ceilings are **19.3 / 19.2 / 37.2** for
+XMM / YMM / ZMM, and the measured ZMM multiply/shuffle mix gives about
+**24.0 B/TSC cycle** before loads, folding, and recurrence. These are
+optimistic instruction budgets, not achievable-throughput promises. See the
+[optimization report](results/vpclmul/OPTIMIZATION_REPORT.md) and
+[measurement data](results/vpclmul/speeds_chainhash_opt.json).
+
+For the standalone C99 header, the supplementary hot-buffer harness used
+five 16 MiB trials per input size (median), selecting the best of two passes:
+
+| Host / compiler | 256 B input | 4 KiB input | 256 KiB input |
 | --- | ---: | ---: | ---: |
-| Apple M2 Pro / Apple Clang 17, PMULL | 9.06 | 18.19 | 20.92 |
-| Xeon Platinum 8375C / GCC 11.5, PCLMUL | 2.62 | 5.79 | 6.60 |
+| Apple M2 Pro / Apple Clang 17, PMULL; retained | 9.06 | 18.19 | 20.92 |
+| Xeon Platinum 8375C / GCC 11.5, runtime dispatch | 4.29 | 12.26 | 14.91 |
 
-Units are **bytes/cycle**, with different counter bases: M2 cycles are
-estimated from elapsed time using a short dependent-add calibration
-(3.342 GHz in this run); Xeon cycles are invariant **TSC reference cycles**,
-not turbo-dependent core cycles. Thus these are not directly comparable
-hardware-counter measurements. Corresponding GB/s were M2
-30.28 / 60.79 / 69.91 and Xeon 7.60 / 16.80 / 19.13.
-Raw results are in [results/](results/). The Mac runs are deliberately light;
-these numbers are indicative, not a comprehensive performance study.
-
-The measurements used legacy SplitMix64 keys; key generation was excluded.
-The hashing path is unchanged by the constructor integration.
-
-The expanded key omits the benchmark's cached short-input constants. The
-last incomplete 32-byte group uses a bounded stack copy. These choices
-preserve the function while simplifying the C API; the table measures
-this header, not the more specialized SMHasher3 wrapper.
+The paired old-header Xeon results were 4.38 / 12.04 / 14.62; gains are
+not uniform at every input size. The expanded key omits the adapter's cached
+short-input constants, and the last incomplete 32-byte group uses a bounded
+stack copy, so this harness and SMHasher3 measure different implementations.
+[Verification evidence](REPORT.md) covers the integrated source; no new Mac
+timing or complete SMHasher3 suite is claimed.
 
 ## SMHasher3 record
 

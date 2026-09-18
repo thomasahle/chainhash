@@ -1,0 +1,9 @@
+xmm_latency TSC/op=5.04510 thread_ns/op=1.72536
+ymm_latency TSC/op=6.72611 thread_ns/op=2.30366
+zmm_latency TSC/op=6.93307 thread_ns/op=2.37728
+xmm_throughput TSC/op=0.82940 thread_ns/op=0.28608
+ymm_throughput TSC/op=1.67084 thread_ns/op=0.57318
+zmm_throughput TSC/op=1.72123 thread_ns/op=0.59004
+recurrence_old TSC/op=16.73634 thread_ns/op=5.73563
+recurrence_new TSC/op=12.63210 thread_ns/op=4.32866
+recurrence_lazy TSC/op=7.52940 thread_ns/op=2.58123

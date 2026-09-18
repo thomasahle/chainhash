@@ -1,0 +1,2020 @@
+{
+  "host": "Xeon8375C",
+  "binary": "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+  "binary_sha256": "906d07e855853f918fa394f3040e5a681f2c3fbfad7faed00d50883c23ad8956",
+  "core": null,
+  "names": [
+    "chainhash-256",
+    "chainhash-1k",
+    "komihash",
+    "rapidhash",
+    "XXH3-64",
+    "HalftimeHash-512"
+  ],
+  "started": "2026-09-18T14:25:48.256958+00:00",
+  "runs": [
+    {
+      "name": "chainhash-256",
+      "run": 1,
+      "command": [
+        "taskset",
+        "-c",
+        "3",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "chainhash-256",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/chainhash-256.run1.txt",
+      "started": "2026-09-18T14:49:12.320645+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:49:12.320654+00:00",
+        "load": [
+          47.77,
+          49.24,
+          49.93
+        ],
+        "uptime": "14:49:12 up 6 days, 23:33,  0 users,  load average: 47.77, 49.24, 49.93"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:49:12.320442+00:00",
+        "load": "47.77 49.24 49.93 10/11013 2350602",
+        "best": [
+          [
+            0.0,
+            3,
+            [
+              3,
+              51
+            ]
+          ],
+          [
+            0.0,
+            4,
+            [
+              4,
+              52
+            ]
+          ],
+          [
+            0.0,
+            6,
+            [
+              6,
+              54
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            12,
+            [
+              12,
+              60
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            20,
+            [
+              20,
+              68
+            ]
+          ],
+          [
+            0.0,
+            23,
+            [
+              23,
+              71
+            ]
+          ],
+          [
+            0.0,
+            25,
+            [
+              25,
+              73
+            ]
+          ],
+          [
+            0.0,
+            33,
+            [
+              33,
+              81
+            ]
+          ],
+          [
+            0.0,
+            38,
+            [
+              38,
+              86
+            ]
+          ]
+        ]
+      },
+      "core": 3,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:50:05.951944+00:00",
+      "elapsed_seconds": 53.62865696195513,
+      "load_after": {
+        "utc": "2026-09-18T14:50:05.951977+00:00",
+        "load": [
+          21.41,
+          41.63,
+          47.29
+        ],
+        "uptime": "14:50:05 up 6 days, 23:34,  0 users,  load average: 21.41, 41.63, 47.29"
+      },
+      "raw_sha256": "44f83c75b8b9ee5b99c73b3284ccfaad21f00c6c1f3ea42f172df8bb50f4ddbb",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 15.4,
+          "bulk_gib_s": 50.19,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 15.40 bytes/cycle - 50.19 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 15.32,
+          "bulk_gib_s": 49.93,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 15.32 bytes/cycle - 49.93 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 15.4,
+      "bulk_gib_s": 50.19,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 104.17,
+      "valid": true
+    },
+    {
+      "name": "chainhash-1k",
+      "run": 1,
+      "command": [
+        "taskset",
+        "-c",
+        "1",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "chainhash-1k",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/chainhash-1k.run1.txt",
+      "started": "2026-09-18T14:50:07.960830+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:50:07.960836+00:00",
+        "load": [
+          21.41,
+          41.63,
+          47.29
+        ],
+        "uptime": "14:50:07 up 6 days, 23:34,  0 users,  load average: 21.41, 41.63, 47.29"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:50:07.960641+00:00",
+        "load": "21.41 41.63 47.29 4/10951 2350915",
+        "best": [
+          [
+            0.0,
+            1,
+            [
+              1,
+              49
+            ]
+          ],
+          [
+            0.0,
+            3,
+            [
+              3,
+              51
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            15,
+            [
+              15,
+              63
+            ]
+          ],
+          [
+            0.0,
+            16,
+            [
+              16,
+              64
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            18,
+            [
+              18,
+              66
+            ]
+          ],
+          [
+            0.0,
+            21,
+            [
+              21,
+              69
+            ]
+          ],
+          [
+            0.0,
+            22,
+            [
+              22,
+              70
+            ]
+          ],
+          [
+            0.0,
+            24,
+            [
+              24,
+              72
+            ]
+          ],
+          [
+            0.0,
+            26,
+            [
+              26,
+              74
+            ]
+          ],
+          [
+            0.0,
+            28,
+            [
+              28,
+              76
+            ]
+          ]
+        ]
+      },
+      "core": 1,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:50:59.797784+00:00",
+      "elapsed_seconds": 51.83452271902934,
+      "load_after": {
+        "utc": "2026-09-18T14:50:59.797817+00:00",
+        "load": [
+          11.23,
+          35.4,
+          44.83
+        ],
+        "uptime": "14:50:59 up 6 days, 23:35,  0 users,  load average: 11.23, 35.40, 44.83"
+      },
+      "raw_sha256": "2e62300075840bbc7c83306b013cb05d7856dcd774a1ace0dce9024da8afd6d6",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 16.36,
+          "bulk_gib_s": 53.32,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 16.36 bytes/cycle - 53.32 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 16.32,
+          "bulk_gib_s": 53.18,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 16.32 bytes/cycle - 53.18 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 16.36,
+      "bulk_gib_s": 53.32,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 106.15,
+      "valid": true
+    },
+    {
+      "name": "komihash",
+      "run": 1,
+      "command": [
+        "taskset",
+        "-c",
+        "11",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "komihash",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/komihash.run1.txt",
+      "started": "2026-09-18T14:51:01.807067+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:51:01.807073+00:00",
+        "load": [
+          11.23,
+          35.4,
+          44.83
+        ],
+        "uptime": "14:51:01 up 6 days, 23:35,  0 users,  load average: 11.23, 35.40, 44.83"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:51:01.806865+00:00",
+        "load": "11.23 35.40 44.83 5/10931 2351103",
+        "best": [
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            12,
+            [
+              12,
+              60
+            ]
+          ],
+          [
+            0.0,
+            36,
+            [
+              36,
+              84
+            ]
+          ],
+          [
+            0.0,
+            59,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            60,
+            [
+              12,
+              60
+            ]
+          ],
+          [
+            0.0,
+            84,
+            [
+              36,
+              84
+            ]
+          ],
+          [
+            0.5,
+            1,
+            [
+              1,
+              49
+            ]
+          ],
+          [
+            0.5,
+            3,
+            [
+              3,
+              51
+            ]
+          ],
+          [
+            0.5,
+            7,
+            [
+              7,
+              55
+            ]
+          ],
+          [
+            0.5,
+            8,
+            [
+              8,
+              56
+            ]
+          ],
+          [
+            0.5,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.5,
+            15,
+            [
+              15,
+              63
+            ]
+          ]
+        ]
+      },
+      "core": 11,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:52:23.586652+00:00",
+      "elapsed_seconds": 81.77740499097854,
+      "load_after": {
+        "utc": "2026-09-18T14:52:23.586680+00:00",
+        "load": [
+          6.49,
+          28.21,
+          41.52
+        ],
+        "uptime": "14:52:23 up 6 days, 23:36,  0 users,  load average: 6.49, 28.21, 41.52"
+      },
+      "raw_sha256": "9951ffa65ebea960d7298a84e25424e02423b8a6c1e29ac9ea2ec6b641255059",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 7.35,
+          "bulk_gib_s": 23.97,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       -  7.35 bytes/cycle - 23.97 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 7.32,
+          "bulk_gib_s": 23.86,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       -  7.32 bytes/cycle - 23.86 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 7.35,
+      "bulk_gib_s": 23.97,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 27.56,
+      "valid": true
+    },
+    {
+      "name": "rapidhash",
+      "run": 1,
+      "command": [
+        "taskset",
+        "-c",
+        "1",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "rapidhash",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/rapidhash.run1.txt",
+      "started": "2026-09-18T14:52:25.595392+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:52:25.595397+00:00",
+        "load": [
+          6.21,
+          27.79,
+          41.31
+        ],
+        "uptime": "14:52:25 up 6 days, 23:36,  0 users,  load average: 6.21, 27.79, 41.31"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:52:25.595213+00:00",
+        "load": "6.21 27.79 41.31 3/10938 2351612",
+        "best": [
+          [
+            0.0,
+            1,
+            [
+              1,
+              49
+            ]
+          ],
+          [
+            0.0,
+            5,
+            [
+              5,
+              53
+            ]
+          ],
+          [
+            0.0,
+            6,
+            [
+              6,
+              54
+            ]
+          ],
+          [
+            0.0,
+            8,
+            [
+              8,
+              56
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            12,
+            [
+              12,
+              60
+            ]
+          ],
+          [
+            0.0,
+            13,
+            [
+              13,
+              61
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            15,
+            [
+              15,
+              63
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            21,
+            [
+              21,
+              69
+            ]
+          ],
+          [
+            0.0,
+            23,
+            [
+              23,
+              71
+            ]
+          ]
+        ]
+      },
+      "core": 1,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:53:26.311430+00:00",
+      "elapsed_seconds": 60.7134983119322,
+      "load_after": {
+        "utc": "2026-09-18T14:53:26.311459+00:00",
+        "load": [
+          5.02,
+          23.52,
+          39.0
+        ],
+        "uptime": "14:53:26 up 6 days, 23:37,  0 users,  load average: 5.02, 23.52, 39.00"
+      },
+      "raw_sha256": "bca506bc59240b24849bd574f899c29cb716e0b497e615a8315507702754eb13",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 10.67,
+          "bulk_gib_s": 34.79,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 10.67 bytes/cycle - 34.79 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 10.53,
+          "bulk_gib_s": 34.34,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 10.53 bytes/cycle - 34.34 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 10.67,
+      "bulk_gib_s": 34.79,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 27.59,
+      "valid": true
+    },
+    {
+      "name": "XXH3-64",
+      "run": 1,
+      "command": [
+        "taskset",
+        "-c",
+        "1",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "XXH3-64",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/XXH3-64.run1.txt",
+      "started": "2026-09-18T14:53:28.320209+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:53:28.320214+00:00",
+        "load": [
+          5.02,
+          23.52,
+          39.0
+        ],
+        "uptime": "14:53:28 up 6 days, 23:37,  0 users,  load average: 5.02, 23.52, 39.00"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:53:28.320038+00:00",
+        "load": "5.02 23.52 39.00 3/10943 2351964",
+        "best": [
+          [
+            0.0,
+            1,
+            [
+              1,
+              49
+            ]
+          ],
+          [
+            0.0,
+            6,
+            [
+              6,
+              54
+            ]
+          ],
+          [
+            0.0,
+            7,
+            [
+              7,
+              55
+            ]
+          ],
+          [
+            0.0,
+            10,
+            [
+              10,
+              58
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            12,
+            [
+              12,
+              60
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            20,
+            [
+              20,
+              68
+            ]
+          ],
+          [
+            0.0,
+            22,
+            [
+              22,
+              70
+            ]
+          ],
+          [
+            0.0,
+            23,
+            [
+              23,
+              71
+            ]
+          ],
+          [
+            0.0,
+            24,
+            [
+              24,
+              72
+            ]
+          ],
+          [
+            0.0,
+            25,
+            [
+              25,
+              73
+            ]
+          ]
+        ]
+      },
+      "core": 1,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:54:07.065897+00:00",
+      "elapsed_seconds": 38.74340084497817,
+      "load_after": {
+        "utc": "2026-09-18T14:54:07.065938+00:00",
+        "load": [
+          4.99,
+          21.17,
+          37.55
+        ],
+        "uptime": "14:54:07 up 6 days, 23:38,  0 users,  load average: 4.99, 21.17, 37.55"
+      },
+      "raw_sha256": "5e353ee76ae4f32e57c8a69f696a15f6c81da619714e24b03cb0c268085957e0",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 19.82,
+          "bulk_gib_s": 64.61,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 19.82 bytes/cycle - 64.61 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 19.83,
+          "bulk_gib_s": 64.63,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 19.83 bytes/cycle - 64.63 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 19.82,
+      "bulk_gib_s": 64.61,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 30.18,
+      "valid": true
+    },
+    {
+      "name": "HalftimeHash-512",
+      "run": 1,
+      "command": [
+        "taskset",
+        "-c",
+        "2",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "HalftimeHash-512",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/HalftimeHash-512.run1.txt",
+      "started": "2026-09-18T14:54:09.074649+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:54:09.074655+00:00",
+        "load": [
+          4.99,
+          21.17,
+          37.55
+        ],
+        "uptime": "14:54:09 up 6 days, 23:38,  0 users,  load average: 4.99, 21.17, 37.55"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:54:09.074477+00:00",
+        "load": "4.99 21.17 37.55 3/10941 2352232",
+        "best": [
+          [
+            0.0,
+            2,
+            [
+              2,
+              50
+            ]
+          ],
+          [
+            0.0,
+            5,
+            [
+              5,
+              53
+            ]
+          ],
+          [
+            0.0,
+            6,
+            [
+              6,
+              54
+            ]
+          ],
+          [
+            0.0,
+            7,
+            [
+              7,
+              55
+            ]
+          ],
+          [
+            0.0,
+            8,
+            [
+              8,
+              56
+            ]
+          ],
+          [
+            0.0,
+            10,
+            [
+              10,
+              58
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            19,
+            [
+              19,
+              67
+            ]
+          ],
+          [
+            0.0,
+            20,
+            [
+              20,
+              68
+            ]
+          ],
+          [
+            0.0,
+            23,
+            [
+              23,
+              71
+            ]
+          ]
+        ]
+      },
+      "core": 2,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:54:54.645443+00:00",
+      "elapsed_seconds": 45.56828480202239,
+      "load_after": {
+        "utc": "2026-09-18T14:54:54.645471+00:00",
+        "load": [
+          4.64,
+          18.58,
+          35.81
+        ],
+        "uptime": "14:54:54 up 6 days, 23:39,  0 users,  load average: 4.64, 18.58, 35.81"
+      },
+      "raw_sha256": "2db25dc107e681a2a9b229df7c0ce11fda0613f0643935d1b7b06951e4205fdd",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 19.39,
+          "bulk_gib_s": 63.21,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 19.39 bytes/cycle - 63.21 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 19.3,
+          "bulk_gib_s": 62.9,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 19.30 bytes/cycle - 62.90 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 19.39,
+      "bulk_gib_s": 63.21,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 84.97,
+      "valid": true
+    },
+    {
+      "name": "chainhash-256",
+      "run": 2,
+      "command": [
+        "taskset",
+        "-c",
+        "1",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "chainhash-256",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/chainhash-256.run2.txt",
+      "started": "2026-09-18T14:54:56.654417+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:54:56.654423+00:00",
+        "load": [
+          4.64,
+          18.58,
+          35.81
+        ],
+        "uptime": "14:54:56 up 6 days, 23:39,  0 users,  load average: 4.64, 18.58, 35.81"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:54:56.654248+00:00",
+        "load": "4.64 18.58 35.81 4/10920 2352479",
+        "best": [
+          [
+            0.0,
+            1,
+            [
+              1,
+              49
+            ]
+          ],
+          [
+            0.0,
+            2,
+            [
+              2,
+              50
+            ]
+          ],
+          [
+            0.0,
+            5,
+            [
+              5,
+              53
+            ]
+          ],
+          [
+            0.0,
+            6,
+            [
+              6,
+              54
+            ]
+          ],
+          [
+            0.0,
+            8,
+            [
+              8,
+              56
+            ]
+          ],
+          [
+            0.0,
+            10,
+            [
+              10,
+              58
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            13,
+            [
+              13,
+              61
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            15,
+            [
+              15,
+              63
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            18,
+            [
+              18,
+              66
+            ]
+          ]
+        ]
+      },
+      "core": 1,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:55:50.480671+00:00",
+      "elapsed_seconds": 53.823854699963704,
+      "load_after": {
+        "utc": "2026-09-18T14:55:50.480701+00:00",
+        "load": [
+          4.86,
+          16.28,
+          34.03
+        ],
+        "uptime": "14:55:50 up 6 days, 23:39,  0 users,  load average: 4.86, 16.28, 34.03"
+      },
+      "raw_sha256": "b435047a68b8f9137a10b5145a08f0a359d36989063fef8ad8d3893022f71597",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 15.36,
+          "bulk_gib_s": 50.08,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 15.36 bytes/cycle - 50.08 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 15.3,
+          "bulk_gib_s": 49.87,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 15.30 bytes/cycle - 49.87 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 15.36,
+      "bulk_gib_s": 50.08,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 103.98,
+      "valid": true
+    },
+    {
+      "name": "chainhash-1k",
+      "run": 2,
+      "command": [
+        "taskset",
+        "-c",
+        "6",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "chainhash-1k",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/chainhash-1k.run2.txt",
+      "started": "2026-09-18T14:55:52.489904+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:55:52.489910+00:00",
+        "load": [
+          4.86,
+          16.28,
+          34.03
+        ],
+        "uptime": "14:55:52 up 6 days, 23:39,  0 users,  load average: 4.86, 16.28, 34.03"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:55:52.489738+00:00",
+        "load": "4.86 16.28 34.03 3/10927 2352657",
+        "best": [
+          [
+            0.0,
+            6,
+            [
+              6,
+              54
+            ]
+          ],
+          [
+            0.0,
+            7,
+            [
+              7,
+              55
+            ]
+          ],
+          [
+            0.0,
+            10,
+            [
+              10,
+              58
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            12,
+            [
+              12,
+              60
+            ]
+          ],
+          [
+            0.0,
+            13,
+            [
+              13,
+              61
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            15,
+            [
+              15,
+              63
+            ]
+          ],
+          [
+            0.0,
+            16,
+            [
+              16,
+              64
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            19,
+            [
+              19,
+              67
+            ]
+          ],
+          [
+            0.0,
+            20,
+            [
+              20,
+              68
+            ]
+          ]
+        ]
+      },
+      "core": 6,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:56:44.349490+00:00",
+      "elapsed_seconds": 51.857135731959715,
+      "load_after": {
+        "utc": "2026-09-18T14:56:44.349519+00:00",
+        "load": [
+          4.52,
+          14.27,
+          32.32
+        ],
+        "uptime": "14:56:44 up 6 days, 23:40,  0 users,  load average: 4.52, 14.27, 32.32"
+      },
+      "raw_sha256": "043c26207163df24183bc85fe94f1581cddcdb209683c138141b733618844402",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 16.34,
+          "bulk_gib_s": 53.27,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 16.34 bytes/cycle - 53.27 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 16.3,
+          "bulk_gib_s": 53.13,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 16.30 bytes/cycle - 53.13 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 16.34,
+      "bulk_gib_s": 53.27,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 106.43,
+      "valid": true
+    },
+    {
+      "name": "komihash",
+      "run": 2,
+      "command": [
+        "taskset",
+        "-c",
+        "2",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "komihash",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/komihash.run2.txt",
+      "started": "2026-09-18T14:56:46.358655+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:56:46.358661+00:00",
+        "load": [
+          4.52,
+          14.27,
+          32.32
+        ],
+        "uptime": "14:56:46 up 6 days, 23:40,  0 users,  load average: 4.52, 14.27, 32.32"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:56:46.358485+00:00",
+        "load": "4.52 14.27 32.32 3/10967 2352973",
+        "best": [
+          [
+            0.0,
+            2,
+            [
+              2,
+              50
+            ]
+          ],
+          [
+            0.0,
+            5,
+            [
+              5,
+              53
+            ]
+          ],
+          [
+            0.0,
+            6,
+            [
+              6,
+              54
+            ]
+          ],
+          [
+            0.0,
+            7,
+            [
+              7,
+              55
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            15,
+            [
+              15,
+              63
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            18,
+            [
+              18,
+              66
+            ]
+          ],
+          [
+            0.0,
+            19,
+            [
+              19,
+              67
+            ]
+          ],
+          [
+            0.0,
+            22,
+            [
+              22,
+              70
+            ]
+          ],
+          [
+            0.0,
+            24,
+            [
+              24,
+              72
+            ]
+          ],
+          [
+            0.0,
+            25,
+            [
+              25,
+              73
+            ]
+          ]
+        ]
+      },
+      "core": 2,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:58:08.225198+00:00",
+      "elapsed_seconds": 81.86424103996251,
+      "load_after": {
+        "utc": "2026-09-18T14:58:08.225225+00:00",
+        "load": [
+          4.74,
+          12.03,
+          30.04
+        ],
+        "uptime": "14:58:08 up 6 days, 23:42,  0 users,  load average: 4.74, 12.03, 30.04"
+      },
+      "raw_sha256": "7f6b1b9a840ea2e37f7142dae0bbadc358759ed4dcc3a1c7477d8a10b3ecc5bb",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 7.35,
+          "bulk_gib_s": 23.97,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       -  7.35 bytes/cycle - 23.97 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 7.32,
+          "bulk_gib_s": 23.86,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       -  7.32 bytes/cycle - 23.86 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 7.35,
+      "bulk_gib_s": 23.97,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 27.49,
+      "valid": true
+    },
+    {
+      "name": "rapidhash",
+      "run": 2,
+      "command": [
+        "taskset",
+        "-c",
+        "2",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "rapidhash",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/rapidhash.run2.txt",
+      "started": "2026-09-18T14:58:10.234653+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:58:10.234658+00:00",
+        "load": [
+          4.68,
+          11.9,
+          29.9
+        ],
+        "uptime": "14:58:10 up 6 days, 23:42,  0 users,  load average: 4.68, 11.90, 29.90"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:58:10.234465+00:00",
+        "load": "4.68 11.90 29.90 3/10931 2353335",
+        "best": [
+          [
+            0.0,
+            2,
+            [
+              2,
+              50
+            ]
+          ],
+          [
+            0.0,
+            7,
+            [
+              7,
+              55
+            ]
+          ],
+          [
+            0.0,
+            10,
+            [
+              10,
+              58
+            ]
+          ],
+          [
+            0.0,
+            15,
+            [
+              15,
+              63
+            ]
+          ],
+          [
+            0.0,
+            19,
+            [
+              19,
+              67
+            ]
+          ],
+          [
+            0.0,
+            20,
+            [
+              20,
+              68
+            ]
+          ],
+          [
+            0.0,
+            21,
+            [
+              21,
+              69
+            ]
+          ],
+          [
+            0.0,
+            22,
+            [
+              22,
+              70
+            ]
+          ],
+          [
+            0.0,
+            24,
+            [
+              24,
+              72
+            ]
+          ],
+          [
+            0.0,
+            26,
+            [
+              26,
+              74
+            ]
+          ],
+          [
+            0.0,
+            27,
+            [
+              27,
+              75
+            ]
+          ],
+          [
+            0.0,
+            29,
+            [
+              29,
+              77
+            ]
+          ]
+        ]
+      },
+      "core": 2,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:59:11.026748+00:00",
+      "elapsed_seconds": 60.7895149779506,
+      "load_after": {
+        "utc": "2026-09-18T14:59:11.026778+00:00",
+        "load": [
+          4.7,
+          10.56,
+          28.31
+        ],
+        "uptime": "14:59:11 up 6 days, 23:43,  0 users,  load average: 4.70, 10.56, 28.31"
+      },
+      "raw_sha256": "572852bbc15ffe880eeb4f0a9fee43b6ae5aa3d4de099c3bd5d6a7f2bc63b192",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 10.67,
+          "bulk_gib_s": 34.79,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 10.67 bytes/cycle - 34.79 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 10.53,
+          "bulk_gib_s": 34.32,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 10.53 bytes/cycle - 34.32 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 10.67,
+      "bulk_gib_s": 34.79,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 27.65,
+      "valid": true
+    },
+    {
+      "name": "XXH3-64",
+      "run": 2,
+      "command": [
+        "taskset",
+        "-c",
+        "2",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "XXH3-64",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/XXH3-64.run2.txt",
+      "started": "2026-09-18T14:59:13.036444+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:59:13.036450+00:00",
+        "load": [
+          4.7,
+          10.56,
+          28.31
+        ],
+        "uptime": "14:59:13 up 6 days, 23:43,  0 users,  load average: 4.70, 10.56, 28.31"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:59:13.036258+00:00",
+        "load": "4.70 10.56 28.31 4/10965 2353710",
+        "best": [
+          [
+            0.0,
+            2,
+            [
+              2,
+              50
+            ]
+          ],
+          [
+            0.0,
+            11,
+            [
+              11,
+              59
+            ]
+          ],
+          [
+            0.0,
+            13,
+            [
+              13,
+              61
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            19,
+            [
+              19,
+              67
+            ]
+          ],
+          [
+            0.0,
+            21,
+            [
+              21,
+              69
+            ]
+          ],
+          [
+            0.0,
+            23,
+            [
+              23,
+              71
+            ]
+          ],
+          [
+            0.0,
+            24,
+            [
+              24,
+              72
+            ]
+          ],
+          [
+            0.0,
+            26,
+            [
+              26,
+              74
+            ]
+          ],
+          [
+            0.0,
+            27,
+            [
+              27,
+              75
+            ]
+          ],
+          [
+            0.0,
+            28,
+            [
+              28,
+              76
+            ]
+          ]
+        ]
+      },
+      "core": 2,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T14:59:51.916696+00:00",
+      "elapsed_seconds": 38.877661679987796,
+      "load_after": {
+        "utc": "2026-09-18T14:59:51.916726+00:00",
+        "load": [
+          4.5,
+          9.78,
+          27.3
+        ],
+        "uptime": "14:59:51 up 6 days, 23:43,  0 users,  load average: 4.50, 9.78, 27.30"
+      },
+      "raw_sha256": "bb561f94d72a97119ab26ce9db309eb885730d2de5688fb46ab71a862572ddee",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 19.66,
+          "bulk_gib_s": 64.08,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 19.66 bytes/cycle - 64.08 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 20.05,
+          "bulk_gib_s": 65.36,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 20.05 bytes/cycle - 65.36 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 19.66,
+      "bulk_gib_s": 64.08,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 30.17,
+      "valid": true
+    },
+    {
+      "name": "HalftimeHash-512",
+      "run": 2,
+      "command": [
+        "taskset",
+        "-c",
+        "1",
+        "nice",
+        "-n",
+        "10",
+        "/home/thomas-ahle/agents/speedbench-chainhash/build/SMHasher3",
+        "HalftimeHash-512",
+        "--test=Speed"
+      ],
+      "raw_file": "out/Xeon8375C/HalftimeHash-512.run2.txt",
+      "started": "2026-09-18T14:59:53.926624+00:00",
+      "load_before": {
+        "utc": "2026-09-18T14:59:53.926629+00:00",
+        "load": [
+          4.5,
+          9.78,
+          27.3
+        ],
+        "uptime": "14:59:53 up 6 days, 23:44,  0 users,  load average: 4.50, 9.78, 27.30"
+      },
+      "core_before": {
+        "sample_seconds": 2,
+        "chosen": null,
+        "utc": "2026-09-18T14:59:53.926433+00:00",
+        "load": "4.50 9.78 27.30 3/10950 2353907",
+        "best": [
+          [
+            0.0,
+            1,
+            [
+              1,
+              49
+            ]
+          ],
+          [
+            0.0,
+            2,
+            [
+              2,
+              50
+            ]
+          ],
+          [
+            0.0,
+            3,
+            [
+              3,
+              51
+            ]
+          ],
+          [
+            0.0,
+            7,
+            [
+              7,
+              55
+            ]
+          ],
+          [
+            0.0,
+            14,
+            [
+              14,
+              62
+            ]
+          ],
+          [
+            0.0,
+            15,
+            [
+              15,
+              63
+            ]
+          ],
+          [
+            0.0,
+            17,
+            [
+              17,
+              65
+            ]
+          ],
+          [
+            0.0,
+            18,
+            [
+              18,
+              66
+            ]
+          ],
+          [
+            0.0,
+            19,
+            [
+              19,
+              67
+            ]
+          ],
+          [
+            0.0,
+            20,
+            [
+              20,
+              68
+            ]
+          ],
+          [
+            0.0,
+            21,
+            [
+              21,
+              69
+            ]
+          ],
+          [
+            0.0,
+            23,
+            [
+              23,
+              71
+            ]
+          ]
+        ]
+      },
+      "core": 1,
+      "allow_loaded": false,
+      "returncode": 0,
+      "finished": "2026-09-18T15:00:39.590827+00:00",
+      "elapsed_seconds": 45.66160640900489,
+      "load_after": {
+        "utc": "2026-09-18T15:00:39.590857+00:00",
+        "load": [
+          3.87,
+          8.82,
+          26.05
+        ],
+        "uptime": "15:00:39 up 6 days, 23:44,  0 users,  load average: 3.87, 8.82, 26.05"
+      },
+      "raw_sha256": "965b6def57b9133a3ec69065d09122435fa9bbda9c2aa72b3e0fa395fec829c9",
+      "bulk_sections": [
+        {
+          "header": "Bulk speed test - 262144-byte keys",
+          "bulk_bytes_per_cycle": 19.24,
+          "bulk_gib_s": 62.71,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 19.24 bytes/cycle - 62.71 GiB/sec @ 3.5 ghz"
+        },
+        {
+          "header": "Bulk speed test - [262017, 262144]-byte keys",
+          "bulk_bytes_per_cycle": 19.18,
+          "bulk_gib_s": 62.53,
+          "clock_assumption": "3.5 ghz",
+          "average_line": "Average       - 19.18 bytes/cycle - 62.53 GiB/sec @ 3.5 ghz"
+        }
+      ],
+      "bulk_bytes_per_cycle": 19.24,
+      "bulk_gib_s": 62.71,
+      "clock_assumption": "3.5 ghz",
+      "small_cycles": 85.52,
+      "valid": true
+    }
+  ],
+  "source_sha256": "622010e95f1759610d3c2e5b6a1a89818956ad3a3bf24c47c5c84586b2a50564",
+  "registration": {
+    "chainhash-256": "chainhash-256                  64  hwclmul+vpclmul-dispatch          ChainHash (GF(2^64) carry-less PH with strided word pairing + three-key injective chain + degree-5 finalizer behind an additive twist), 256-byte blocks",
+    "chainhash-1k": "chainhash-1k                   64  hwclmul+vpclmul-dispatch          ChainHash (GF(2^64) carry-less PH with strided word pairing + three-key injective chain + degree-5 finalizer behind an additive twist), 1024-byte blocks, 2 sub-blocks per block",
+    "komihash": "komihash                       64                      komihash v5.27                                              ",
+    "rapidhash": "rapidhash                      64                      rapidhash v3, 64-bit                                        ",
+    "XXH3-64": "XXH3-64                        64      avx512          xxh3, 64-bit version                                        ",
+    "HalftimeHash-512": "HalftimeHash-512               64     avx512f          Halftime Hash (512-bit blocks)                              "
+  },
+  "finished": "2026-09-18T15:00:39.595594+00:00",
+  "binary_sha256_after": "906d07e855853f918fa394f3040e5a681f2c3fbfad7faed00d50883c23ad8956"
+}

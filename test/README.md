@@ -2,7 +2,10 @@
 
 `make test` runs hardware-vs-portable-vs-paper-reference comparisons,
 frozen vectors, seed/byte-key checks, C99 API smoke tests, and Unix guard
-pages. It also builds a separate forced-portable executable. This requires
+pages. It adds 12,000 deterministic random messages, raw keys, and lengths,
+including more than 10,000 bulk inputs. On capable x86 hosts it calls the
+PCLMUL fallback, pipelined XMM, YMM, and ZMM paths directly, independently
+of dispatch tuning; all are compared with the bit-serial reference. It also builds a separate forced-portable executable. This requires
 C99 and C++11 compilers; only the test oracle uses `unsigned __int128`.
 The public portable header does not require it.
 
@@ -64,8 +67,15 @@ all constructors. The old frozen vectors and SMHasher3 checks explicitly use
 
 `ARCH_FLAGS=-mpclmul python3 test/check_hash_path.py` on x86, or
 `ARCH_FLAGS=-march=native+crypto python3 test/check_hash_path.py` on Apple ARM,
-checks the hashing source suffix byte-for-byte against the pre-integration
-commit. It also compiles an identical wrapper before/after: GNU objcopy
+checks the portable and baseline hardware source byte-for-byte against the
+pre-constructor-integration commit (ignoring only the backend label). It also
+compiles a wrapper calling the baseline path before/after: GNU objcopy
 compares the `.text` bytes when available; otherwise the assembly must match.
 GCC may renumber local assembly labels after extra inline constructors, so
 its assembly text alone is not a machine-code comparison.
+
+
+The optimized SMHasher3 registration is in `smhasher3/chainhash.cpp`; see
+`smhasher3/README.md` for installation and Sanity commands. Historical proof
+integration logs describe the old full-source identity check; the current
+check preserves baseline identity while allowing the new x86 dispatch paths.

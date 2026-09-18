@@ -1,11 +1,13 @@
 /* ChainHash, 256-byte blocks. Copyright 2026 Thomas Dybdahl Ahle. MIT.
  * C99 / C++11, header only. Model A is the default; see docs/THEOREM.md for all key models.
  * Words and input bytes have canonical little-endian interpretation.
- * Compile-time dispatch, as in the original benchmark/SMHasher3 code:
+ * Baseline compile-time selection; x86 wide PH uses runtime CPUID/XGETBV:
  *   x86-64: -mpclmul; AArch64 GCC/Clang: -march=armv8-a+crypto
  *   Apple Clang: -march=native+crypto
  * Define CHAINHASH_FORCE_PORTABLE to disable hardware paths.
- * The executable must run on a CPU supporting its selected instructions.
+ * The executable must support its baseline instructions. The AVX2 and
+ * AVX-512F VPCLMUL paths are isolated with GCC/Clang target attributes.
+ * Do not compile the rest of a portable executable with -march=native.
  */
 #ifndef CHAINHASH_H_INCLUDED
 #define CHAINHASH_H_INCLUDED
@@ -217,7 +219,7 @@ static inline uint64_t chainhash_portable(const chainhash_key *key, const void *
 }
 
 #if !defined(CHAINHASH_FORCE_PORTABLE) && defined(__x86_64__) && defined(__PCLMUL__)
-#define CHAINHASH_BACKEND "pclmul"
+#define CHAINHASH_BACKEND "pclmul+vpclmul-dispatch"
 #define CHAINHASH_HARDWARE 1
 #include <wmmintrin.h>
 typedef __m128i ch_vec;
@@ -322,6 +324,227 @@ static inline uint64_t chainhash_hardware(const chainhash_key *key, const void *
 }
 #endif
 
+#if CHAINHASH_HARDWARE && defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
+#define CHAINHASH_RUNTIME_WIDE 1
+#include <immintrin.h>
+#include <cpuid.h>
+#define CH_HEADER_WIDE256 __attribute__((target("avx2,vpclmulqdq")))
+#define CH_HEADER_WIDE512 __attribute__((target("avx2,avx512f,vpclmulqdq")))
+
+// Check both CPU capabilities and OS register save support. 0=baseline,
+// 1=YMM, 2=ZMM. No AVX512BW/DQ/VL requirement in the ZMM path.
+static int ch_x86_detect(void) {
+    unsigned a,b,c,d;
+    if (!__get_cpuid(1,&a,&b,&c,&d) || (c & ((1u<<27)|(1u<<28))) != ((1u<<27)|(1u<<28))) return 0;
+    unsigned lo,hi;
+    __asm__("xgetbv" : "=a"(lo), "=d"(hi) : "c"(0));
+    if ((lo & 6) != 6 || !__get_cpuid_count(7,0,&a,&b,&c,&d) || !(c & (1u<<10)) || !(b & (1u<<5))) return 0;
+    return ((lo & 0xe6) == 0xe6 && (b & (1u<<16))) ? 2 : 1;
+}
+static int ch_x86_width(void) {
+    /* C99 and C++: relaxed atomics avoid a racy static cache. */
+    static int cached = 0;
+    int v = __atomic_load_n(&cached,__ATOMIC_RELAXED);
+    if (!v) { v=ch_x86_detect()+1; __atomic_store_n(&cached,v,__ATOMIC_RELAXED); }
+    return v-1;
+}
+
+// Ice Lake-SP (family 6, model 0x6a): YMM VPCLMUL has no product-throughput
+// advantage over XMM, and the wide PH shuffles lose on 256-byte blocks.
+// Use the measured pipelined XMM driver for this 256-byte configuration.
+static int ch_x86_detect_tuning(void) {
+    unsigned a,b,c,d;
+    if (!__get_cpuid(0,&a,&b,&c,&d) || b != 0x756e6547u || d != 0x49656e69u || c != 0x6c65746eu) return 0;
+    if (!__get_cpuid(1,&a,&b,&c,&d)) return 0;
+    const unsigned family = (a >> 8) & 15;
+    const unsigned model = ((a >> 4) & 15) | ((a >> 12) & 0xf0);
+    return family == 6 && model == 0x6a;
+}
+static int ch_x86_prefer128(void) {
+    static int cached=0;
+    int v=__atomic_load_n(&cached,__ATOMIC_RELAXED);
+    if (!v) { v=ch_x86_detect_tuning()+1; __atomic_store_n(&cached,v,__ATOMIC_RELAXED); }
+    return v-1;
+}
+
+// The second CLMUL fold only multiplies a nibble by 27. A 16-entry byte
+// table gives the identical polynomial product with a shuffle.
+__attribute__((target("ssse3,pclmul"),always_inline)) static inline __m128i ch_wide_reduce(__m128i ab, __m128i add) {
+    __m128i xr = _mm_clmulepi64_si128(ab,_mm_set_epi64x(0,27),0x01);
+    const __m128i lut = _mm_setr_epi8(0,27,54,45,108,119,90,65,(char)216,(char)195,(char)238,(char)245,(char)180,(char)175,(char)130,(char)153);
+    __m128i corr = _mm_shuffle_epi8(lut,_mm_srli_si128(xr,8));
+    return _mm_xor_si128(_mm_xor_si128(ab,add),_mm_xor_si128(xr,corr));
+}
+
+CH_HEADER_WIDE256 static inline __m256i ch_wload256(const uint8_t *p, int swap) {
+    __m256i v = _mm256_loadu_si256((const __m256i *)p);
+    if (swap) v = _mm256_shuffle_epi8(v,_mm256_setr_epi8(7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8));
+    return v;
+}
+CH_HEADER_WIDE512 static inline __m512i ch_wload512(const uint8_t *p, int swap) {
+    __m512i v = _mm512_loadu_si512(p);
+    if (swap) { // AVX512F only: byte/word exchange with shifts and masks.
+        const __m512i m8 = _mm512_set1_epi64(0x00ff00ff00ff00ffLL);
+        const __m512i m16 = _mm512_set1_epi64(0x0000ffff0000ffffLL);
+        v = _mm512_or_si512(_mm512_slli_epi64(_mm512_and_si512(v,m8),8),_mm512_and_si512(_mm512_srli_epi64(v,8),m8));
+        v = _mm512_or_si512(_mm512_slli_epi64(_mm512_and_si512(v,m16),16),_mm512_and_si512(_mm512_srli_epi64(v,16),m16));
+        v = _mm512_shuffle_epi32(v,(_MM_PERM_ENUM)0xb1);
+    }
+    return v;
+}
+
+CH_HEADER_WIDE256 static inline __m128i ch_ph256(const uint64_t *k,const uint8_t *p) {
+    __m256i acc = _mm256_setzero_si256();
+    for (int i=0;i<32;i+=8) {
+        __m256i x = _mm256_xor_si256(ch_wload256(p+8*i,0),_mm256_loadu_si256((const __m256i *)(k+i)));
+        __m256i y = _mm256_xor_si256(ch_wload256(p+8*i+32,0),_mm256_loadu_si256((const __m256i *)(k+i+4)));
+        __m256i a = _mm256_permute2x128_si256(x,y,0x20), b = _mm256_permute2x128_si256(x,y,0x31);
+        acc = _mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(a,b,0x00),_mm256_clmulepi64_epi128(a,b,0x11)));
+    }
+    return _mm_xor_si128(_mm256_castsi256_si128(acc),_mm256_extracti128_si256(acc,1));
+}
+CH_HEADER_WIDE512 static inline __m128i ch_ph512(const uint64_t *k,const uint8_t *p) {
+
+    __m512i acc = _mm512_setzero_si512();
+    for (int i=0;i<32;i+=16) {
+        __m512i x = _mm512_xor_si512(ch_wload512(p+8*i,0),_mm512_loadu_si512(k+i));
+        __m512i y = _mm512_xor_si512(ch_wload512(p+8*i+64,0),_mm512_loadu_si512(k+i+8));
+        __m512i a = _mm512_shuffle_i64x2(x,y,0x88), b = _mm512_shuffle_i64x2(x,y,0xdd);
+        acc = _mm512_xor_si512(acc,_mm512_xor_si512(_mm512_clmulepi64_epi128(a,b,0x00),_mm512_clmulepi64_epi128(a,b,0x11)));
+    }
+    __m256i h = _mm256_xor_si256(_mm512_castsi512_si256(acc),_mm512_extracti64x4_epi64(acc,1));
+    return _mm_xor_si128(_mm256_castsi256_si128(h),_mm256_extracti128_si256(h,1));
+}
+
+
+CH_HEADER_WIDE256 static inline __m128i ch_narrow_ph(const uint64_t *k,const uint8_t *p) {
+    return ch_block(k,p,256);
+}
+
+CH_HEADER_WIDE256 static uint64_t chainhash_narrow(const chainhash_key *key,const void *data,size_t len) {
+    const int SW=32,S=1;
+    const uint64_t *k=key->words;
+    const uint8_t *p=(const uint8_t *)data;
+    const size_t SB=256,BB=256;
+    const size_t full = (len-1)/BB*S; // leave the complete final block peeled
+    const __m128i uy = ch_vload(k+32);
+    __m128i q = ch_v64(k[34]^k[32]);
+    size_t j = 0;
+    if (full) {
+        __m128i t = _mm_xor_si128(ch_narrow_ph(k,p),uy);
+        for (;j+1<full;++j) {
+            __m128i prod = _mm_clmulepi64_si128(t,q,0x01);
+            __m128i next = _mm_xor_si128(ch_narrow_ph(k+((j+1)%S)*SW,p+(j+1)*SB),uy);
+            q = ch_wide_reduce(prod,t);
+            t = next;
+        }
+        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
+        ++j;
+    }
+    const size_t rem = len-full*SB;
+    for (int i=0;i<S;++i) {
+        const size_t off = (size_t)i*SB;
+        const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
+        __m128i acc;
+        if (n==SB) acc = ch_narrow_ph(k+i*SW,p+(full+i)*SB);
+        else if (n) acc = ch_block(k+i*SW,p+(full+i)*SB,n);
+        else acc = _mm_setzero_si128();
+        __m128i t = _mm_xor_si128(acc,i+1<S ? uy : _mm_xor_si128(ch_vxor(uy,ch_v64(k[32])),ch_vdup((uint64_t)len)));
+        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
+    }
+    {
+        __m128i v=ch_vadd(q,ch_v64(k[40]));
+        __m128i y=ch_reduce_add(ch_ll(v,v),ch_v64(k[35]));
+        __m128i z=ch_xor3(v,y,ch_v64(k[35]^k[36]));
+        z=ch_reduce_add(ch_ll(y,z),ch_v64(k[38]));
+        return ch_low(ch_reduce_add(ch_ll(ch_vxor(v,ch_v64(k[37])),z),ch_v64(k[39])));
+    }
+}
+
+CH_HEADER_WIDE256 static uint64_t chainhash_wide256(const chainhash_key *key,const void *data,size_t len) {
+    const int SW=32,S=1;
+    const uint64_t *k=key->words;
+    const uint8_t *p=(const uint8_t *)data;
+    const size_t SB=256,BB=256;
+    const size_t full = (len-1)/BB*S; // leave the complete final block peeled
+    const __m128i uy = ch_vload(k+32);
+    __m128i q = ch_v64(k[34]^k[32]);
+    size_t j = 0;
+    if (full) {
+        __m128i t = _mm_xor_si128(ch_ph256(k,p),uy);
+        for (;j+1<full;++j) {
+            __m128i prod = _mm_clmulepi64_si128(t,q,0x01);
+            __m128i next = _mm_xor_si128(ch_ph256(k+((j+1)%S)*SW,p+(j+1)*SB),uy);
+            q = ch_wide_reduce(prod,t);
+            t = next;
+        }
+        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
+        ++j;
+    }
+    const size_t rem = len-full*SB;
+    for (int i=0;i<S;++i) {
+        const size_t off = (size_t)i*SB;
+        const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
+        __m128i acc;
+        if (n==SB) acc = ch_ph256(k+i*SW,p+(full+i)*SB);
+        else if (n) acc = ch_block(k+i*SW,p+(full+i)*SB,n);
+        else acc = _mm_setzero_si128();
+        __m128i t = _mm_xor_si128(acc,i+1<S ? uy : _mm_xor_si128(ch_vxor(uy,ch_v64(k[32])),ch_vdup((uint64_t)len)));
+        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
+    }
+    {
+        __m128i v=ch_vadd(q,ch_v64(k[40]));
+        __m128i y=ch_reduce_add(ch_ll(v,v),ch_v64(k[35]));
+        __m128i z=ch_xor3(v,y,ch_v64(k[35]^k[36]));
+        z=ch_reduce_add(ch_ll(y,z),ch_v64(k[38]));
+        return ch_low(ch_reduce_add(ch_ll(ch_vxor(v,ch_v64(k[37])),z),ch_v64(k[39])));
+    }
+}
+
+CH_HEADER_WIDE512 static uint64_t chainhash_wide512(const chainhash_key *key,const void *data,size_t len) {
+    const int SW=32,S=1;
+    const uint64_t *k=key->words;
+    const uint8_t *p=(const uint8_t *)data;
+    const size_t SB=256,BB=256;
+    const size_t full = (len-1)/BB*S; // leave the complete final block peeled
+    const __m128i uy = ch_vload(k+32);
+    __m128i q = ch_v64(k[34]^k[32]);
+    size_t j = 0;
+    if (full) {
+        __m128i t = _mm_xor_si128(ch_ph512(k,p),uy);
+        for (;j+1<full;++j) {
+            __m128i prod = _mm_clmulepi64_si128(t,q,0x01);
+            __m128i next = _mm_xor_si128(ch_ph512(k+((j+1)%S)*SW,p+(j+1)*SB),uy);
+            q = ch_wide_reduce(prod,t);
+            t = next;
+        }
+        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
+        ++j;
+    }
+    const size_t rem = len-full*SB;
+    for (int i=0;i<S;++i) {
+        const size_t off = (size_t)i*SB;
+        const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
+        __m128i acc;
+        if (n==SB) acc = ch_ph512(k+i*SW,p+(full+i)*SB);
+        else if (n) acc = ch_block(k+i*SW,p+(full+i)*SB,n);
+        else acc = _mm_setzero_si128();
+        __m128i t = _mm_xor_si128(acc,i+1<S ? uy : _mm_xor_si128(ch_vxor(uy,ch_v64(k[32])),ch_vdup((uint64_t)len)));
+        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
+    }
+    {
+        __m128i v=ch_vadd(q,ch_v64(k[40]));
+        __m128i y=ch_reduce_add(ch_ll(v,v),ch_v64(k[35]));
+        __m128i z=ch_xor3(v,y,ch_v64(k[35]^k[36]));
+        z=ch_reduce_add(ch_ll(y,z),ch_v64(k[38]));
+        return ch_low(ch_reduce_add(ch_ll(ch_vxor(v,ch_v64(k[37])),z),ch_v64(k[39])));
+    }
+}
+
+#undef CH_HEADER_WIDE256
+#undef CH_HEADER_WIDE512
+#endif
+
 /* Hash len bytes. data may be NULL iff len==0; key must be non-NULL.
  * No input alignment requirement; no reads outside [data,data+len).
  * len must be <2^64 bytes (automatic on usual 32/64-bit size_t targets).
@@ -331,6 +554,14 @@ static inline uint64_t chainhash_hardware(const chainhash_key *key, const void *
  */
 static inline uint64_t chainhash(const chainhash_key *key, const void *data, size_t len) {
 #if CHAINHASH_HARDWARE
+#if defined(CHAINHASH_RUNTIME_WIDE)
+    if (len>256) {
+        int width=ch_x86_width();
+        if (width && ch_x86_prefer128()) return chainhash_narrow(key,data,len);
+        if (width==2) return chainhash_wide512(key,data,len);
+        if (width==1) return chainhash_wide256(key,data,len);
+    }
+#endif
     return chainhash_hardware(key,data,len);
 #else
     return chainhash_portable(key,data,len);

@@ -1,0 +1,1 @@
+PASS cases=48710 (both configurations; 12000 randomized lengths/keys/messages each, every length 0..4096, long inputs through 1 MiB, guard pages, unaligned, NULL/0, native and bswap).

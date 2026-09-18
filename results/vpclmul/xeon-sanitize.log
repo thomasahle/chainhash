@@ -1,0 +1,5 @@
+clang++ -Iinclude -std=c++11 -O1 -g -mpclmul -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
+./build/sanitize
+PASS 21479 differential cases; 92 frozen vectors; backend=pclmul+vpclmul-dispatch; verification=0xAA4E2A3B
+PASS 12000 randomized messages/keys/lengths; 11248 bulk inputs
+x86 runtime width=2 (0=PCLMUL, 1=YMM, 2=ZMM); prefer128=1; direct bulk paths=PCLMUL, pipelined XMM, YMM, ZMM

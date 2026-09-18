@@ -1,0 +1,5 @@
+PASS all 12 archived Speed log hashes match supplied JSON
+PASS integrated header and registration match supplied source hashes
+PASS README Guarantee and Machine-checked sections unchanged
+PASS prior proof/key-model integration report preserved verbatim
+PASS evidence contains text files only

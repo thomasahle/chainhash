@@ -27,6 +27,17 @@ static void check(const chainhash_key &k, const void *p, size_t n) {
 #if CHAINHASH_HARDWARE
     require(chainhash_hardware(&k,p,n)==expected,"hardware vs portable");
 #endif
+#if defined(CHAINHASH_RUNTIME_WIDE)
+    if (n>256) {
+        const int width=ch_x86_width();
+        if (width>=1) {
+            require(chainhash_narrow(&k,p,n)==expected,"pipelined XMM vs paper reference");
+            require(chainhash_wide256(&k,p,n)==expected,"YMM vs paper reference");
+        }
+        if (width>=2)
+            require(chainhash_wide512(&k,p,n)==expected,"ZMM vs paper reference");
+    }
+#endif
     ++cases;
 }
 int main() {
@@ -45,6 +56,19 @@ int main() {
     }
     chainhash_key k=chainhash_key_from_splitmix64_legacy(42);
     for(unsigned i=0;i<200;++i) check(k,data.data()+(i%32),ch_splitmix64(&rng)%8193);
+    /* Fresh messages and raw keys; at least 10,000 inputs enter every
+     * available bulk path, independently of the CPU's dispatch preference. */
+    size_t random_bulk=0;
+    for(unsigned i=0;i<12000;++i) {
+        const size_t n=ch_splitmix64(&rng)%4097;
+        const size_t off=ch_splitmix64(&rng)%64;
+        for(size_t j=0;j<n;++j) data[off+j]=(uint8_t)ch_splitmix64(&rng);
+        chainhash_key random_key;
+        for(auto &word:random_key.words) word=ch_splitmix64(&rng);
+        check(random_key,data.data()+off,n);
+        if(n>256) ++random_bulk;
+    }
+    require(random_bulk>=10000,"at least 10000 randomized bulk inputs");
     std::memset(data.data(),0,data.size());
     for(size_t n=0;n<=1024;++n) check(k,data.data(),n);
     for(size_t i=0;i<data.size();++i) data[i]=(uint8_t)(i*131+17);
@@ -79,4 +103,11 @@ int main() {
     munmap(map,3*page);
 #endif
     std::printf("PASS %zu differential cases; %zu frozen vectors; backend=%s; verification=0x%08X\n",cases,sizeof(vectors)/sizeof(vectors[0]),CHAINHASH_BACKEND,verification);
+    std::printf("PASS 12000 randomized messages/keys/lengths; %zu bulk inputs\n",random_bulk);
+#if defined(CHAINHASH_RUNTIME_WIDE)
+    std::printf("x86 runtime width=%d (0=PCLMUL, 1=YMM, 2=ZMM); prefer128=%d; direct bulk paths=PCLMUL%s%s\n",
+                ch_x86_width(),ch_x86_prefer128(),
+                ch_x86_width()>=1?", pipelined XMM, YMM":"",
+                ch_x86_width()>=2?", ZMM":"");
+#endif
 }
