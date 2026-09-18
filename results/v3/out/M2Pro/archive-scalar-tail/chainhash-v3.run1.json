@@ -1,0 +1,28 @@
+{
+  "host": "M2Pro",
+  "name": "chainhash-v3",
+  "test": "Speed",
+  "run": 1,
+  "command": [
+    "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+    "chainhash-v3",
+    "--test=Speed"
+  ],
+  "raw_file": "out/M2Pro/chainhash-v3.run1.txt",
+  "binary_sha256": "ff88c33b567df2c19c54c8dde32be8d3ffd9723d31731bde338cd73b22ae20d9",
+  "started": "2026-09-18T22:12:13.923455+00:00",
+  "load_before": [
+    4.2998046875,
+    4.83837890625,
+    5.1513671875
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T22:12:48.538385+00:00",
+  "elapsed_seconds": 34.614582666000004,
+  "load_after": [
+    4.24609375,
+    4.76025390625,
+    5.109375
+  ],
+  "raw_sha256": "85eedfc363eabf3486234d4a3c63934f7051bea88aa173ea75dfdb5572b39b95"
+}

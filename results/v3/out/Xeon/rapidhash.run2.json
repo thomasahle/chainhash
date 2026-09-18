@@ -1,0 +1,31 @@
+{
+  "host": "Xeon",
+  "name": "rapidhash",
+  "test": "Speed",
+  "run": 2,
+  "command": [
+    "taskset",
+    "-c",
+    "16-23",
+    "/home/thomas-ahle/agents/chainhash-v3-horner/build/SMHasher3",
+    "rapidhash",
+    "--test=Speed"
+  ],
+  "raw_file": "out/Xeon/rapidhash.run2.txt",
+  "binary_sha256": "ae7dd7f352102c79e5616e51695c39814f35f47a80ee6a9d95bf132d32f76e5a",
+  "started": "2026-09-18T20:18:54.758302+00:00",
+  "load_before": [
+    7.49,
+    7.32,
+    6.27
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T20:19:55.767318+00:00",
+  "elapsed_seconds": 61.008960735052824,
+  "load_after": [
+    5.51,
+    6.82,
+    6.17
+  ],
+  "raw_sha256": "c0128399f35ea5fddb1ea77cc091e3a80d26d66df560e7aada2087e0fb8eabb9"
+}

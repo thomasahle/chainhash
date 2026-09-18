@@ -13,7 +13,7 @@ else ifeq ($(ARCH),x86_64)
 ARCH_FLAGS ?= -mpclmul
 endif
 .PHONY: all test speed sanitize clean vectors
-all: build/selftest build/c99 build/speed
+all: build/selftest build/c99 build/speed build/v3-compile build/v3-cpp
 build:
 	mkdir -p build
 build/selftest: test/selftest.cpp test/vectors.h test/vendor/chainhash_ref.h test/fixtures.h include/chainhash.h | build
@@ -57,3 +57,41 @@ build/key-schedule-c99: test/key_schedule_c99.c include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
 build/key-schedule-c99-portable: test/key_schedule_c99.c include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
+
+# v3 is a separate digest family; retain all v1 targets above.
+V3_TESTS = property guard key_alignment compile vectors frozen schedule
+V3_BINS = $(addprefix build/v3-,$(V3_TESTS))
+V3_PORTABLE_BINS = $(addsuffix -portable,$(V3_BINS))
+V3_RANDOM_CASES ?= 20000
+.PHONY: test-v3 sanitize-v3
+test: test-v3
+build/v3-%: test/v3/%.c include/chainhash3.h test/v3/property.c | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) -pthread $< -o $@
+build/v3-%-portable: test/v3/%.c include/chainhash3.h test/v3/property.c | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_V3_PORTABLE -pthread $< -o $@
+build/v3-cpp: test/v3/compile.c include/chainhash3.h include/chainhash.h | build
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
+build/v3-compile build/v3-compile-portable: include/chainhash.h
+test-v3: $(V3_BINS) $(V3_PORTABLE_BINS) build/v3-cpp
+	./build/v3-compile
+	./build/v3-compile-portable
+	./build/v3-cpp
+	./build/v3-frozen
+	./build/v3-frozen-portable
+	./build/v3-schedule
+	./build/v3-schedule-portable
+	python3 test/v3/check_vectors.py
+	./build/v3-guard
+	./build/v3-guard-portable
+	./build/v3-key_alignment
+	./build/v3-key_alignment-portable
+	./build/v3-property $(V3_RANDOM_CASES) 123456789
+	./build/v3-property-portable $(V3_RANDOM_CASES) 123456789
+sanitize: sanitize-v3
+sanitize-v3: | build
+	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/v3/guard.c -o build/v3-guard-sanitize
+	./build/v3-guard-sanitize
+	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/v3/key_alignment.c -o build/v3-key-alignment-sanitize
+	./build/v3-key-alignment-sanitize
+	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer -pthread test/v3/property.c -o build/v3-property-sanitize
+	./build/v3-property-sanitize 0 123456789

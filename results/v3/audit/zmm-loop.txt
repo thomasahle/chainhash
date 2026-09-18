@@ -1,0 +1,48 @@
+  4038d8:	62 f1 55 40 ef 4f 01 	vpxord zmm1,zmm21,ZMMWORD PTR [rdi+0x40]
+  4038df:	62 f1 4d 40 ef 07    	vpxord zmm0,zmm22,ZMMWORD PTR [rdi]
+  4038e5:	48 81 c7 00 04 00 00 	add    rdi,0x400
+  4038ec:	62 f1 5d 40 ef 57 f2 	vpxord zmm2,zmm20,ZMMWORD PTR [rdi-0x380]
+  4038f3:	62 f1 6d 40 ef 5f f4 	vpxord zmm3,zmm18,ZMMWORD PTR [rdi-0x300]
+  4038fa:	62 63 7d 48 44 d9 11 	vpclmulhqhqdq zmm27,zmm0,zmm1
+  403901:	62 f1 05 48 ef 6f f7 	vpxord zmm5,zmm15,ZMMWORD PTR [rdi-0x240]
+  403908:	62 61 15 48 ef 4f f9 	vpxord zmm25,zmm13,ZMMWORD PTR [rdi-0x1c0]
+  40390f:	62 f3 7d 48 44 c1 00 	vpclmullqlqdq zmm0,zmm0,zmm1
+  403916:	62 f1 65 40 ef 4f f3 	vpxord zmm1,zmm19,ZMMWORD PTR [rdi-0x340]
+  40391d:	62 63 6d 48 44 d1 11 	vpclmulhqhqdq zmm26,zmm2,zmm1
+  403924:	62 f3 6d 48 44 d1 00 	vpclmullqlqdq zmm2,zmm2,zmm1
+  40392b:	62 f1 75 40 ef 4f f5 	vpxord zmm1,zmm17,ZMMWORD PTR [rdi-0x2c0]
+  403932:	62 63 65 48 44 c1 11 	vpclmulhqhqdq zmm24,zmm3,zmm1
+  403939:	62 f3 65 48 44 d9 00 	vpclmullqlqdq zmm3,zmm3,zmm1
+  403940:	62 91 7d 48 ef c3    	vpxord zmm0,zmm0,zmm27
+  403946:	62 f1 7d 40 ef 4f f6 	vpxord zmm1,zmm16,ZMMWORD PTR [rdi-0x280]
+  40394d:	62 e3 75 48 44 fd 11 	vpclmulhqhqdq zmm23,zmm1,zmm5
+  403954:	62 f3 75 48 44 cd 00 	vpclmullqlqdq zmm1,zmm1,zmm5
+  40395b:	62 f1 0d 48 ef 6f f8 	vpxord zmm5,zmm14,ZMMWORD PTR [rdi-0x200]
+  403962:	62 91 6d 48 ef d2    	vpxord zmm2,zmm2,zmm26
+  403968:	62 03 55 48 44 e1 11 	vpclmulhqhqdq zmm28,zmm5,zmm25
+  40396f:	62 93 55 48 44 e9 00 	vpclmullqlqdq zmm5,zmm5,zmm25
+  403976:	62 91 65 48 ef d8    	vpxord zmm3,zmm3,zmm24
+  40397c:	62 61 45 48 ef 47 ff 	vpxord zmm24,zmm7,ZMMWORD PTR [rdi-0x40]
+  403983:	62 61 25 48 ef 4f fb 	vpxord zmm25,zmm11,ZMMWORD PTR [rdi-0x140]
+  40398a:	62 b1 75 48 ef cf    	vpxord zmm1,zmm1,zmm23
+  403990:	62 93 d5 48 25 c4 96 	vpternlogq zmm0,zmm5,zmm28,0x96
+  403997:	62 f1 1d 48 ef 6f fa 	vpxord zmm5,zmm12,ZMMWORD PTR [rdi-0x180]
+  40399e:	62 03 55 48 44 d9 11 	vpclmulhqhqdq zmm27,zmm5,zmm25
+  4039a5:	62 93 55 48 44 e9 00 	vpclmullqlqdq zmm5,zmm5,zmm25
+  4039ac:	62 61 35 48 ef 4f fd 	vpxord zmm25,zmm9,ZMMWORD PTR [rdi-0xc0]
+  4039b3:	62 93 d5 48 25 d3 96 	vpternlogq zmm2,zmm5,zmm27,0x96
+  4039ba:	62 f1 2d 48 ef 6f fc 	vpxord zmm5,zmm10,ZMMWORD PTR [rdi-0x100]
+  4039c1:	62 03 55 48 44 d1 11 	vpclmulhqhqdq zmm26,zmm5,zmm25
+  4039c8:	62 93 55 48 44 e9 00 	vpclmullqlqdq zmm5,zmm5,zmm25
+  4039cf:	62 93 d5 48 25 da 96 	vpternlogq zmm3,zmm5,zmm26,0x96
+  4039d6:	62 f1 3d 48 ef 6f fe 	vpxord zmm5,zmm8,ZMMWORD PTR [rdi-0x80]
+  4039dd:	62 f3 ed 48 25 c3 96 	vpternlogq zmm0,zmm2,zmm3,0x96
+  4039e4:	62 03 55 48 44 c8 11 	vpclmulhqhqdq zmm25,zmm5,zmm24
+  4039eb:	62 93 55 48 44 e8 00 	vpclmullqlqdq zmm5,zmm5,zmm24
+  4039f2:	62 f3 5d 48 44 d6 11 	vpclmulhqhqdq zmm2,zmm4,zmm6
+  4039f9:	62 f3 5d 48 44 e6 00 	vpclmullqlqdq zmm4,zmm4,zmm6
+  403a00:	62 93 d5 48 25 c9 96 	vpternlogq zmm1,zmm5,zmm25,0x96
+  403a07:	62 f1 7d 48 ef c1    	vpxord zmm0,zmm0,zmm1
+  403a0d:	62 f3 ed 48 25 e0 96 	vpternlogq zmm4,zmm2,zmm0,0x96
+  403a14:	48 83 ee 01          	sub    rsi,0x1
+  403a18:	0f 85 ba fe ff ff    	jne    4038d8 <chv3_bulk512.constprop.0+0xd8>

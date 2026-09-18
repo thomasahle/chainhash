@@ -1,0 +1,14 @@
+--- Testing chainhash-v3 "ChainHash v3 Horner, comb 256-byte blocks" [lazy-k4]
+
+[[[ Sanity Tests ]]]
+
+Verification value BE 0xFA8A8D3B ...... PASS
+Running sanity check 1       .......... PASS
+Running sanity check 2       .......... PASS
+Running append zeroes test   .......... PASS
+Running prepend zeroes test  .......... PASS
+Running thread-safety test 1 .......... PASS
+Running thread-safety test 2 .......... PASS
+
+Verification value is 0x00000001 - Testing took 0.694655 seconds
+

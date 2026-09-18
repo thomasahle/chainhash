@@ -1,0 +1,163 @@
+  401fc0:	c4 e2 7d 5a 05 97 76 	vbroadcasti128 ymm0,XMMWORD PTR [rip+0x7697]        # 409660 <v3>
+  401fc7:	00 00 
+  401fc9:	c4 e2 7d 5a 15 9e 76 	vbroadcasti128 ymm2,XMMWORD PTR [rip+0x769e]        # 409670 <v3+0x10>
+  401fd0:	00 00 
+  401fd2:	c5 fd ef 0f          	vpxor  ymm1,ymm0,YMMWORD PTR [rdi]
+  401fd6:	c5 ed ef 77 40       	vpxor  ymm6,ymm2,YMMWORD PTR [rdi+0x40]
+  401fdb:	c5 fd ef 47 20       	vpxor  ymm0,ymm0,YMMWORD PTR [rdi+0x20]
+  401fe0:	c4 63 75 44 c6 11    	vpclmulhqhqdq ymm8,ymm1,ymm6
+  401fe6:	c4 e3 75 44 fe 00    	vpclmullqlqdq ymm7,ymm1,ymm6
+  401fec:	c5 ed ef 4f 60       	vpxor  ymm1,ymm2,YMMWORD PTR [rdi+0x60]
+  401ff1:	c4 e3 7d 44 d1 11    	vpclmulhqhqdq ymm2,ymm0,ymm1
+  401ff7:	c4 e3 7d 44 c9 00    	vpclmullqlqdq ymm1,ymm0,ymm1
+  401ffd:	c4 c1 45 ef f8       	vpxor  ymm7,ymm7,ymm8
+  402002:	c5 f5 ef ca          	vpxor  ymm1,ymm1,ymm2
+  402006:	c4 e2 7d 5a 15 71 76 	vbroadcasti128 ymm2,XMMWORD PTR [rip+0x7671]        # 409680 <v3+0x20>
+  40200d:	00 00 
+  40200f:	c4 62 7d 5a 05 78 76 	vbroadcasti128 ymm8,XMMWORD PTR [rip+0x7678]        # 409690 <v3+0x30>
+  402016:	00 00 
+  402018:	c5 ed ef 87 80 00 00 	vpxor  ymm0,ymm2,YMMWORD PTR [rdi+0x80]
+  40201f:	00 
+  402020:	c5 bd ef b7 c0 00 00 	vpxor  ymm6,ymm8,YMMWORD PTR [rdi+0xc0]
+  402027:	00 
+  402028:	c5 ed ef 97 a0 00 00 	vpxor  ymm2,ymm2,YMMWORD PTR [rdi+0xa0]
+  40202f:	00 
+  402030:	c4 63 7d 44 ce 11    	vpclmulhqhqdq ymm9,ymm0,ymm6
+  402036:	c4 e3 7d 44 f6 00    	vpclmullqlqdq ymm6,ymm0,ymm6
+  40203c:	c5 bd ef 87 e0 00 00 	vpxor  ymm0,ymm8,YMMWORD PTR [rdi+0xe0]
+  402043:	00 
+  402044:	c4 c1 4d ef f1       	vpxor  ymm6,ymm6,ymm9
+  402049:	c5 cd ef f7          	vpxor  ymm6,ymm6,ymm7
+  40204d:	c4 e3 6d 44 f8 11    	vpclmulhqhqdq ymm7,ymm2,ymm0
+  402053:	c4 e3 6d 44 c0 00    	vpclmullqlqdq ymm0,ymm2,ymm0
+  402059:	c5 fd ef c7          	vpxor  ymm0,ymm0,ymm7
+  40205d:	c5 fd ef c1          	vpxor  ymm0,ymm0,ymm1
+  402061:	c4 e2 7d 5a 15 36 76 	vbroadcasti128 ymm2,XMMWORD PTR [rip+0x7636]        # 4096a0 <v3+0x40>
+  402068:	00 00 
+  40206a:	c4 62 7d 5a 05 3d 76 	vbroadcasti128 ymm8,XMMWORD PTR [rip+0x763d]        # 4096b0 <v3+0x50>
+  402071:	00 00 
+  402073:	c5 ed ef 8f 00 01 00 	vpxor  ymm1,ymm2,YMMWORD PTR [rdi+0x100]
+  40207a:	00 
+  40207b:	c5 bd ef bf 40 01 00 	vpxor  ymm7,ymm8,YMMWORD PTR [rdi+0x140]
+  402082:	00 
+  402083:	c5 ed ef 97 20 01 00 	vpxor  ymm2,ymm2,YMMWORD PTR [rdi+0x120]
+  40208a:	00 
+  40208b:	c4 63 75 44 cf 11    	vpclmulhqhqdq ymm9,ymm1,ymm7
+  402091:	c4 e3 75 44 ff 00    	vpclmullqlqdq ymm7,ymm1,ymm7
+  402097:	c5 bd ef 8f 60 01 00 	vpxor  ymm1,ymm8,YMMWORD PTR [rdi+0x160]
+  40209e:	00 
+  40209f:	c4 c1 45 ef f9       	vpxor  ymm7,ymm7,ymm9
+  4020a4:	c5 c5 ef fe          	vpxor  ymm7,ymm7,ymm6
+  4020a8:	c4 e3 6d 44 f1 11    	vpclmulhqhqdq ymm6,ymm2,ymm1
+  4020ae:	c4 e3 6d 44 c9 00    	vpclmullqlqdq ymm1,ymm2,ymm1
+  4020b4:	c5 f5 ef ce          	vpxor  ymm1,ymm1,ymm6
+  4020b8:	c5 f5 ef c8          	vpxor  ymm1,ymm1,ymm0
+  4020bc:	c4 e2 7d 5a 15 fb 75 	vbroadcasti128 ymm2,XMMWORD PTR [rip+0x75fb]        # 4096c0 <v3+0x60>
+  4020c3:	00 00 
+  4020c5:	c4 62 7d 5a 05 02 76 	vbroadcasti128 ymm8,XMMWORD PTR [rip+0x7602]        # 4096d0 <v3+0x70>
+  4020cc:	00 00 
+  4020ce:	c5 ed ef 87 80 01 00 	vpxor  ymm0,ymm2,YMMWORD PTR [rdi+0x180]
+  4020d5:	00 
+  4020d6:	c5 bd ef b7 c0 01 00 	vpxor  ymm6,ymm8,YMMWORD PTR [rdi+0x1c0]
+  4020dd:	00 
+  4020de:	c5 ed ef 97 a0 01 00 	vpxor  ymm2,ymm2,YMMWORD PTR [rdi+0x1a0]
+  4020e5:	00 
+  4020e6:	c4 63 7d 44 ce 11    	vpclmulhqhqdq ymm9,ymm0,ymm6
+  4020ec:	c4 e3 7d 44 f6 00    	vpclmullqlqdq ymm6,ymm0,ymm6
+  4020f2:	c5 bd ef 87 e0 01 00 	vpxor  ymm0,ymm8,YMMWORD PTR [rdi+0x1e0]
+  4020f9:	00 
+  4020fa:	c4 c1 4d ef f1       	vpxor  ymm6,ymm6,ymm9
+  4020ff:	c5 cd ef f7          	vpxor  ymm6,ymm6,ymm7
+  402103:	c4 e3 6d 44 f8 11    	vpclmulhqhqdq ymm7,ymm2,ymm0
+  402109:	c4 e3 6d 44 c0 00    	vpclmullqlqdq ymm0,ymm2,ymm0
+  40210f:	c5 fd ef c7          	vpxor  ymm0,ymm0,ymm7
+  402113:	c5 fd ef c1          	vpxor  ymm0,ymm0,ymm1
+  402117:	c4 e2 7d 5a 15 c0 75 	vbroadcasti128 ymm2,XMMWORD PTR [rip+0x75c0]        # 4096e0 <v3+0x80>
+  40211e:	00 00 
+  402120:	c4 62 7d 5a 05 c7 75 	vbroadcasti128 ymm8,XMMWORD PTR [rip+0x75c7]        # 4096f0 <v3+0x90>
+  402127:	00 00 
+  402129:	c5 ed ef 8f 00 02 00 	vpxor  ymm1,ymm2,YMMWORD PTR [rdi+0x200]
+  402130:	00 
+  402131:	c5 bd ef bf 40 02 00 	vpxor  ymm7,ymm8,YMMWORD PTR [rdi+0x240]
+  402138:	00 
+  402139:	c5 ed ef 97 20 02 00 	vpxor  ymm2,ymm2,YMMWORD PTR [rdi+0x220]
+  402140:	00 
+  402141:	c4 63 75 44 cf 11    	vpclmulhqhqdq ymm9,ymm1,ymm7
+  402147:	c4 e3 75 44 ff 00    	vpclmullqlqdq ymm7,ymm1,ymm7
+  40214d:	c5 bd ef 8f 60 02 00 	vpxor  ymm1,ymm8,YMMWORD PTR [rdi+0x260]
+  402154:	00 
+  402155:	c4 c1 45 ef f9       	vpxor  ymm7,ymm7,ymm9
+  40215a:	c5 c5 ef fe          	vpxor  ymm7,ymm7,ymm6
+  40215e:	c4 e3 6d 44 f1 11    	vpclmulhqhqdq ymm6,ymm2,ymm1
+  402164:	c4 e3 6d 44 c9 00    	vpclmullqlqdq ymm1,ymm2,ymm1
+  40216a:	c5 f5 ef ce          	vpxor  ymm1,ymm1,ymm6
+  40216e:	c5 f5 ef c8          	vpxor  ymm1,ymm1,ymm0
+  402172:	c4 e2 7d 5a 15 85 75 	vbroadcasti128 ymm2,XMMWORD PTR [rip+0x7585]        # 409700 <v3+0xa0>
+  402179:	00 00 
+  40217b:	c4 62 7d 5a 05 8c 75 	vbroadcasti128 ymm8,XMMWORD PTR [rip+0x758c]        # 409710 <v3+0xb0>
+  402182:	00 00 
+  402184:	c5 ed ef 87 80 02 00 	vpxor  ymm0,ymm2,YMMWORD PTR [rdi+0x280]
+  40218b:	00 
+  40218c:	c5 bd ef b7 c0 02 00 	vpxor  ymm6,ymm8,YMMWORD PTR [rdi+0x2c0]
+  402193:	00 
+  402194:	c5 ed ef 97 a0 02 00 	vpxor  ymm2,ymm2,YMMWORD PTR [rdi+0x2a0]
+  40219b:	00 
+  40219c:	c4 63 7d 44 ce 11    	vpclmulhqhqdq ymm9,ymm0,ymm6
+  4021a2:	c4 e3 7d 44 f6 00    	vpclmullqlqdq ymm6,ymm0,ymm6
+  4021a8:	c5 bd ef 87 e0 02 00 	vpxor  ymm0,ymm8,YMMWORD PTR [rdi+0x2e0]
+  4021af:	00 
+  4021b0:	c4 c1 4d ef f1       	vpxor  ymm6,ymm6,ymm9
+  4021b5:	c5 cd ef f7          	vpxor  ymm6,ymm6,ymm7
+  4021b9:	c4 e3 6d 44 f8 11    	vpclmulhqhqdq ymm7,ymm2,ymm0
+  4021bf:	c4 e3 6d 44 c0 00    	vpclmullqlqdq ymm0,ymm2,ymm0
+  4021c5:	c5 fd ef c7          	vpxor  ymm0,ymm0,ymm7
+  4021c9:	c5 fd ef c1          	vpxor  ymm0,ymm0,ymm1
+  4021cd:	c4 e2 7d 5a 0d 4a 75 	vbroadcasti128 ymm1,XMMWORD PTR [rip+0x754a]        # 409720 <v3+0xc0>
+  4021d4:	00 00 
+  4021d6:	c4 62 7d 5a 05 51 75 	vbroadcasti128 ymm8,XMMWORD PTR [rip+0x7551]        # 409730 <v3+0xd0>
+  4021dd:	00 00 
+  4021df:	c5 f5 ef 97 00 03 00 	vpxor  ymm2,ymm1,YMMWORD PTR [rdi+0x300]
+  4021e6:	00 
+  4021e7:	c5 bd ef bf 40 03 00 	vpxor  ymm7,ymm8,YMMWORD PTR [rdi+0x340]
+  4021ee:	00 
+  4021ef:	c5 f5 ef 8f 20 03 00 	vpxor  ymm1,ymm1,YMMWORD PTR [rdi+0x320]
+  4021f6:	00 
+  4021f7:	c4 63 6d 44 cf 11    	vpclmulhqhqdq ymm9,ymm2,ymm7
+  4021fd:	c4 e3 6d 44 ff 00    	vpclmullqlqdq ymm7,ymm2,ymm7
+  402203:	c5 bd ef 97 60 03 00 	vpxor  ymm2,ymm8,YMMWORD PTR [rdi+0x360]
+  40220a:	00 
+  40220b:	c4 c1 45 ef f9       	vpxor  ymm7,ymm7,ymm9
+  402210:	c5 c5 ef fe          	vpxor  ymm7,ymm7,ymm6
+  402214:	c4 e3 75 44 f2 11    	vpclmulhqhqdq ymm6,ymm1,ymm2
+  40221a:	c4 e3 75 44 d2 00    	vpclmullqlqdq ymm2,ymm1,ymm2
+  402220:	c5 ed ef d6          	vpxor  ymm2,ymm2,ymm6
+  402224:	c5 ed ef d0          	vpxor  ymm2,ymm2,ymm0
+  402228:	c4 e2 7d 5a 0d 0f 75 	vbroadcasti128 ymm1,XMMWORD PTR [rip+0x750f]        # 409740 <v3+0xe0>
+  40222f:	00 00 
+  402231:	c4 62 7d 5a 05 16 75 	vbroadcasti128 ymm8,XMMWORD PTR [rip+0x7516]        # 409750 <v3+0xf0>
+  402238:	00 00 
+  40223a:	c5 f5 ef 87 80 03 00 	vpxor  ymm0,ymm1,YMMWORD PTR [rdi+0x380]
+  402241:	00 
+  402242:	c5 bd ef b7 c0 03 00 	vpxor  ymm6,ymm8,YMMWORD PTR [rdi+0x3c0]
+  402249:	00 
+  40224a:	48 81 c7 00 04 00 00 	add    rdi,0x400
+  402251:	c5 f5 ef 4f a0       	vpxor  ymm1,ymm1,YMMWORD PTR [rdi-0x60]
+  402256:	c4 63 7d 44 ce 11    	vpclmulhqhqdq ymm9,ymm0,ymm6
+  40225c:	c4 e3 7d 44 f6 00    	vpclmullqlqdq ymm6,ymm0,ymm6
+  402262:	c5 bd ef 47 e0       	vpxor  ymm0,ymm8,YMMWORD PTR [rdi-0x20]
+  402267:	c4 c1 4d ef f1       	vpxor  ymm6,ymm6,ymm9
+  40226c:	c5 cd ef f7          	vpxor  ymm6,ymm6,ymm7
+  402270:	c4 e3 75 44 f8 11    	vpclmulhqhqdq ymm7,ymm1,ymm0
+  402276:	c4 e3 75 44 c0 00    	vpclmullqlqdq ymm0,ymm1,ymm0
+  40227c:	c4 e3 65 44 cd 11    	vpclmulhqhqdq ymm1,ymm3,ymm5
+  402282:	c4 e3 65 44 dd 00    	vpclmullqlqdq ymm3,ymm3,ymm5
+  402288:	c5 fd ef c7          	vpxor  ymm0,ymm0,ymm7
+  40228c:	c5 fd ef c2          	vpxor  ymm0,ymm0,ymm2
+  402290:	c5 e5 ef d9          	vpxor  ymm3,ymm3,ymm1
+  402294:	c4 e3 5d 44 cd 11    	vpclmulhqhqdq ymm1,ymm4,ymm5
+  40229a:	c5 e5 ef de          	vpxor  ymm3,ymm3,ymm6
+  40229e:	c4 e3 5d 44 e5 00    	vpclmullqlqdq ymm4,ymm4,ymm5
+  4022a4:	c5 dd ef e1          	vpxor  ymm4,ymm4,ymm1
+  4022a8:	c5 dd ef e0          	vpxor  ymm4,ymm4,ymm0
+  4022ac:	48 83 ee 01          	sub    rsi,0x1
+  4022b0:	0f 85 0a fd ff ff    	jne    401fc0 <chv3_bulk256.constprop.0+0x30>

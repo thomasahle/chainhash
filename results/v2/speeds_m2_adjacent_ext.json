@@ -1,0 +1,5289 @@
+{
+  "host": "Apple M2 Pro",
+  "binary": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+  "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+  "completed": "2026-09-18T22:18:41.281562+00:00",
+  "source_tree": "scratch copy of ../m2-rerun/smhasher3",
+  "protocol": {
+    "runs_per_variant": 3,
+    "command": "SMHasher3 NAME --test=Speed",
+    "statistic": "median",
+    "bulk_section": "262144-byte Average across alignments",
+    "gate": "before every run: no SMHasher process AND one-minute load < 4.5; no timeout",
+    "outlier_rule": "absolute deviation >15% from the three-run median, per metric",
+    "units": "unaltered SMHasher3 calibrated monotonic-clock cycle estimates on M2; not hardware PMU cycles"
+  },
+  "summary": {
+    "chainhash-ext-k1-256": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            17.64,
+            17.43,
+            17.45
+          ],
+          "median": 17.45,
+          "deviations_from_median_percent": [
+            1.0888252148997246,
+            -0.11461318051575464,
+            0.0
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.2048192771084487
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            16.91,
+            16.98,
+            16.8
+          ],
+          "median": 16.91,
+          "deviations_from_median_percent": [
+            0.0,
+            0.4139562389118945,
+            -0.6505026611472453
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.0714285714285676
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            87.32,
+            88.73,
+            88.27
+          ],
+          "median": 88.27,
+          "deviations_from_median_percent": [
+            -1.0762433442845887,
+            0.5211283561799007,
+            0.0
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.6147503435639088
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            88.89,
+            89.02,
+            90.58
+          ],
+          "median": 89.02,
+          "deviations_from_median_percent": [
+            -0.14603459896651572,
+            0.0,
+            1.7524151875982996
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.9012262346720599
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.7714412024756852,
+        "chainhash-1k": 0.9257294429708222,
+        "rapidhash": 1.1065313887127457,
+        "XXH3-64": 1.3259878419452886
+      }
+    },
+    "chainhash-ext-k1-1024": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            17.56,
+            17.45,
+            17.43
+          ],
+          "median": 17.45,
+          "deviations_from_median_percent": [
+            0.6303724928366838,
+            0.0,
+            -0.11461318051575464
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.7458405048766492
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            17.36,
+            17.16,
+            17.09
+          ],
+          "median": 17.16,
+          "deviations_from_median_percent": [
+            1.1655011655011593,
+            0.0,
+            -0.40792540792541354
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.5798712697483897
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            90.5,
+            90.21,
+            90.81
+          ],
+          "median": 90.5,
+          "deviations_from_median_percent": [
+            0.0,
+            -0.32044198895028186,
+            0.3425414364640833
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.6651147322913387
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            90.98,
+            92.36,
+            92.84
+          ],
+          "median": 92.36,
+          "deviations_from_median_percent": [
+            -1.4941533131225593,
+            0.0,
+            0.5197055002165385
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 2.0444053638162263
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.7714412024756852,
+        "chainhash-1k": 0.9257294429708222,
+        "rapidhash": 1.1065313887127457,
+        "XXH3-64": 1.3259878419452886
+      }
+    },
+    "chainhash-ext-k2-256": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            12.15,
+            13.14,
+            13.09
+          ],
+          "median": 13.09,
+          "deviations_from_median_percent": [
+            -7.181054239877771,
+            0.381970970206269,
+            0.0
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 8.148148148148149
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            12.14,
+            12.2,
+            12.24
+          ],
+          "median": 12.2,
+          "deviations_from_median_percent": [
+            -0.4918032786885185,
+            0.0,
+            0.3278688524590345
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.8237232289950658
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            88.69,
+            87.98,
+            88.83
+          ],
+          "median": 88.69,
+          "deviations_from_median_percent": [
+            0.0,
+            -0.8005412109595156,
+            0.15785319652723562
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.9661286656058143
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            89.18,
+            88.61,
+            87.64
+          ],
+          "median": 88.61,
+          "deviations_from_median_percent": [
+            0.6432682541474,
+            0.0,
+            -1.0946845728473042
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.757188498402562
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.5786914235190097,
+        "chainhash-1k": 0.6944297082228116,
+        "rapidhash": 0.8300570703868104,
+        "XXH3-64": 0.9946808510638298
+      }
+    },
+    "chainhash-ext-k2-1024": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            13.24,
+            13.25,
+            13.15
+          ],
+          "median": 13.24,
+          "deviations_from_median_percent": [
+            0.0,
+            0.07552870090634656,
+            -0.6797583081570968
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.7604562737642651
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            13.24,
+            13.24,
+            13.14
+          ],
+          "median": 13.24,
+          "deviations_from_median_percent": [
+            0.0,
+            0.0,
+            -0.7552870090634434
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.7610350076103556
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            90.1,
+            90.08,
+            90.72
+          ],
+          "median": 90.1,
+          "deviations_from_median_percent": [
+            0.0,
+            -0.02219755826858849,
+            0.6881243063262987
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.7104795737122638
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            90.56,
+            90.27,
+            89.5
+          ],
+          "median": 90.27,
+          "deviations_from_median_percent": [
+            0.32125844688157823,
+            0.0,
+            -0.8529965658579775
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.18435754189945
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.5853227232537577,
+        "chainhash-1k": 0.7023872679045092,
+        "rapidhash": 0.8395688015218771,
+        "XXH3-64": 1.006079027355623
+      }
+    },
+    "chainhash-ext-k3-256": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            19.98,
+            20.65,
+            19.63
+          ],
+          "median": 19.98,
+          "deviations_from_median_percent": [
+            0.0,
+            3.353353353353339,
+            -1.7517517517517622
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 5.196128374936326
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            19.97,
+            20.64,
+            19.62
+          ],
+          "median": 19.97,
+          "deviations_from_median_percent": [
+            0.0,
+            3.3550325488232335,
+            -1.7526289434151132
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 5.198776758409784
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            87.61,
+            84.51,
+            88.94
+          ],
+          "median": 87.61,
+          "deviations_from_median_percent": [
+            0.0,
+            -3.5384088574363592,
+            1.5180915420614172
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 5.2419831972547515
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            88.0,
+            84.95,
+            88.25
+          ],
+          "median": 88.0,
+          "deviations_from_median_percent": [
+            0.0,
+            -3.4659090909090917,
+            0.28409090909091717
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 3.8846380223660937
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.883289124668435,
+        "chainhash-1k": 1.0599469496021219,
+        "rapidhash": 1.2669625871908687,
+        "XXH3-64": 1.5182370820668694
+      }
+    },
+    "chainhash-ext-k1-256-b4": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            14.68,
+            14.6,
+            14.81
+          ],
+          "median": 14.68,
+          "deviations_from_median_percent": [
+            0.0,
+            -0.544959128065392,
+            0.8855585831062829
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.4383561643835696
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            14.5,
+            14.42,
+            14.3
+          ],
+          "median": 14.42,
+          "deviations_from_median_percent": [
+            0.554785020804438,
+            0.0,
+            -0.832177531206657
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.3986013986013957
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            87.74,
+            88.32,
+            89.07
+          ],
+          "median": 88.32,
+          "deviations_from_median_percent": [
+            -0.6567028985507206,
+            0.0,
+            0.8491847826086918
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.5158422612263411
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            87.98,
+            88.58,
+            90.58
+          ],
+          "median": 88.58,
+          "deviations_from_median_percent": [
+            -0.6773538044705263,
+            0.0,
+            2.2578460149017765
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 2.9552170947942713
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.6489832007073386,
+        "chainhash-1k": 0.7787798408488062,
+        "rapidhash": 0.9308814204185162,
+        "XXH3-64": 1.115501519756839
+      }
+    },
+    "chainhash-ext-k2-256-b4": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            12.17,
+            12.27,
+            12.71
+          ],
+          "median": 12.27,
+          "deviations_from_median_percent": [
+            -0.8149959250203676,
+            0.0,
+            3.585982070089666
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 4.437140509449478
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            12.16,
+            12.27,
+            12.37
+          ],
+          "median": 12.27,
+          "deviations_from_median_percent": [
+            -0.896495517522411,
+            0.0,
+            0.8149959250203676
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.7269736842105088
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            88.48,
+            87.83,
+            86.94
+          ],
+          "median": 87.83,
+          "deviations_from_median_percent": [
+            0.7400660366617462,
+            0.0,
+            -1.0133211886599103
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.7713365539452575
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            88.84,
+            88.1,
+            87.1
+          ],
+          "median": 88.1,
+          "deviations_from_median_percent": [
+            0.8399545970488198,
+            0.0,
+            -1.1350737797956922
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.9977037887485727
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.5424403183023873,
+        "chainhash-1k": 0.6509283819628646,
+        "rapidhash": 0.7780596068484464,
+        "XXH3-64": 0.9323708206686929
+      }
+    },
+    "chainhash-ext-k3-256-b4": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            17.6,
+            17.54,
+            17.4
+          ],
+          "median": 17.54,
+          "deviations_from_median_percent": [
+            0.3420752565564511,
+            0.0,
+            -0.7981755986317007
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.1494252873563315
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            17.3,
+            17.19,
+            17.28
+          ],
+          "median": 17.28,
+          "deviations_from_median_percent": [
+            0.11574074074074403,
+            -0.520833333333337,
+            0.0
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.6399069226294296
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            88.08,
+            88.43,
+            88.99
+          ],
+          "median": 88.43,
+          "deviations_from_median_percent": [
+            -0.3957932828225763,
+            0.0,
+            0.6332692525160999
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.0331516802906338
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            88.74,
+            88.81,
+            90.75
+          ],
+          "median": 88.81,
+          "deviations_from_median_percent": [
+            -0.07881995270803133,
+            0.0,
+            2.184438689336776
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 2.2650439486139318
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.775419982316534,
+        "chainhash-1k": 0.9305039787798407,
+        "rapidhash": 1.1122384273937858,
+        "XXH3-64": 1.3328267477203646
+      }
+    },
+    "chainhash-256": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            22.69,
+            22.62,
+            22.45
+          ],
+          "median": 22.62,
+          "deviations_from_median_percent": [
+            0.30946065428825165,
+            0.0,
+            -0.7515473032714493
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.0690423162583507
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            20.97,
+            21.02,
+            21.11
+          ],
+          "median": 21.02,
+          "deviations_from_median_percent": [
+            -0.23786869647954845,
+            0.0,
+            0.42816365366318276
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 0.6676204101096817
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            72.68,
+            71.89,
+            72.99
+          ],
+          "median": 72.68,
+          "deviations_from_median_percent": [
+            0.0,
+            -1.0869565217391353,
+            0.42652724270775266
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.530115454166081
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            73.03,
+            74.13,
+            74.87
+          ],
+          "median": 74.13,
+          "deviations_from_median_percent": [
+            -1.483879670848498,
+            0.0,
+            0.9982463240253647
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 2.519512529097634
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 1.0,
+        "chainhash-1k": 1.2,
+        "rapidhash": 1.4343690551680406,
+        "XXH3-64": 1.7188449848024316
+      }
+    },
+    "chainhash-1k": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            18.87,
+            18.85,
+            17.75
+          ],
+          "median": 18.85,
+          "deviations_from_median_percent": [
+            0.10610079575597009,
+            0.0,
+            -5.835543766578255
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 6.309859154929587
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            18.86,
+            18.84,
+            17.53
+          ],
+          "median": 18.84,
+          "deviations_from_median_percent": [
+            0.10615711252652815,
+            0.0,
+            -6.953290870488315
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 7.586993725042768
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            70.6,
+            70.58,
+            75.58
+          ],
+          "median": 70.6,
+          "deviations_from_median_percent": [
+            0.0,
+            -0.028328611898009726,
+            7.0538243626062425
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 7.084159818645519
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            71.35,
+            70.84,
+            77.32
+          ],
+          "median": 71.35,
+          "deviations_from_median_percent": [
+            0.0,
+            -0.714786264891365,
+            8.367203924316758
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 9.147374364765648
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.8333333333333334,
+        "chainhash-1k": 1.0,
+        "rapidhash": 1.1953075459733673,
+        "XXH3-64": 1.4323708206686931
+      }
+    },
+    "rapidhash": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            15.85,
+            15.77,
+            15.69
+          ],
+          "median": 15.77,
+          "deviations_from_median_percent": [
+            0.5072923272035457,
+            0.0,
+            -0.5072923272035568
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.0197578075207048
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            15.14,
+            15.22,
+            15.35
+          ],
+          "median": 15.22,
+          "deviations_from_median_percent": [
+            -0.5256241787122251,
+            0.0,
+            0.854139290407363
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.387054161162471
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            20.4,
+            20.15,
+            20.83
+          ],
+          "median": 20.4,
+          "deviations_from_median_percent": [
+            0.0,
+            -1.225490196078427,
+            2.1078431372548945
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 3.3746898263027347
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            20.51,
+            20.64,
+            21.04
+          ],
+          "median": 20.64,
+          "deviations_from_median_percent": [
+            -0.6298449612403001,
+            0.0,
+            1.9379844961240345
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 2.5841053144807224
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.6971706454465074,
+        "chainhash-1k": 0.836604774535809,
+        "rapidhash": 1.0,
+        "XXH3-64": 1.1983282674772036
+      }
+    },
+    "XXH3-64": {
+      "metrics": {
+        "bulk_bytes_per_cycle": {
+          "runs": [
+            13.45,
+            13.16,
+            13.08
+          ],
+          "median": 13.16,
+          "deviations_from_median_percent": [
+            2.203647416413368,
+            0.0,
+            -0.6079027355623157
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 2.828746177370034
+        },
+        "variable_bulk_bytes_per_cycle": {
+          "runs": [
+            12.81,
+            12.61,
+            12.62
+          ],
+          "median": 12.62,
+          "deviations_from_median_percent": [
+            1.5055467511885912,
+            -0.07923930269413404,
+            0.0
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 1.5860428231562418
+        },
+        "small_cycles_per_hash": {
+          "runs": [
+            24.11,
+            24.44,
+            24.89
+          ],
+          "median": 24.44,
+          "deviations_from_median_percent": [
+            -1.3502454991816792,
+            0.0,
+            1.8412438625204475
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 3.2351721277478207
+        },
+        "random_small_cycles_per_hash": {
+          "runs": [
+            24.2,
+            24.98,
+            25.12
+          ],
+          "median": 24.98,
+          "deviations_from_median_percent": [
+            -3.122497998398721,
+            0.0,
+            0.5604483586869602
+          ],
+          "flag_over_15_percent": false,
+          "range_over_min_percent": 3.8016528925619797
+        }
+      },
+      "overlap_detected": false,
+      "bulk_ratios_to_controls": {
+        "chainhash-256": 0.5817860300618921,
+        "chainhash-1k": 0.6981432360742705,
+        "rapidhash": 0.8344958782498415,
+        "XXH3-64": 1.0
+      }
+    }
+  },
+  "runs": [
+    {
+      "name": "chainhash-ext-k1-256",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:40:08.160519+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:40:08.107486+00:00",
+        "load1": 4.345703125,
+        "load5": 5.783203125,
+        "load15": 5.890625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-256",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-256.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:40:08.163145+00:00",
+          "load1": 4.345703125,
+          "load5": 5.783203125,
+          "load15": 5.890625
+        },
+        {
+          "utc": "2026-09-18T20:40:13.204583+00:00",
+          "load1": 4.39794921875,
+          "load5": 5.77001953125,
+          "load15": 5.88525390625
+        },
+        {
+          "utc": "2026-09-18T20:40:18.258591+00:00",
+          "load1": 4.20556640625,
+          "load5": 5.70703125,
+          "load15": 5.8623046875
+        },
+        {
+          "utc": "2026-09-18T20:40:23.309943+00:00",
+          "load1": 4.02880859375,
+          "load5": 5.64501953125,
+          "load15": 5.83935546875
+        },
+        {
+          "utc": "2026-09-18T20:40:28.350105+00:00",
+          "load1": 4.0263671875,
+          "load5": 5.61767578125,
+          "load15": 5.828125
+        },
+        {
+          "utc": "2026-09-18T20:40:33.396122+00:00",
+          "load1": 3.94384765625,
+          "load5": 5.57373046875,
+          "load15": 5.8115234375
+        },
+        {
+          "utc": "2026-09-18T20:40:38.442287+00:00",
+          "load1": 4.2685546875,
+          "load5": 5.61376953125,
+          "load15": 5.82421875
+        },
+        {
+          "utc": "2026-09-18T20:40:43.485501+00:00",
+          "load1": 4.24658203125,
+          "load5": 5.5869140625,
+          "load15": 5.8134765625
+        }
+      ],
+      "replaces_archived_attempts": [
+        "evidence/speeds/chainhash-ext-k1-256.run1.excluded-1789763913317458000.txt"
+      ],
+      "returncode": 0,
+      "finished": "2026-09-18T20:40:48.529714+00:00",
+      "elapsed_seconds": 40.368530666000005,
+      "after": {
+        "utc": "2026-09-18T20:40:48.529746+00:00",
+        "load1": 4.306640625,
+        "load5": 5.5771484375,
+        "load15": 5.80859375,
+        "smhasher_processes": [
+          {
+            "pid": 31265,
+            "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+          }
+        ]
+      },
+      "raw_sha256": "5a7958960da54eb2a63630cb7f49fc1e3ce6c683bbaede515eebf29390100973",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.64,
+        "variable_bulk_bytes_per_cycle": 16.91,
+        "small_cycles_per_hash": 87.32,
+        "random_small_cycles_per_hash": 88.89
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-1024",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-1024",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:42:38.163904+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:42:38.118548+00:00",
+        "load1": 4.48291015625,
+        "load5": 5.27978515625,
+        "load15": 5.662109375,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-1024",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-1024.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:42:38.166071+00:00",
+          "load1": 4.48291015625,
+          "load5": 5.27978515625,
+          "load15": 5.662109375
+        },
+        {
+          "utc": "2026-09-18T20:42:43.208347+00:00",
+          "load1": 4.28369140625,
+          "load5": 5.22509765625,
+          "load15": 5.640625
+        },
+        {
+          "utc": "2026-09-18T20:42:48.249599+00:00",
+          "load1": 4.2607421875,
+          "load5": 5.20458984375,
+          "load15": 5.630859375
+        },
+        {
+          "utc": "2026-09-18T20:42:53.295530+00:00",
+          "load1": 4.23974609375,
+          "load5": 5.1845703125,
+          "load15": 5.62109375
+        },
+        {
+          "utc": "2026-09-18T20:42:58.335050+00:00",
+          "load1": 4.14013671875,
+          "load5": 5.14794921875,
+          "load15": 5.60546875
+        },
+        {
+          "utc": "2026-09-18T20:43:03.376806+00:00",
+          "load1": 4.12890625,
+          "load5": 5.12841796875,
+          "load15": 5.595703125
+        },
+        {
+          "utc": "2026-09-18T20:43:08.417517+00:00",
+          "load1": 3.9580078125,
+          "load5": 5.076171875,
+          "load15": 5.57421875
+        },
+        {
+          "utc": "2026-09-18T20:43:13.468811+00:00",
+          "load1": 4.28125,
+          "load5": 5.12451171875,
+          "load15": 5.58837890625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:43:18.669800+00:00",
+      "elapsed_seconds": 40.50533604200001,
+      "after": {
+        "utc": "2026-09-18T20:43:18.669843+00:00",
+        "load1": 4.25830078125,
+        "load5": 5.10546875,
+        "load15": 5.57861328125,
+        "smhasher_processes": [
+          {
+            "pid": 32471,
+            "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+          }
+        ]
+      },
+      "raw_sha256": "321f96261b593ca9d68cdd6acfcc7645ac41651d810b68e6730251e0697a7f3e",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.56,
+        "variable_bulk_bytes_per_cycle": 17.36,
+        "small_cycles_per_hash": 90.5,
+        "random_small_cycles_per_hash": 90.98
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-256",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:46:27.904957+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:46:27.857375+00:00",
+        "load1": 4.45458984375,
+        "load5": 5.009765625,
+        "load15": 5.447265625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-256",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-256.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:46:27.908495+00:00",
+          "load1": 4.45458984375,
+          "load5": 5.009765625,
+          "load15": 5.447265625
+        },
+        {
+          "utc": "2026-09-18T20:46:32.953204+00:00",
+          "load1": 4.658203125,
+          "load5": 5.04248046875,
+          "load15": 5.4560546875
+        },
+        {
+          "utc": "2026-09-18T20:46:38.003497+00:00",
+          "load1": 4.685546875,
+          "load5": 5.04150390625,
+          "load15": 5.453125
+        },
+        {
+          "utc": "2026-09-18T20:46:43.051822+00:00",
+          "load1": 4.79052734375,
+          "load5": 5.05712890625,
+          "load15": 5.4560546875
+        },
+        {
+          "utc": "2026-09-18T20:46:48.091153+00:00",
+          "load1": 4.64697265625,
+          "load5": 5.02294921875,
+          "load15": 5.44140625
+        },
+        {
+          "utc": "2026-09-18T20:46:53.139451+00:00",
+          "load1": 4.4345703125,
+          "load5": 4.97265625,
+          "load15": 5.4208984375
+        },
+        {
+          "utc": "2026-09-18T20:46:58.181416+00:00",
+          "load1": 4.2392578125,
+          "load5": 4.9228515625,
+          "load15": 5.400390625
+        },
+        {
+          "utc": "2026-09-18T20:47:03.228607+00:00",
+          "load1": 4.4599609375,
+          "load5": 4.95703125,
+          "load15": 5.40966796875
+        },
+        {
+          "utc": "2026-09-18T20:47:08.272246+00:00",
+          "load1": 4.2626953125,
+          "load5": 4.90771484375,
+          "load15": 5.3896484375
+        },
+        {
+          "utc": "2026-09-18T20:47:13.318095+00:00",
+          "load1": 4.3212890625,
+          "load5": 4.9091796875,
+          "load15": 5.38720703125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:47:18.358536+00:00",
+      "elapsed_seconds": 50.45280604199996,
+      "after": {
+        "utc": "2026-09-18T20:47:18.358575+00:00",
+        "load1": 4.21533203125,
+        "load5": 4.87744140625,
+        "load15": 5.373046875,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "d256c23da823ae6d15fe5f84ee51c1d5d0cf4f7d155acdc3ad2a03335966b718",
+      "metrics": {
+        "bulk_bytes_per_cycle": 12.15,
+        "variable_bulk_bytes_per_cycle": 12.14,
+        "small_cycles_per_hash": 88.69,
+        "random_small_cycles_per_hash": 89.18
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-1024",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-1024",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:47:18.473713+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:47:18.416021+00:00",
+        "load1": 4.21533203125,
+        "load5": 4.87744140625,
+        "load15": 5.373046875,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-1024",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-1024.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:47:18.476505+00:00",
+          "load1": 4.21533203125,
+          "load5": 4.87744140625,
+          "load15": 5.373046875
+        },
+        {
+          "utc": "2026-09-18T20:47:23.526036+00:00",
+          "load1": 4.35791015625,
+          "load5": 4.89599609375,
+          "load15": 5.37646484375
+        },
+        {
+          "utc": "2026-09-18T20:47:28.576066+00:00",
+          "load1": 4.4892578125,
+          "load5": 4.9140625,
+          "load15": 5.3798828125
+        },
+        {
+          "utc": "2026-09-18T20:47:33.622573+00:00",
+          "load1": 4.85009765625,
+          "load5": 4.9814453125,
+          "load15": 5.40087890625
+        },
+        {
+          "utc": "2026-09-18T20:47:38.672897+00:00",
+          "load1": 4.78173828125,
+          "load5": 4.96484375,
+          "load15": 5.392578125
+        },
+        {
+          "utc": "2026-09-18T20:47:43.718574+00:00",
+          "load1": 5.19921875,
+          "load5": 5.04833984375,
+          "load15": 5.41943359375
+        },
+        {
+          "utc": "2026-09-18T20:47:48.766729+00:00",
+          "load1": 4.94287109375,
+          "load5": 4.99755859375,
+          "load15": 5.39892578125
+        },
+        {
+          "utc": "2026-09-18T20:47:53.812405+00:00",
+          "load1": 4.8671875,
+          "load5": 4.98095703125,
+          "load15": 5.390625
+        },
+        {
+          "utc": "2026-09-18T20:47:58.861532+00:00",
+          "load1": 5.03759765625,
+          "load5": 5.01416015625,
+          "load15": 5.39990234375
+        },
+        {
+          "utc": "2026-09-18T20:48:03.914471+00:00",
+          "load1": 4.8740234375,
+          "load5": 4.98046875,
+          "load15": 5.3857421875
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:48:08.956695+00:00",
+      "elapsed_seconds": 50.48229779099995,
+      "after": {
+        "utc": "2026-09-18T20:48:08.956724+00:00",
+        "load1": 4.9638671875,
+        "load5": 4.9970703125,
+        "load15": 5.38916015625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "7a75ddb5a7bf7c17ab4be6f803f1917799cfa6d5063c4a13aae2b153bd3caf7f",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.24,
+        "variable_bulk_bytes_per_cycle": 13.24,
+        "small_cycles_per_hash": 90.1,
+        "random_small_cycles_per_hash": 90.56
+      }
+    },
+    {
+      "name": "chainhash-ext-k3-256",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k3-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:48:33.431624+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:48:33.384819+00:00",
+        "load1": 4.4169921875,
+        "load5": 4.8671875,
+        "load15": 5.330078125,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k3-256",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k3-256.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:48:33.434017+00:00",
+          "load1": 4.4169921875,
+          "load5": 4.8671875,
+          "load15": 5.330078125
+        },
+        {
+          "utc": "2026-09-18T20:48:38.484084+00:00",
+          "load1": 4.86376953125,
+          "load5": 4.9521484375,
+          "load15": 5.357421875
+        },
+        {
+          "utc": "2026-09-18T20:48:43.528749+00:00",
+          "load1": 5.03466796875,
+          "load5": 4.98583984375,
+          "load15": 5.36669921875
+        },
+        {
+          "utc": "2026-09-18T20:48:48.576060+00:00",
+          "load1": 4.95166015625,
+          "load5": 4.96923828125,
+          "load15": 5.3583984375
+        },
+        {
+          "utc": "2026-09-18T20:48:53.632620+00:00",
+          "load1": 4.794921875,
+          "load5": 4.9365234375,
+          "load15": 5.34423828125
+        },
+        {
+          "utc": "2026-09-18T20:48:58.678813+00:00",
+          "load1": 4.65087890625,
+          "load5": 4.904296875,
+          "load15": 5.330078125
+        },
+        {
+          "utc": "2026-09-18T20:49:03.723605+00:00",
+          "load1": 4.6787109375,
+          "load5": 4.90576171875,
+          "load15": 5.328125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:49:08.766222+00:00",
+      "elapsed_seconds": 35.333970749999935,
+      "after": {
+        "utc": "2026-09-18T20:49:08.766257+00:00",
+        "load1": 4.9443359375,
+        "load5": 4.95703125,
+        "load15": 5.34375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "5f8afb04d9aebf3e6b57df1e3833dbe09dac8a310f70c1fd472b027bb299c1bb",
+      "metrics": {
+        "bulk_bytes_per_cycle": 19.98,
+        "variable_bulk_bytes_per_cycle": 19.97,
+        "small_cycles_per_hash": 87.61,
+        "random_small_cycles_per_hash": 88.0
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-256-b4",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:49:17.997042+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:49:17.951143+00:00",
+        "load1": 4.4912109375,
+        "load5": 4.859375,
+        "load15": 5.30419921875,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-256-b4",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-256-b4.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:49:18.000902+00:00",
+          "load1": 4.4912109375,
+          "load5": 4.859375,
+          "load15": 5.30419921875
+        },
+        {
+          "utc": "2026-09-18T20:49:23.040038+00:00",
+          "load1": 4.37158203125,
+          "load5": 4.828125,
+          "load15": 5.29052734375
+        },
+        {
+          "utc": "2026-09-18T20:49:28.084431+00:00",
+          "load1": 4.7421875,
+          "load5": 4.89697265625,
+          "load15": 5.31201171875
+        },
+        {
+          "utc": "2026-09-18T20:49:33.130683+00:00",
+          "load1": 4.8427734375,
+          "load5": 4.9150390625,
+          "load15": 5.31591796875
+        },
+        {
+          "utc": "2026-09-18T20:49:38.178866+00:00",
+          "load1": 4.85498046875,
+          "load5": 4.916015625,
+          "load15": 5.31396484375
+        },
+        {
+          "utc": "2026-09-18T20:49:43.222495+00:00",
+          "load1": 5.7470703125,
+          "load5": 5.099609375,
+          "load15": 5.37646484375
+        },
+        {
+          "utc": "2026-09-18T20:49:48.265689+00:00",
+          "load1": 5.52685546875,
+          "load5": 5.064453125,
+          "load15": 5.3623046875
+        },
+        {
+          "utc": "2026-09-18T20:49:53.307060+00:00",
+          "load1": 5.32421875,
+          "load5": 5.02978515625,
+          "load15": 5.34814453125
+        },
+        {
+          "utc": "2026-09-18T20:49:58.352974+00:00",
+          "load1": 5.6982421875,
+          "load5": 5.11181640625,
+          "load15": 5.375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:50:03.401183+00:00",
+      "elapsed_seconds": 45.403405959,
+      "after": {
+        "utc": "2026-09-18T20:50:03.401231+00:00",
+        "load1": 5.64208984375,
+        "load5": 5.10986328125,
+        "load15": 5.37255859375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "fa7e1c7a7c16b2a24ab3a0843854173456387e9075459881a8d5241a790add32",
+      "metrics": {
+        "bulk_bytes_per_cycle": 14.68,
+        "variable_bulk_bytes_per_cycle": 14.5,
+        "small_cycles_per_hash": 87.74,
+        "random_small_cycles_per_hash": 87.98
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-256-b4",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:50:40.113678+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:50:40.064734+00:00",
+        "load1": 4.46484375,
+        "load5": 4.875,
+        "load15": 5.275390625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-256-b4",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-256-b4.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:50:40.116384+00:00",
+          "load1": 4.46484375,
+          "load5": 4.875,
+          "load15": 5.275390625
+        },
+        {
+          "utc": "2026-09-18T20:50:45.157707+00:00",
+          "load1": 4.74755859375,
+          "load5": 4.9267578125,
+          "load15": 5.291015625
+        },
+        {
+          "utc": "2026-09-18T20:50:50.203455+00:00",
+          "load1": 4.607421875,
+          "load5": 4.89453125,
+          "load15": 5.27734375
+        },
+        {
+          "utc": "2026-09-18T20:50:55.245488+00:00",
+          "load1": 5.19921875,
+          "load5": 5.01220703125,
+          "load15": 5.31640625
+        },
+        {
+          "utc": "2026-09-18T20:51:00.287280+00:00",
+          "load1": 4.94287109375,
+          "load5": 4.9619140625,
+          "load15": 5.296875
+        },
+        {
+          "utc": "2026-09-18T20:51:05.331510+00:00",
+          "load1": 5.1875,
+          "load5": 5.01220703125,
+          "load15": 5.3125
+        },
+        {
+          "utc": "2026-09-18T20:51:10.376089+00:00",
+          "load1": 5.09228515625,
+          "load5": 4.9951171875,
+          "load15": 5.3046875
+        },
+        {
+          "utc": "2026-09-18T20:51:15.422620+00:00",
+          "load1": 5.72509765625,
+          "load5": 5.1279296875,
+          "load15": 5.349609375
+        },
+        {
+          "utc": "2026-09-18T20:51:20.466587+00:00",
+          "load1": 5.5068359375,
+          "load5": 5.09228515625,
+          "load15": 5.33544921875
+        },
+        {
+          "utc": "2026-09-18T20:51:25.511210+00:00",
+          "load1": 5.3857421875,
+          "load5": 5.07373046875,
+          "load15": 5.3271484375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:51:30.556139+00:00",
+      "elapsed_seconds": 50.44168158399998,
+      "after": {
+        "utc": "2026-09-18T20:51:30.556172+00:00",
+        "load1": 5.3544921875,
+        "load5": 5.072265625,
+        "load15": 5.3251953125,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "f8c3744c65265b7d8b30f8fd5767f661b42a0637fd9d39b7921e775e839b74cc",
+      "metrics": {
+        "bulk_bytes_per_cycle": 12.17,
+        "variable_bulk_bytes_per_cycle": 12.16,
+        "small_cycles_per_hash": 88.48,
+        "random_small_cycles_per_hash": 88.84
+      }
+    },
+    {
+      "name": "chainhash-ext-k3-256-b4",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k3-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:52:04.147136+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:52:04.099848+00:00",
+        "load1": 4.3203125,
+        "load5": 4.8544921875,
+        "load15": 5.2353515625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k3-256-b4",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k3-256-b4.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:52:04.149549+00:00",
+          "load1": 4.3203125,
+          "load5": 4.8544921875,
+          "load15": 5.2353515625
+        },
+        {
+          "utc": "2026-09-18T20:52:09.211032+00:00",
+          "load1": 4.53466796875,
+          "load5": 4.8896484375,
+          "load15": 5.24560546875
+        },
+        {
+          "utc": "2026-09-18T20:52:14.256527+00:00",
+          "load1": 4.65185546875,
+          "load5": 4.90771484375,
+          "load15": 5.25
+        },
+        {
+          "utc": "2026-09-18T20:52:19.302077+00:00",
+          "load1": 5.400390625,
+          "load5": 5.05859375,
+          "load15": 5.30126953125
+        },
+        {
+          "utc": "2026-09-18T20:52:24.356699+00:00",
+          "load1": 5.1279296875,
+          "load5": 5.0078125,
+          "load15": 5.28173828125
+        },
+        {
+          "utc": "2026-09-18T20:52:29.396545+00:00",
+          "load1": 5.27783203125,
+          "load5": 5.04052734375,
+          "load15": 5.29150390625
+        },
+        {
+          "utc": "2026-09-18T20:52:34.440686+00:00",
+          "load1": 5.09521484375,
+          "load5": 5.00634765625,
+          "load15": 5.27783203125
+        },
+        {
+          "utc": "2026-09-18T20:52:39.511350+00:00",
+          "load1": 5.00732421875,
+          "load5": 4.9892578125,
+          "load15": 5.27001953125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:52:44.558559+00:00",
+      "elapsed_seconds": 40.410857082999996,
+      "after": {
+        "utc": "2026-09-18T20:52:44.558587+00:00",
+        "load1": 5.08642578125,
+        "load5": 5.005859375,
+        "load15": 5.27392578125,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "0e588af483ee75939184ce00e42786fbbbf63bfe71f3365a1e1483cf4b615baf",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.6,
+        "variable_bulk_bytes_per_cycle": 17.3,
+        "small_cycles_per_hash": 88.08,
+        "random_small_cycles_per_hash": 88.74
+      }
+    },
+    {
+      "name": "chainhash-256",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:53:39.549628+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:53:39.497985+00:00",
+        "load1": 4.43603515625,
+        "load5": 4.87060546875,
+        "load15": 5.20703125,
+        "smhasher_processes": [],
+        "name": "chainhash-256",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-256.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:53:39.552032+00:00",
+          "load1": 4.43603515625,
+          "load5": 4.87060546875,
+          "load15": 5.20703125
+        },
+        {
+          "utc": "2026-09-18T20:53:44.594888+00:00",
+          "load1": 4.48095703125,
+          "load5": 4.87255859375,
+          "load15": 5.20556640625
+        },
+        {
+          "utc": "2026-09-18T20:53:49.640482+00:00",
+          "load1": 4.5224609375,
+          "load5": 4.87451171875,
+          "load15": 5.2041015625
+        },
+        {
+          "utc": "2026-09-18T20:53:54.688331+00:00",
+          "load1": 4.80078125,
+          "load5": 4.92626953125,
+          "load15": 5.22021484375
+        },
+        {
+          "utc": "2026-09-18T20:53:59.740881+00:00",
+          "load1": 4.736328125,
+          "load5": 4.91064453125,
+          "load15": 5.212890625
+        },
+        {
+          "utc": "2026-09-18T20:54:04.794610+00:00",
+          "load1": 4.75732421875,
+          "load5": 4.912109375,
+          "load15": 5.21142578125
+        },
+        {
+          "utc": "2026-09-18T20:54:09.862398+00:00",
+          "load1": 5.0966796875,
+          "load5": 4.9794921875,
+          "load15": 5.2333984375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:54:14.922936+00:00",
+      "elapsed_seconds": 35.372741958999995,
+      "after": {
+        "utc": "2026-09-18T20:54:14.922962+00:00",
+        "load1": 5.1689453125,
+        "load5": 4.99609375,
+        "load15": 5.23779296875,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "4e691065a82c862a08a00503a9b32174333fb3c9dbb291a18763b939186dbd88",
+      "metrics": {
+        "bulk_bytes_per_cycle": 22.69,
+        "variable_bulk_bytes_per_cycle": 20.97,
+        "small_cycles_per_hash": 72.68,
+        "random_small_cycles_per_hash": 73.03
+      }
+    },
+    {
+      "name": "chainhash-1k",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-1k",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:57:48.663685+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:57:48.596730+00:00",
+        "load1": 4.4951171875,
+        "load5": 5.142578125,
+        "load15": 5.271484375,
+        "smhasher_processes": [],
+        "name": "chainhash-1k",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-1k.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:57:48.666392+00:00",
+          "load1": 4.4951171875,
+          "load5": 5.142578125,
+          "load15": 5.271484375
+        },
+        {
+          "utc": "2026-09-18T20:57:53.713406+00:00",
+          "load1": 4.935546875,
+          "load5": 5.22314453125,
+          "load15": 5.298828125
+        },
+        {
+          "utc": "2026-09-18T20:57:58.762211+00:00",
+          "load1": 4.8603515625,
+          "load5": 5.20263671875,
+          "load15": 5.291015625
+        },
+        {
+          "utc": "2026-09-18T20:58:03.807990+00:00",
+          "load1": 4.951171875,
+          "load5": 5.2158203125,
+          "load15": 5.294921875
+        },
+        {
+          "utc": "2026-09-18T20:58:08.854524+00:00",
+          "load1": 5.115234375,
+          "load5": 5.2451171875,
+          "load15": 5.3046875
+        },
+        {
+          "utc": "2026-09-18T20:58:13.902126+00:00",
+          "load1": 5.98681640625,
+          "load5": 5.42333984375,
+          "load15": 5.3671875
+        },
+        {
+          "utc": "2026-09-18T20:58:18.954204+00:00",
+          "load1": 5.90771484375,
+          "load5": 5.416015625,
+          "load15": 5.36474609375
+        },
+        {
+          "utc": "2026-09-18T20:58:24.003939+00:00",
+          "load1": 5.9150390625,
+          "load5": 5.42529296875,
+          "load15": 5.3681640625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T20:58:29.052263+00:00",
+      "elapsed_seconds": 40.387931250000065,
+      "after": {
+        "utc": "2026-09-18T20:58:29.052306+00:00",
+        "load1": 5.68115234375,
+        "load5": 5.384765625,
+        "load15": 5.35400390625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "d80a44904ea3f9df28382cc801123e3607023ab1ad4b588e524530b761eb63d1",
+      "metrics": {
+        "bulk_bytes_per_cycle": 18.87,
+        "variable_bulk_bytes_per_cycle": 18.86,
+        "small_cycles_per_hash": 70.6,
+        "random_small_cycles_per_hash": 71.35
+      }
+    },
+    {
+      "name": "rapidhash",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "rapidhash",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:05:09.116619+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:05:09.064784+00:00",
+        "load1": 4.4921875,
+        "load5": 5.447265625,
+        "load15": 5.46728515625,
+        "smhasher_processes": [],
+        "name": "rapidhash",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/rapidhash.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:05:09.119104+00:00",
+          "load1": 4.4921875,
+          "load5": 5.447265625,
+          "load15": 5.46728515625
+        },
+        {
+          "utc": "2026-09-18T21:05:14.174793+00:00",
+          "load1": 4.45263671875,
+          "load5": 5.4228515625,
+          "load15": 5.45849609375
+        },
+        {
+          "utc": "2026-09-18T21:05:19.223764+00:00",
+          "load1": 5.376953125,
+          "load5": 5.59814453125,
+          "load15": 5.52001953125
+        },
+        {
+          "utc": "2026-09-18T21:05:24.278048+00:00",
+          "load1": 5.3466796875,
+          "load5": 5.587890625,
+          "load15": 5.5166015625
+        },
+        {
+          "utc": "2026-09-18T21:05:29.356556+00:00",
+          "load1": 5.31884765625,
+          "load5": 5.578125,
+          "load15": 5.51318359375
+        },
+        {
+          "utc": "2026-09-18T21:05:34.416645+00:00",
+          "load1": 5.373046875,
+          "load5": 5.5849609375,
+          "load15": 5.515625
+        },
+        {
+          "utc": "2026-09-18T21:05:39.474029+00:00",
+          "load1": 5.8232421875,
+          "load5": 5.6748046875,
+          "load15": 5.54736328125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:05:44.519343+00:00",
+      "elapsed_seconds": 35.40203199999996,
+      "after": {
+        "utc": "2026-09-18T21:05:44.519372+00:00",
+        "load1": 6.2373046875,
+        "load5": 5.76318359375,
+        "load15": 5.5791015625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "4a57c0b3484ecfc961d4cb666c8524c7aa9de40362bf0028cb95932317f72a38",
+      "metrics": {
+        "bulk_bytes_per_cycle": 15.85,
+        "variable_bulk_bytes_per_cycle": 15.14,
+        "small_cycles_per_hash": 20.4,
+        "random_small_cycles_per_hash": 20.51
+      }
+    },
+    {
+      "name": "XXH3-64",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "XXH3-64",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:10:31.281277+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:10:31.235292+00:00",
+        "load1": 4.49658203125,
+        "load5": 5.486328125,
+        "load15": 5.5166015625,
+        "smhasher_processes": [],
+        "name": "XXH3-64",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/XXH3-64.run1.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:10:31.284071+00:00",
+          "load1": 4.49658203125,
+          "load5": 5.486328125,
+          "load15": 5.5166015625
+        },
+        {
+          "utc": "2026-09-18T21:10:36.329295+00:00",
+          "load1": 4.61669921875,
+          "load5": 5.49462890625,
+          "load15": 5.51904296875
+        },
+        {
+          "utc": "2026-09-18T21:10:41.381605+00:00",
+          "load1": 5.36767578125,
+          "load5": 5.6357421875,
+          "load15": 5.568359375
+        },
+        {
+          "utc": "2026-09-18T21:10:46.425163+00:00",
+          "load1": 5.337890625,
+          "load5": 5.625,
+          "load15": 5.56494140625
+        },
+        {
+          "utc": "2026-09-18T21:10:51.468343+00:00",
+          "load1": 5.150390625,
+          "load5": 5.5810546875,
+          "load15": 5.5498046875
+        },
+        {
+          "utc": "2026-09-18T21:10:56.509979+00:00",
+          "load1": 5.45849609375,
+          "load5": 5.6376953125,
+          "load15": 5.56982421875
+        },
+        {
+          "utc": "2026-09-18T21:11:01.553474+00:00",
+          "load1": 5.66162109375,
+          "load5": 5.6767578125,
+          "load15": 5.583984375
+        },
+        {
+          "utc": "2026-09-18T21:11:06.618157+00:00",
+          "load1": 5.6083984375,
+          "load5": 5.6650390625,
+          "load15": 5.580078125
+        },
+        {
+          "utc": "2026-09-18T21:11:11.668834+00:00",
+          "load1": 5.4794921875,
+          "load5": 5.63720703125,
+          "load15": 5.57080078125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:11:16.709159+00:00",
+      "elapsed_seconds": 45.42708662500013,
+      "after": {
+        "utc": "2026-09-18T21:11:16.709203+00:00",
+        "load1": 5.52099609375,
+        "load5": 5.64306640625,
+        "load15": 5.5732421875,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "b3fc7b0b00f414059ad69f7229d4416fa93efc0c013204633f827ba06f11ed6e",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.45,
+        "variable_bulk_bytes_per_cycle": 12.81,
+        "small_cycles_per_hash": 24.11,
+        "random_small_cycles_per_hash": 24.2
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-1024",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-1024",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:18:29.484790+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:18:29.435757+00:00",
+        "load1": 4.322265625,
+        "load5": 5.31396484375,
+        "load15": 5.5166015625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-1024",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-1024.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:18:29.487203+00:00",
+          "load1": 4.322265625,
+          "load5": 5.31396484375,
+          "load15": 5.5166015625
+        },
+        {
+          "utc": "2026-09-18T21:18:34.530716+00:00",
+          "load1": 4.29638671875,
+          "load5": 5.2919921875,
+          "load15": 5.50732421875
+        },
+        {
+          "utc": "2026-09-18T21:18:39.692036+00:00",
+          "load1": 4.2724609375,
+          "load5": 5.2705078125,
+          "load15": 5.498046875
+        },
+        {
+          "utc": "2026-09-18T21:18:44.741173+00:00",
+          "load1": 4.73095703125,
+          "load5": 5.3486328125,
+          "load15": 5.5244140625
+        },
+        {
+          "utc": "2026-09-18T21:18:49.796672+00:00",
+          "load1": 5.55322265625,
+          "load5": 5.5087890625,
+          "load15": 5.57958984375
+        },
+        {
+          "utc": "2026-09-18T21:18:54.837782+00:00",
+          "load1": 5.9892578125,
+          "load5": 5.599609375,
+          "load15": 5.611328125
+        },
+        {
+          "utc": "2026-09-18T21:18:59.885013+00:00",
+          "load1": 5.90966796875,
+          "load5": 5.58935546875,
+          "load15": 5.607421875
+        },
+        {
+          "utc": "2026-09-18T21:19:04.929747+00:00",
+          "load1": 5.75634765625,
+          "load5": 5.5625,
+          "load15": 5.59765625
+        },
+        {
+          "utc": "2026-09-18T21:19:10.011211+00:00",
+          "load1": 5.6953125,
+          "load5": 5.552734375,
+          "load15": 5.59375
+        },
+        {
+          "utc": "2026-09-18T21:19:15.057365+00:00",
+          "load1": 5.79931640625,
+          "load5": 5.57666015625,
+          "load15": 5.6015625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:19:20.101564+00:00",
+      "elapsed_seconds": 50.61588554199989,
+      "after": {
+        "utc": "2026-09-18T21:19:20.101587+00:00",
+        "load1": 5.49462890625,
+        "load5": 5.51708984375,
+        "load15": 5.580078125,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "9df2ffd63e096114f9115dad1436b6c1035c59a8ba68670b325669e25a980c8b",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.25,
+        "variable_bulk_bytes_per_cycle": 13.24,
+        "small_cycles_per_hash": 90.08,
+        "random_small_cycles_per_hash": 90.27
+      }
+    },
+    {
+      "name": "chainhash-ext-k3-256",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k3-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:23:30.285218+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:23:30.237114+00:00",
+        "load1": 4.45703125,
+        "load5": 5.37109375,
+        "load15": 5.5390625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k3-256",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k3-256.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:23:30.288171+00:00",
+          "load1": 4.45703125,
+          "load5": 5.37109375,
+          "load15": 5.5390625
+        },
+        {
+          "utc": "2026-09-18T21:23:35.332360+00:00",
+          "load1": 4.58056640625,
+          "load5": 5.38134765625,
+          "load15": 5.54150390625
+        },
+        {
+          "utc": "2026-09-18T21:23:40.377721+00:00",
+          "load1": 4.53369140625,
+          "load5": 5.3583984375,
+          "load15": 5.5322265625
+        },
+        {
+          "utc": "2026-09-18T21:23:45.422427+00:00",
+          "load1": 4.57080078125,
+          "load5": 5.35205078125,
+          "load15": 5.52880859375
+        },
+        {
+          "utc": "2026-09-18T21:23:50.466412+00:00",
+          "load1": 4.52490234375,
+          "load5": 5.32958984375,
+          "load15": 5.51953125
+        },
+        {
+          "utc": "2026-09-18T21:23:55.512657+00:00",
+          "load1": 4.642578125,
+          "load5": 5.34033203125,
+          "load15": 5.52197265625
+        },
+        {
+          "utc": "2026-09-18T21:24:00.556965+00:00",
+          "load1": 5.7119140625,
+          "load5": 5.55029296875,
+          "load15": 5.5947265625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:24:05.604251+00:00",
+      "elapsed_seconds": 35.3162581659999,
+      "after": {
+        "utc": "2026-09-18T21:24:05.604296+00:00",
+        "load1": 5.89501953125,
+        "load5": 5.5908203125,
+        "load15": 5.6083984375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "0d9a939d2b6f115502e4a645025f074588ef553ecd4cd8ccc86e8cb9a16a4a41",
+      "metrics": {
+        "bulk_bytes_per_cycle": 20.65,
+        "variable_bulk_bytes_per_cycle": 20.64,
+        "small_cycles_per_hash": 84.51,
+        "random_small_cycles_per_hash": 84.95
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-256-b4",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:34:41.074056+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:34:41.017812+00:00",
+        "load1": 4.3564453125,
+        "load5": 5.70654296875,
+        "load15": 5.876953125,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-256-b4",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-256-b4.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:34:41.077223+00:00",
+          "load1": 4.3564453125,
+          "load5": 5.70654296875,
+          "load15": 5.876953125
+        },
+        {
+          "utc": "2026-09-18T21:34:46.121875+00:00",
+          "load1": 4.56787109375,
+          "load5": 5.7275390625,
+          "load15": 5.88330078125
+        },
+        {
+          "utc": "2026-09-18T21:34:51.171123+00:00",
+          "load1": 4.44189453125,
+          "load5": 5.68212890625,
+          "load15": 5.8662109375
+        },
+        {
+          "utc": "2026-09-18T21:34:56.222451+00:00",
+          "load1": 4.40625,
+          "load5": 5.65380859375,
+          "load15": 5.85498046875
+        },
+        {
+          "utc": "2026-09-18T21:35:01.276309+00:00",
+          "load1": 4.85400390625,
+          "load5": 5.7255859375,
+          "load15": 5.87890625
+        },
+        {
+          "utc": "2026-09-18T21:35:06.330719+00:00",
+          "load1": 4.705078125,
+          "load5": 5.68017578125,
+          "load15": 5.86181640625
+        },
+        {
+          "utc": "2026-09-18T21:35:11.385783+00:00",
+          "load1": 4.568359375,
+          "load5": 5.63525390625,
+          "load15": 5.8447265625
+        },
+        {
+          "utc": "2026-09-18T21:35:16.436623+00:00",
+          "load1": 4.6826171875,
+          "load5": 5.64111328125,
+          "load15": 5.84521484375
+        },
+        {
+          "utc": "2026-09-18T21:35:21.487445+00:00",
+          "load1": 4.5478515625,
+          "load5": 5.59716796875,
+          "load15": 5.828125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:35:26.534795+00:00",
+      "elapsed_seconds": 45.459595875000105,
+      "after": {
+        "utc": "2026-09-18T21:35:26.534849+00:00",
+        "load1": 4.6640625,
+        "load5": 5.603515625,
+        "load15": 5.8291015625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "5bbb006c5dcb04c8778b4c7869d8b14fa6a727feed6cad23c22abfb02f3d2b3c",
+      "metrics": {
+        "bulk_bytes_per_cycle": 14.6,
+        "variable_bulk_bytes_per_cycle": 14.42,
+        "small_cycles_per_hash": 88.32,
+        "random_small_cycles_per_hash": 88.58
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-256-b4",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:35:29.691037+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:35:29.641486+00:00",
+        "load1": 4.45068359375,
+        "load5": 5.54345703125,
+        "load15": 5.806640625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-256-b4",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-256-b4.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:35:29.693667+00:00",
+          "load1": 4.45068359375,
+          "load5": 5.54345703125,
+          "load15": 5.806640625
+        },
+        {
+          "utc": "2026-09-18T21:35:34.742460+00:00",
+          "load1": 4.89501953125,
+          "load5": 5.6171875,
+          "load15": 5.8310546875
+        },
+        {
+          "utc": "2026-09-18T21:35:39.791453+00:00",
+          "load1": 4.9033203125,
+          "load5": 5.60693359375,
+          "load15": 5.826171875
+        },
+        {
+          "utc": "2026-09-18T21:35:44.865068+00:00",
+          "load1": 4.91064453125,
+          "load5": 5.5966796875,
+          "load15": 5.8212890625
+        },
+        {
+          "utc": "2026-09-18T21:35:49.919445+00:00",
+          "load1": 5.07763671875,
+          "load5": 5.61962890625,
+          "load15": 5.828125
+        },
+        {
+          "utc": "2026-09-18T21:35:54.962154+00:00",
+          "load1": 5.2314453125,
+          "load5": 5.64208984375,
+          "load15": 5.8349609375
+        },
+        {
+          "utc": "2026-09-18T21:36:00.009520+00:00",
+          "load1": 5.1328125,
+          "load5": 5.61474609375,
+          "load15": 5.82373046875
+        },
+        {
+          "utc": "2026-09-18T21:36:05.080806+00:00",
+          "load1": 6.0830078125,
+          "load5": 5.8037109375,
+          "load15": 5.88916015625
+        },
+        {
+          "utc": "2026-09-18T21:36:10.134763+00:00",
+          "load1": 6.4765625,
+          "load5": 5.8896484375,
+          "load15": 5.9189453125
+        },
+        {
+          "utc": "2026-09-18T21:36:15.180789+00:00",
+          "load1": 6.59814453125,
+          "load5": 5.92431640625,
+          "load15": 5.9306640625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:36:20.231657+00:00",
+      "elapsed_seconds": 50.539912749999985,
+      "after": {
+        "utc": "2026-09-18T21:36:20.231683+00:00",
+        "load1": 6.3896484375,
+        "load5": 5.89208984375,
+        "load15": 5.9189453125,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "cfb4ea740684fa666147acc2b5c87b64c9f382f27763dfc6f870d40cf327e3bb",
+      "metrics": {
+        "bulk_bytes_per_cycle": 12.27,
+        "variable_bulk_bytes_per_cycle": 12.27,
+        "small_cycles_per_hash": 87.83,
+        "random_small_cycles_per_hash": 88.1
+      }
+    },
+    {
+      "name": "chainhash-ext-k3-256-b4",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k3-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:39:29.378565+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:39:29.323947+00:00",
+        "load1": 4.2724609375,
+        "load5": 5.3115234375,
+        "load15": 5.673828125,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k3-256-b4",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k3-256-b4.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:39:29.381168+00:00",
+          "load1": 4.2724609375,
+          "load5": 5.3115234375,
+          "load15": 5.673828125
+        },
+        {
+          "utc": "2026-09-18T21:39:34.428569+00:00",
+          "load1": 4.49072265625,
+          "load5": 5.33935546875,
+          "load15": 5.68115234375
+        },
+        {
+          "utc": "2026-09-18T21:39:39.477176+00:00",
+          "load1": 4.37109375,
+          "load5": 5.30029296875,
+          "load15": 5.6650390625
+        },
+        {
+          "utc": "2026-09-18T21:39:44.524186+00:00",
+          "load1": 4.18115234375,
+          "load5": 5.2451171875,
+          "load15": 5.6435546875
+        },
+        {
+          "utc": "2026-09-18T21:39:49.571340+00:00",
+          "load1": 4.88720703125,
+          "load5": 5.37353515625,
+          "load15": 5.6865234375
+        },
+        {
+          "utc": "2026-09-18T21:39:54.614298+00:00",
+          "load1": 4.81591796875,
+          "load5": 5.3505859375,
+          "load15": 5.67626953125
+        },
+        {
+          "utc": "2026-09-18T21:39:59.659669+00:00",
+          "load1": 5.15087890625,
+          "load5": 5.4111328125,
+          "load15": 5.6953125
+        },
+        {
+          "utc": "2026-09-18T21:40:04.706671+00:00",
+          "load1": 5.21875,
+          "load5": 5.4208984375,
+          "load15": 5.69677734375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:40:09.752676+00:00",
+      "elapsed_seconds": 40.37318200000027,
+      "after": {
+        "utc": "2026-09-18T21:40:09.752700+00:00",
+        "load1": 5.12109375,
+        "load5": 5.39697265625,
+        "load15": 5.6865234375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "04197e18af114d2378be4689f3bc489eeccb5b0c9abe492b9693be74c46337a9",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.54,
+        "variable_bulk_bytes_per_cycle": 17.19,
+        "small_cycles_per_hash": 88.43,
+        "random_small_cycles_per_hash": 88.81
+      }
+    },
+    {
+      "name": "chainhash-256",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:54:32.628046+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:54:32.583928+00:00",
+        "load1": 4.39892578125,
+        "load5": 5.42626953125,
+        "load15": 5.92333984375,
+        "smhasher_processes": [],
+        "name": "chainhash-256",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-256.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:54:32.632799+00:00",
+          "load1": 4.39892578125,
+          "load5": 5.42626953125,
+          "load15": 5.92333984375
+        },
+        {
+          "utc": "2026-09-18T21:54:37.675455+00:00",
+          "load1": 4.20654296875,
+          "load5": 5.369140625,
+          "load15": 5.89990234375
+        },
+        {
+          "utc": "2026-09-18T21:54:42.720444+00:00",
+          "load1": 4.35009765625,
+          "load5": 5.37939453125,
+          "load15": 5.900390625
+        },
+        {
+          "utc": "2026-09-18T21:54:47.764101+00:00",
+          "load1": 4.16162109375,
+          "load5": 5.3232421875,
+          "load15": 5.87744140625
+        },
+        {
+          "utc": "2026-09-18T21:54:52.807591+00:00",
+          "load1": 4.068359375,
+          "load5": 5.28466796875,
+          "load15": 5.8603515625
+        },
+        {
+          "utc": "2026-09-18T21:54:57.852269+00:00",
+          "load1": 4.0625,
+          "load5": 5.26318359375,
+          "load15": 5.84912109375
+        },
+        {
+          "utc": "2026-09-18T21:55:02.893420+00:00",
+          "load1": 3.97705078125,
+          "load5": 5.2255859375,
+          "load15": 5.83203125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:55:07.943463+00:00",
+      "elapsed_seconds": 35.314201041999695,
+      "after": {
+        "utc": "2026-09-18T21:55:07.943507+00:00",
+        "load1": 4.05859375,
+        "load5": 5.2216796875,
+        "load15": 5.8271484375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "7cb3c462c8192fdd01d876132734a9fb03e7652c2a634027c42ff26d8da1213d",
+      "metrics": {
+        "bulk_bytes_per_cycle": 22.62,
+        "variable_bulk_bytes_per_cycle": 21.02,
+        "small_cycles_per_hash": 71.89,
+        "random_small_cycles_per_hash": 74.13
+      }
+    },
+    {
+      "name": "chainhash-1k",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-1k",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:55:08.039834+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:55:07.992843+00:00",
+        "load1": 4.05859375,
+        "load5": 5.2216796875,
+        "load15": 5.8271484375,
+        "smhasher_processes": [],
+        "name": "chainhash-1k",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-1k.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:55:08.042479+00:00",
+          "load1": 4.05859375,
+          "load5": 5.2216796875,
+          "load15": 5.8271484375
+        },
+        {
+          "utc": "2026-09-18T21:55:13.088628+00:00",
+          "load1": 4.2939453125,
+          "load5": 5.2509765625,
+          "load15": 5.833984375
+        },
+        {
+          "utc": "2026-09-18T21:55:18.130725+00:00",
+          "load1": 5.55126953125,
+          "load5": 5.49560546875,
+          "load15": 5.91650390625
+        },
+        {
+          "utc": "2026-09-18T21:55:23.175697+00:00",
+          "load1": 5.3466796875,
+          "load5": 5.4541015625,
+          "load15": 5.8994140625
+        },
+        {
+          "utc": "2026-09-18T21:55:28.217424+00:00",
+          "load1": 5.47900390625,
+          "load5": 5.4794921875,
+          "load15": 5.90576171875
+        },
+        {
+          "utc": "2026-09-18T21:55:33.261789+00:00",
+          "load1": 5.5205078125,
+          "load5": 5.48779296875,
+          "load15": 5.90625
+        },
+        {
+          "utc": "2026-09-18T21:55:38.306676+00:00",
+          "load1": 5.71875,
+          "load5": 5.529296875,
+          "load15": 5.91845703125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:55:43.352840+00:00",
+      "elapsed_seconds": 35.312170709000384,
+      "after": {
+        "utc": "2026-09-18T21:55:43.352866+00:00",
+        "load1": 5.6611328125,
+        "load5": 5.5205078125,
+        "load15": 5.91259765625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "6d088a816cc1673c2696a060e4640cd20971fabd70dddfc391b1eb798d4ff93c",
+      "metrics": {
+        "bulk_bytes_per_cycle": 18.85,
+        "variable_bulk_bytes_per_cycle": 18.84,
+        "small_cycles_per_hash": 70.58,
+        "random_small_cycles_per_hash": 70.84
+      }
+    },
+    {
+      "name": "rapidhash",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "rapidhash",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:56:41.278594+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:56:41.231801+00:00",
+        "load1": 4.4736328125,
+        "load5": 5.1982421875,
+        "load15": 5.76318359375,
+        "smhasher_processes": [],
+        "name": "rapidhash",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/rapidhash.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:56:41.280921+00:00",
+          "load1": 4.4736328125,
+          "load5": 5.1982421875,
+          "load15": 5.76318359375
+        },
+        {
+          "utc": "2026-09-18T21:56:46.324898+00:00",
+          "load1": 4.435546875,
+          "load5": 5.17822265625,
+          "load15": 5.75244140625
+        },
+        {
+          "utc": "2026-09-18T21:56:51.369135+00:00",
+          "load1": 4.80078125,
+          "load5": 5.2412109375,
+          "load15": 5.77099609375
+        },
+        {
+          "utc": "2026-09-18T21:56:56.413370+00:00",
+          "load1": 4.736328125,
+          "load5": 5.22021484375,
+          "load15": 5.76025390625
+        },
+        {
+          "utc": "2026-09-18T21:57:01.459527+00:00",
+          "load1": 4.67724609375,
+          "load5": 5.19970703125,
+          "load15": 5.74951171875
+        },
+        {
+          "utc": "2026-09-18T21:57:06.505011+00:00",
+          "load1": 4.78271484375,
+          "load5": 5.212890625,
+          "load15": 5.7509765625
+        },
+        {
+          "utc": "2026-09-18T21:57:11.549362+00:00",
+          "load1": 4.7197265625,
+          "load5": 5.1923828125,
+          "load15": 5.740234375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:57:16.593064+00:00",
+      "elapsed_seconds": 35.3137141670004,
+      "after": {
+        "utc": "2026-09-18T21:57:16.593088+00:00",
+        "load1": 4.50146484375,
+        "load5": 5.13916015625,
+        "load15": 5.71826171875,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "d9c4cf72e2243230389d0cfa0e2c5fea2e5d21a4e795f00afb359fc0dfb25d6b",
+      "metrics": {
+        "bulk_bytes_per_cycle": 15.77,
+        "variable_bulk_bytes_per_cycle": 15.22,
+        "small_cycles_per_hash": 20.15,
+        "random_small_cycles_per_hash": 20.64
+      }
+    },
+    {
+      "name": "XXH3-64",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "XXH3-64",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T21:57:22.765712+00:00",
+      "gate": {
+        "utc": "2026-09-18T21:57:22.723103+00:00",
+        "load1": 4.4609375,
+        "load5": 5.1201171875,
+        "load15": 5.7080078125,
+        "smhasher_processes": [],
+        "name": "XXH3-64",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/XXH3-64.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T21:57:22.767994+00:00",
+          "load1": 4.4609375,
+          "load5": 5.1201171875,
+          "load15": 5.7080078125
+        },
+        {
+          "utc": "2026-09-18T21:57:27.814301+00:00",
+          "load1": 4.82421875,
+          "load5": 5.18408203125,
+          "load15": 5.72705078125
+        },
+        {
+          "utc": "2026-09-18T21:57:32.867280+00:00",
+          "load1": 4.677734375,
+          "load5": 5.1474609375,
+          "load15": 5.7109375
+        },
+        {
+          "utc": "2026-09-18T21:57:37.918380+00:00",
+          "load1": 4.783203125,
+          "load5": 5.1611328125,
+          "load15": 5.71240234375
+        },
+        {
+          "utc": "2026-09-18T21:57:42.963593+00:00",
+          "load1": 4.96044921875,
+          "load5": 5.19140625,
+          "load15": 5.7197265625
+        },
+        {
+          "utc": "2026-09-18T21:57:48.010485+00:00",
+          "load1": 4.96337890625,
+          "load5": 5.18798828125,
+          "load15": 5.71533203125
+        },
+        {
+          "utc": "2026-09-18T21:57:53.061075+00:00",
+          "load1": 5.12646484375,
+          "load5": 5.2177734375,
+          "load15": 5.72265625
+        },
+        {
+          "utc": "2026-09-18T21:57:58.102234+00:00",
+          "load1": 4.9560546875,
+          "load5": 5.1806640625,
+          "load15": 5.70654296875
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T21:58:03.148526+00:00",
+      "elapsed_seconds": 40.38210583399996,
+      "after": {
+        "utc": "2026-09-18T21:58:03.148551+00:00",
+        "load1": 4.95947265625,
+        "load5": 5.17724609375,
+        "load15": 5.7021484375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "b330f57673c4d97a03214db402572ad12c45a0b5b739a61ea55bc3d02848d4cc",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.16,
+        "variable_bulk_bytes_per_cycle": 12.61,
+        "small_cycles_per_hash": 24.44,
+        "random_small_cycles_per_hash": 24.98
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-256",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:03:08.149597+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:03:08.098753+00:00",
+        "load1": 4.49609375,
+        "load5": 5.2734375,
+        "load15": 5.61962890625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-256",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-256.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:03:08.152342+00:00",
+          "load1": 4.49609375,
+          "load5": 5.2734375,
+          "load15": 5.61962890625
+        },
+        {
+          "utc": "2026-09-18T22:03:13.197213+00:00",
+          "load1": 4.4560546875,
+          "load5": 5.251953125,
+          "load15": 5.60986328125
+        },
+        {
+          "utc": "2026-09-18T22:03:18.239272+00:00",
+          "load1": 4.65966796875,
+          "load5": 5.28076171875,
+          "load15": 5.61767578125
+        },
+        {
+          "utc": "2026-09-18T22:03:23.287862+00:00",
+          "load1": 4.5263671875,
+          "load5": 5.24267578125,
+          "load15": 5.60205078125
+        },
+        {
+          "utc": "2026-09-18T22:03:28.333930+00:00",
+          "load1": 4.48388671875,
+          "load5": 5.2216796875,
+          "load15": 5.59228515625
+        },
+        {
+          "utc": "2026-09-18T22:03:33.376413+00:00",
+          "load1": 4.36474609375,
+          "load5": 5.1845703125,
+          "load15": 5.57666015625
+        },
+        {
+          "utc": "2026-09-18T22:03:38.425048+00:00",
+          "load1": 4.25537109375,
+          "load5": 5.14794921875,
+          "load15": 5.5615234375
+        },
+        {
+          "utc": "2026-09-18T22:03:43.471835+00:00",
+          "load1": 4.39501953125,
+          "load5": 5.16162109375,
+          "load15": 5.56396484375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:03:48.513884+00:00",
+      "elapsed_seconds": 40.36291558300036,
+      "after": {
+        "utc": "2026-09-18T22:03:48.513917+00:00",
+        "load1": 4.203125,
+        "load5": 5.10888671875,
+        "load15": 5.54296875,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "4988de0911875d6cd92af5937ecd012200569cee3d20a81d3fc814c7d0cdf7f5",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.43,
+        "variable_bulk_bytes_per_cycle": 16.98,
+        "small_cycles_per_hash": 88.73,
+        "random_small_cycles_per_hash": 89.02
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-1024",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-1024",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:03:48.601649+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:03:48.558874+00:00",
+        "load1": 4.203125,
+        "load5": 5.10888671875,
+        "load15": 5.54296875,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-1024",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-1024.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:03:48.603710+00:00",
+          "load1": 4.203125,
+          "load5": 5.10888671875,
+          "load15": 5.54296875
+        },
+        {
+          "utc": "2026-09-18T22:03:53.647109+00:00",
+          "load1": 4.1865234375,
+          "load5": 5.09033203125,
+          "load15": 5.53369140625
+        },
+        {
+          "utc": "2026-09-18T22:03:58.698330+00:00",
+          "load1": 4.09130859375,
+          "load5": 5.05517578125,
+          "load15": 5.5185546875
+        },
+        {
+          "utc": "2026-09-18T22:04:03.748501+00:00",
+          "load1": 4.00390625,
+          "load5": 5.02099609375,
+          "load15": 5.50341796875
+        },
+        {
+          "utc": "2026-09-18T22:04:08.798407+00:00",
+          "load1": 4.00341796875,
+          "load5": 5.00390625,
+          "load15": 5.494140625
+        },
+        {
+          "utc": "2026-09-18T22:04:13.843793+00:00",
+          "load1": 4.0029296875,
+          "load5": 4.98681640625,
+          "load15": 5.4853515625
+        },
+        {
+          "utc": "2026-09-18T22:04:18.954372+00:00",
+          "load1": 4.00244140625,
+          "load5": 4.97021484375,
+          "load15": 5.4765625
+        },
+        {
+          "utc": "2026-09-18T22:04:23.996609+00:00",
+          "load1": 3.921875,
+          "load5": 4.9375,
+          "load15": 5.4619140625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:04:29.047929+00:00",
+      "elapsed_seconds": 40.4457056250003,
+      "after": {
+        "utc": "2026-09-18T22:04:29.047953+00:00",
+        "load1": 3.84765625,
+        "load5": 4.9052734375,
+        "load15": 5.447265625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "0486044cbe42a87266070490d8c951b9c116c59b34bd8de95274c29ecbeabbc2",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.45,
+        "variable_bulk_bytes_per_cycle": 17.16,
+        "small_cycles_per_hash": 90.21,
+        "random_small_cycles_per_hash": 92.36
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-256",
+      "run": 2,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:04:29.147442+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:04:29.098639+00:00",
+        "load1": 3.84765625,
+        "load5": 4.9052734375,
+        "load15": 5.447265625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-256",
+        "run": 2,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-256.run2.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:04:29.149763+00:00",
+          "load1": 3.84765625,
+          "load5": 4.9052734375,
+          "load15": 5.447265625
+        },
+        {
+          "utc": "2026-09-18T22:04:34.190140+00:00",
+          "load1": 3.859375,
+          "load5": 4.89013671875,
+          "load15": 5.4384765625
+        },
+        {
+          "utc": "2026-09-18T22:04:39.244740+00:00",
+          "load1": 3.87060546875,
+          "load5": 4.875,
+          "load15": 5.4296875
+        },
+        {
+          "utc": "2026-09-18T22:04:44.287475+00:00",
+          "load1": 3.720703125,
+          "load5": 4.8271484375,
+          "load15": 5.4091796875
+        },
+        {
+          "utc": "2026-09-18T22:04:49.335827+00:00",
+          "load1": 3.58251953125,
+          "load5": 4.77978515625,
+          "load15": 5.38916015625
+        },
+        {
+          "utc": "2026-09-18T22:04:54.385839+00:00",
+          "load1": 3.45556640625,
+          "load5": 4.7333984375,
+          "load15": 5.369140625
+        },
+        {
+          "utc": "2026-09-18T22:04:59.430666+00:00",
+          "load1": 3.5791015625,
+          "load5": 4.73779296875,
+          "load15": 5.36669921875
+        },
+        {
+          "utc": "2026-09-18T22:05:04.480267+00:00",
+          "load1": 4.41357421875,
+          "load5": 4.89111328125,
+          "load15": 5.4169921875
+        },
+        {
+          "utc": "2026-09-18T22:05:09.530845+00:00",
+          "load1": 4.38037109375,
+          "load5": 4.8759765625,
+          "load15": 5.408203125
+        },
+        {
+          "utc": "2026-09-18T22:05:14.579680+00:00",
+          "load1": 4.830078125,
+          "load5": 4.9609375,
+          "load15": 5.43505859375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:05:19.629911+00:00",
+      "elapsed_seconds": 50.481661666000036,
+      "after": {
+        "utc": "2026-09-18T22:05:19.629938+00:00",
+        "load1": 4.68310546875,
+        "load5": 4.92822265625,
+        "load15": 5.42041015625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "5dc7e049f955fab58e239fd0cceff3d423129b86e50312e08cc7cb86abe98e66",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.14,
+        "variable_bulk_bytes_per_cycle": 12.2,
+        "small_cycles_per_hash": 87.98,
+        "random_small_cycles_per_hash": 88.61
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-256-b4",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:05:38.004207+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:05:37.955158+00:00",
+        "load1": 4.40234375,
+        "load5": 4.8505859375,
+        "load15": 5.38037109375,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-256-b4",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-256-b4.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:05:38.006567+00:00",
+          "load1": 4.40234375,
+          "load5": 4.8505859375,
+          "load15": 5.38037109375
+        },
+        {
+          "utc": "2026-09-18T22:05:43.052295+00:00",
+          "load1": 4.2900390625,
+          "load5": 4.81982421875,
+          "load15": 5.3662109375
+        },
+        {
+          "utc": "2026-09-18T22:05:48.105081+00:00",
+          "load1": 4.1865234375,
+          "load5": 4.78955078125,
+          "load15": 5.35205078125
+        },
+        {
+          "utc": "2026-09-18T22:05:53.150382+00:00",
+          "load1": 4.01123046875,
+          "load5": 4.7431640625,
+          "load15": 5.33203125
+        },
+        {
+          "utc": "2026-09-18T22:05:58.197354+00:00",
+          "load1": 4.17041015625,
+          "load5": 4.763671875,
+          "load15": 5.3359375
+        },
+        {
+          "utc": "2026-09-18T22:06:03.250094+00:00",
+          "load1": 4.87744140625,
+          "load5": 4.900390625,
+          "load15": 5.38037109375
+        },
+        {
+          "utc": "2026-09-18T22:06:08.303720+00:00",
+          "load1": 5.04736328125,
+          "load5": 4.93505859375,
+          "load15": 5.3896484375
+        },
+        {
+          "utc": "2026-09-18T22:06:13.355308+00:00",
+          "load1": 5.04345703125,
+          "load5": 4.93603515625,
+          "load15": 5.38720703125
+        },
+        {
+          "utc": "2026-09-18T22:06:18.405227+00:00",
+          "load1": 4.87939453125,
+          "load5": 4.90380859375,
+          "load15": 5.373046875
+        },
+        {
+          "utc": "2026-09-18T22:06:23.454755+00:00",
+          "load1": 4.80859375,
+          "load5": 4.888671875,
+          "load15": 5.36474609375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:06:28.497034+00:00",
+      "elapsed_seconds": 50.49209366600007,
+      "after": {
+        "utc": "2026-09-18T22:06:28.497058+00:00",
+        "load1": 4.58349609375,
+        "load5": 4.84033203125,
+        "load15": 5.3447265625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "f97492c34714920bb6b58963bdbb4668a8a9de60c1b98c9d7e2d764fb7c23b88",
+      "metrics": {
+        "bulk_bytes_per_cycle": 12.71,
+        "variable_bulk_bytes_per_cycle": 12.37,
+        "small_cycles_per_hash": 86.94,
+        "random_small_cycles_per_hash": 87.1
+      }
+    },
+    {
+      "name": "chainhash-ext-k3-256-b4",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k3-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:06:37.736681+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:06:37.692875+00:00",
+        "load1": 4.40673828125,
+        "load5": 4.79541015625,
+        "load15": 5.322265625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k3-256-b4",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k3-256-b4.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:06:37.740049+00:00",
+          "load1": 4.40673828125,
+          "load5": 4.79541015625,
+          "load15": 5.322265625
+        },
+        {
+          "utc": "2026-09-18T22:06:42.780796+00:00",
+          "load1": 4.2939453125,
+          "load5": 4.76513671875,
+          "load15": 5.30859375
+        },
+        {
+          "utc": "2026-09-18T22:06:47.835132+00:00",
+          "load1": 4.27001953125,
+          "load5": 4.751953125,
+          "load15": 5.30078125
+        },
+        {
+          "utc": "2026-09-18T22:06:52.884205+00:00",
+          "load1": 4.248046875,
+          "load5": 4.7392578125,
+          "load15": 5.29296875
+        },
+        {
+          "utc": "2026-09-18T22:06:57.935091+00:00",
+          "load1": 4.14794921875,
+          "load5": 4.7099609375,
+          "load15": 5.279296875
+        },
+        {
+          "utc": "2026-09-18T22:07:02.981240+00:00",
+          "load1": 4.0556640625,
+          "load5": 4.68115234375,
+          "load15": 5.265625
+        },
+        {
+          "utc": "2026-09-18T22:07:08.031425+00:00",
+          "load1": 4.69140625,
+          "load5": 4.80224609375,
+          "load15": 5.3046875
+        },
+        {
+          "utc": "2026-09-18T22:07:13.084204+00:00",
+          "load1": 4.5556640625,
+          "load5": 4.77197265625,
+          "load15": 5.291015625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:07:18.134741+00:00",
+      "elapsed_seconds": 40.397267084000305,
+      "after": {
+        "utc": "2026-09-18T22:07:18.134773+00:00",
+        "load1": 4.4306640625,
+        "load5": 4.7421875,
+        "load15": 5.27734375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "398ba38c4f95c91db94decf09a0cb1e346d332a25c02b949de602ff99bffa2ee",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.4,
+        "variable_bulk_bytes_per_cycle": 17.28,
+        "small_cycles_per_hash": 88.99,
+        "random_small_cycles_per_hash": 90.75
+      }
+    },
+    {
+      "name": "chainhash-256",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:07:18.226213+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:07:18.181831+00:00",
+        "load1": 4.4306640625,
+        "load5": 4.7421875,
+        "load15": 5.27734375,
+        "smhasher_processes": [],
+        "name": "chainhash-256",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-256.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:07:18.228321+00:00",
+          "load1": 4.4306640625,
+          "load5": 4.7421875,
+          "load15": 5.27734375
+        },
+        {
+          "utc": "2026-09-18T22:07:23.272369+00:00",
+          "load1": 4.39599609375,
+          "load5": 4.7294921875,
+          "load15": 5.26953125
+        },
+        {
+          "utc": "2026-09-18T22:07:28.320679+00:00",
+          "load1": 4.2841796875,
+          "load5": 4.70068359375,
+          "load15": 5.255859375
+        },
+        {
+          "utc": "2026-09-18T22:07:33.375807+00:00",
+          "load1": 4.18115234375,
+          "load5": 4.67236328125,
+          "load15": 5.2421875
+        },
+        {
+          "utc": "2026-09-18T22:07:38.430563+00:00",
+          "load1": 4.08642578125,
+          "load5": 4.64453125,
+          "load15": 5.22900390625
+        },
+        {
+          "utc": "2026-09-18T22:07:43.481012+00:00",
+          "load1": 3.9990234375,
+          "load5": 4.6171875,
+          "load15": 5.2158203125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:07:48.534342+00:00",
+      "elapsed_seconds": 30.307571958999688,
+      "after": {
+        "utc": "2026-09-18T22:07:48.534366+00:00",
+        "load1": 3.9189453125,
+        "load5": 4.59033203125,
+        "load15": 5.20263671875,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "2a47ff812d928fcac63a4a7b252ff47d230284d79908c6c1f585a74103e18556",
+      "metrics": {
+        "bulk_bytes_per_cycle": 22.45,
+        "variable_bulk_bytes_per_cycle": 21.11,
+        "small_cycles_per_hash": 72.99,
+        "random_small_cycles_per_hash": 74.87
+      }
+    },
+    {
+      "name": "chainhash-1k",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-1k",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:07:48.625704+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:07:48.579134+00:00",
+        "load1": 3.9189453125,
+        "load5": 4.59033203125,
+        "load15": 5.20263671875,
+        "smhasher_processes": [],
+        "name": "chainhash-1k",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-1k.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:07:48.627819+00:00",
+          "load1": 3.9189453125,
+          "load5": 4.59033203125,
+          "load15": 5.20263671875
+        },
+        {
+          "utc": "2026-09-18T22:07:53.673109+00:00",
+          "load1": 3.84521484375,
+          "load5": 4.5634765625,
+          "load15": 5.189453125
+        },
+        {
+          "utc": "2026-09-18T22:07:58.719442+00:00",
+          "load1": 3.77734375,
+          "load5": 4.537109375,
+          "load15": 5.17626953125
+        },
+        {
+          "utc": "2026-09-18T22:08:03.773336+00:00",
+          "load1": 3.71484375,
+          "load5": 4.51123046875,
+          "load15": 5.1630859375
+        },
+        {
+          "utc": "2026-09-18T22:08:08.817073+00:00",
+          "load1": 3.7373046875,
+          "load5": 4.50244140625,
+          "load15": 5.15625
+        },
+        {
+          "utc": "2026-09-18T22:08:13.866513+00:00",
+          "load1": 3.67822265625,
+          "load5": 4.47705078125,
+          "load15": 5.1435546875
+        },
+        {
+          "utc": "2026-09-18T22:08:18.915217+00:00",
+          "load1": 3.78369140625,
+          "load5": 4.4853515625,
+          "load15": 5.142578125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:08:23.956951+00:00",
+      "elapsed_seconds": 35.3307015420005,
+      "after": {
+        "utc": "2026-09-18T22:08:23.956982+00:00",
+        "load1": 3.9609375,
+        "load5": 4.51025390625,
+        "load15": 5.1474609375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "3a73f5a9c6094ed3e404e3d0415781080e92d09edfe61cf2f0a604b6222eab80",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.75,
+        "variable_bulk_bytes_per_cycle": 17.53,
+        "small_cycles_per_hash": 75.58,
+        "random_small_cycles_per_hash": 77.32
+      }
+    },
+    {
+      "name": "rapidhash",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "rapidhash",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:08:24.044953+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:08:24.002980+00:00",
+        "load1": 3.9609375,
+        "load5": 4.51025390625,
+        "load15": 5.1474609375,
+        "smhasher_processes": [],
+        "name": "rapidhash",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/rapidhash.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:08:24.047016+00:00",
+          "load1": 3.9609375,
+          "load5": 4.51025390625,
+          "load15": 5.1474609375
+        },
+        {
+          "utc": "2026-09-18T22:08:29.086812+00:00",
+          "load1": 4.0439453125,
+          "load5": 4.51806640625,
+          "load15": 5.146484375
+        },
+        {
+          "utc": "2026-09-18T22:08:34.131628+00:00",
+          "load1": 4.0400390625,
+          "load5": 4.50927734375,
+          "load15": 5.1396484375
+        },
+        {
+          "utc": "2026-09-18T22:08:39.174727+00:00",
+          "load1": 3.95654296875,
+          "load5": 4.48388671875,
+          "load15": 5.126953125
+        },
+        {
+          "utc": "2026-09-18T22:08:44.223884+00:00",
+          "load1": 4.1201171875,
+          "load5": 4.5087890625,
+          "load15": 5.1318359375
+        },
+        {
+          "utc": "2026-09-18T22:08:49.271080+00:00",
+          "load1": 4.3505859375,
+          "load5": 4.5498046875,
+          "load15": 5.142578125
+        },
+        {
+          "utc": "2026-09-18T22:08:54.315047+00:00",
+          "load1": 4.322265625,
+          "load5": 4.54052734375,
+          "load15": 5.1357421875
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:08:59.366807+00:00",
+      "elapsed_seconds": 35.32129824999993,
+      "after": {
+        "utc": "2026-09-18T22:08:59.366829+00:00",
+        "load1": 4.45654296875,
+        "load5": 4.564453125,
+        "load15": 5.140625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "06cb8290c2332352b6fd4d9d798dc6493fc65e737234e36aca4bacdbb15b57ad",
+      "metrics": {
+        "bulk_bytes_per_cycle": 15.69,
+        "variable_bulk_bytes_per_cycle": 15.35,
+        "small_cycles_per_hash": 20.83,
+        "random_small_cycles_per_hash": 21.04
+      }
+    },
+    {
+      "name": "XXH3-64",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "XXH3-64",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:08:59.452159+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:08:59.410599+00:00",
+        "load1": 4.45654296875,
+        "load5": 4.564453125,
+        "load15": 5.140625,
+        "smhasher_processes": [],
+        "name": "XXH3-64",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/XXH3-64.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:08:59.454066+00:00",
+          "load1": 4.45654296875,
+          "load5": 4.564453125,
+          "load15": 5.140625
+        },
+        {
+          "utc": "2026-09-18T22:09:04.498425+00:00",
+          "load1": 4.33984375,
+          "load5": 4.5380859375,
+          "load15": 5.1279296875
+        },
+        {
+          "utc": "2026-09-18T22:09:09.539297+00:00",
+          "load1": 4.232421875,
+          "load5": 4.51220703125,
+          "load15": 5.115234375
+        },
+        {
+          "utc": "2026-09-18T22:09:14.590118+00:00",
+          "load1": 4.21337890625,
+          "load5": 4.50341796875,
+          "load15": 5.1083984375
+        },
+        {
+          "utc": "2026-09-18T22:09:19.635221+00:00",
+          "load1": 4.1162109375,
+          "load5": 4.47802734375,
+          "load15": 5.095703125
+        },
+        {
+          "utc": "2026-09-18T22:09:24.685597+00:00",
+          "load1": 4.2666015625,
+          "load5": 4.5029296875,
+          "load15": 5.1005859375
+        },
+        {
+          "utc": "2026-09-18T22:09:29.733897+00:00",
+          "load1": 4.1650390625,
+          "load5": 4.4775390625,
+          "load15": 5.087890625
+        },
+        {
+          "utc": "2026-09-18T22:09:34.774854+00:00",
+          "load1": 4.0712890625,
+          "load5": 4.45263671875,
+          "load15": 5.0751953125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:09:39.817551+00:00",
+      "elapsed_seconds": 40.36486799999966,
+      "after": {
+        "utc": "2026-09-18T22:09:39.817578+00:00",
+        "load1": 4.1455078125,
+        "load5": 4.46142578125,
+        "load15": 5.07470703125,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "c7de00a6ba1a920383d50c45f6a0b5532e4eb03ef37e222be89a88ff79167c23",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.08,
+        "variable_bulk_bytes_per_cycle": 12.62,
+        "small_cycles_per_hash": 24.89,
+        "random_small_cycles_per_hash": 25.12
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-256",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:09:39.900984+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:09:39.859741+00:00",
+        "load1": 4.1455078125,
+        "load5": 4.46142578125,
+        "load15": 5.07470703125,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-256",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-256.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:09:39.902919+00:00",
+          "load1": 4.1455078125,
+          "load5": 4.46142578125,
+          "load15": 5.07470703125
+        },
+        {
+          "utc": "2026-09-18T22:09:44.948786+00:00",
+          "load1": 4.1337890625,
+          "load5": 4.45361328125,
+          "load15": 5.068359375
+        },
+        {
+          "utc": "2026-09-18T22:09:49.990586+00:00",
+          "load1": 4.04296875,
+          "load5": 4.42919921875,
+          "load15": 5.05615234375
+        },
+        {
+          "utc": "2026-09-18T22:09:55.037730+00:00",
+          "load1": 3.958984375,
+          "load5": 4.4052734375,
+          "load15": 5.0439453125
+        },
+        {
+          "utc": "2026-09-18T22:10:00.079714+00:00",
+          "load1": 3.8818359375,
+          "load5": 4.3818359375,
+          "load15": 5.03173828125
+        },
+        {
+          "utc": "2026-09-18T22:10:05.146057+00:00",
+          "load1": 3.97119140625,
+          "load5": 4.39208984375,
+          "load15": 5.03125
+        },
+        {
+          "utc": "2026-09-18T22:10:10.186243+00:00",
+          "load1": 4.13330078125,
+          "load5": 4.41845703125,
+          "load15": 5.03662109375
+        },
+        {
+          "utc": "2026-09-18T22:10:15.228914+00:00",
+          "load1": 5.72412109375,
+          "load5": 4.7431640625,
+          "load15": 5.1474609375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:10:20.277368+00:00",
+      "elapsed_seconds": 40.37580970900035,
+      "after": {
+        "utc": "2026-09-18T22:10:20.277396+00:00",
+        "load1": 6.947265625,
+        "load5": 5.0126953125,
+        "load15": 5.240234375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "01366941d4d73357f7c10455dee93591bab35b615c6d97d35cc62a6cfbf26d0f",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.45,
+        "variable_bulk_bytes_per_cycle": 16.8,
+        "small_cycles_per_hash": 88.27,
+        "random_small_cycles_per_hash": 90.58
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-1024",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-1024",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:15:03.767957+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:15:03.724926+00:00",
+        "load1": 4.46630859375,
+        "load5": 4.98583984375,
+        "load15": 5.16796875,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-1024",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-1024.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:15:03.770225+00:00",
+          "load1": 4.46630859375,
+          "load5": 4.98583984375,
+          "load15": 5.16796875
+        },
+        {
+          "utc": "2026-09-18T22:15:08.807827+00:00",
+          "load1": 4.3486328125,
+          "load5": 4.95263671875,
+          "load15": 5.15478515625
+        },
+        {
+          "utc": "2026-09-18T22:15:13.854224+00:00",
+          "load1": 4.240234375,
+          "load5": 4.919921875,
+          "load15": 5.14208984375
+        },
+        {
+          "utc": "2026-09-18T22:15:18.897412+00:00",
+          "load1": 4.140625,
+          "load5": 4.8876953125,
+          "load15": 5.12939453125
+        },
+        {
+          "utc": "2026-09-18T22:15:23.946206+00:00",
+          "load1": 4.12890625,
+          "load5": 4.87255859375,
+          "load15": 5.12255859375
+        },
+        {
+          "utc": "2026-09-18T22:15:28.990514+00:00",
+          "load1": 4.2783203125,
+          "load5": 4.89111328125,
+          "load15": 5.12744140625
+        },
+        {
+          "utc": "2026-09-18T22:15:34.038697+00:00",
+          "load1": 4.17578125,
+          "load5": 4.859375,
+          "load15": 5.11474609375
+        },
+        {
+          "utc": "2026-09-18T22:15:39.088210+00:00",
+          "load1": 4.08154296875,
+          "load5": 4.828125,
+          "load15": 5.10205078125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:15:44.131495+00:00",
+      "elapsed_seconds": 40.362798624999414,
+      "after": {
+        "utc": "2026-09-18T22:15:44.131542+00:00",
+        "load1": 3.91455078125,
+        "load5": 4.78076171875,
+        "load15": 5.08349609375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "870cf1048d89b8d2a4ce8bc4044936289023b1b8951fc81ed28713d22827fea0",
+      "metrics": {
+        "bulk_bytes_per_cycle": 17.43,
+        "variable_bulk_bytes_per_cycle": 17.09,
+        "small_cycles_per_hash": 90.81,
+        "random_small_cycles_per_hash": 92.84
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-256",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:15:44.243391+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:15:44.195780+00:00",
+        "load1": 3.91455078125,
+        "load5": 4.78076171875,
+        "load15": 5.08349609375,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-256",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-256.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:15:44.245411+00:00",
+          "load1": 3.91455078125,
+          "load5": 4.78076171875,
+          "load15": 5.08349609375
+        },
+        {
+          "utc": "2026-09-18T22:15:49.288022+00:00",
+          "load1": 3.84130859375,
+          "load5": 4.7509765625,
+          "load15": 5.07080078125
+        },
+        {
+          "utc": "2026-09-18T22:15:54.342301+00:00",
+          "load1": 3.77392578125,
+          "load5": 4.7216796875,
+          "load15": 5.05859375
+        },
+        {
+          "utc": "2026-09-18T22:15:59.390519+00:00",
+          "load1": 3.7119140625,
+          "load5": 4.69287109375,
+          "load15": 5.04638671875
+        },
+        {
+          "utc": "2026-09-18T22:16:04.435232+00:00",
+          "load1": 3.73486328125,
+          "load5": 4.68115234375,
+          "load15": 5.0400390625
+        },
+        {
+          "utc": "2026-09-18T22:16:09.481422+00:00",
+          "load1": 3.755859375,
+          "load5": 4.66943359375,
+          "load15": 5.03369140625
+        },
+        {
+          "utc": "2026-09-18T22:16:14.520732+00:00",
+          "load1": 3.6953125,
+          "load5": 4.6416015625,
+          "load15": 5.021484375
+        },
+        {
+          "utc": "2026-09-18T22:16:19.562878+00:00",
+          "load1": 3.63916015625,
+          "load5": 4.6142578125,
+          "load15": 5.00927734375
+        },
+        {
+          "utc": "2026-09-18T22:16:24.607773+00:00",
+          "load1": 3.66796875,
+          "load5": 4.60400390625,
+          "load15": 5.0029296875
+        },
+        {
+          "utc": "2026-09-18T22:16:29.655265+00:00",
+          "load1": 3.6142578125,
+          "load5": 4.5771484375,
+          "load15": 4.99072265625
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:16:34.707729+00:00",
+      "elapsed_seconds": 50.46372016700025,
+      "after": {
+        "utc": "2026-09-18T22:16:34.707770+00:00",
+        "load1": 3.56494140625,
+        "load5": 4.55078125,
+        "load15": 4.97900390625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "d6999b434a4b8385a28dce6aeeeea9230f4e3c5e66a206009e51b1038dd4c9ed",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.09,
+        "variable_bulk_bytes_per_cycle": 12.24,
+        "small_cycles_per_hash": 88.83,
+        "random_small_cycles_per_hash": 87.64
+      }
+    },
+    {
+      "name": "chainhash-ext-k2-1024",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k2-1024",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:16:34.796433+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:16:34.755979+00:00",
+        "load1": 3.56494140625,
+        "load5": 4.55078125,
+        "load15": 4.97900390625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k2-1024",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k2-1024.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:16:34.798377+00:00",
+          "load1": 3.56494140625,
+          "load5": 4.55078125,
+          "load15": 4.97900390625
+        },
+        {
+          "utc": "2026-09-18T22:16:39.843550+00:00",
+          "load1": 3.759765625,
+          "load5": 4.57470703125,
+          "load15": 4.98486328125
+        },
+        {
+          "utc": "2026-09-18T22:16:44.892868+00:00",
+          "load1": 3.69873046875,
+          "load5": 4.54833984375,
+          "load15": 4.97314453125
+        },
+        {
+          "utc": "2026-09-18T22:16:49.947289+00:00",
+          "load1": 3.642578125,
+          "load5": 4.5224609375,
+          "load15": 4.96142578125
+        },
+        {
+          "utc": "2026-09-18T22:16:54.988257+00:00",
+          "load1": 3.6708984375,
+          "load5": 4.513671875,
+          "load15": 4.95556640625
+        },
+        {
+          "utc": "2026-09-18T22:17:00.033048+00:00",
+          "load1": 3.61669921875,
+          "load5": 4.48828125,
+          "load15": 4.94384765625
+        },
+        {
+          "utc": "2026-09-18T22:17:05.141304+00:00",
+          "load1": 3.56689453125,
+          "load5": 4.46337890625,
+          "load15": 4.93212890625
+        },
+        {
+          "utc": "2026-09-18T22:17:10.187749+00:00",
+          "load1": 3.681640625,
+          "load5": 4.47216796875,
+          "load15": 4.93212890625
+        },
+        {
+          "utc": "2026-09-18T22:17:15.236294+00:00",
+          "load1": 3.70703125,
+          "load5": 4.4638671875,
+          "load15": 4.92626953125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:17:20.283098+00:00",
+      "elapsed_seconds": 45.486079500000415,
+      "after": {
+        "utc": "2026-09-18T22:17:20.283124+00:00",
+        "load1": 3.73046875,
+        "load5": 4.4560546875,
+        "load15": 4.92041015625,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "8e180799d66e54c6b609902ce0feb3384b5e89966cca97fa7d4a89d7255f3996",
+      "metrics": {
+        "bulk_bytes_per_cycle": 13.15,
+        "variable_bulk_bytes_per_cycle": 13.14,
+        "small_cycles_per_hash": 90.72,
+        "random_small_cycles_per_hash": 89.5
+      }
+    },
+    {
+      "name": "chainhash-ext-k3-256",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k3-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:17:20.370493+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:17:20.327453+00:00",
+        "load1": 3.73046875,
+        "load5": 4.4560546875,
+        "load15": 4.92041015625,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k3-256",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k3-256.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:17:20.372648+00:00",
+          "load1": 3.73046875,
+          "load5": 4.4560546875,
+          "load15": 4.92041015625
+        },
+        {
+          "utc": "2026-09-18T22:17:25.419428+00:00",
+          "load1": 3.671875,
+          "load5": 4.431640625,
+          "load15": 4.90869140625
+        },
+        {
+          "utc": "2026-09-18T22:17:30.463052+00:00",
+          "load1": 3.61767578125,
+          "load5": 4.40771484375,
+          "load15": 4.8974609375
+        },
+        {
+          "utc": "2026-09-18T22:17:35.508048+00:00",
+          "load1": 3.72802734375,
+          "load5": 4.41748046875,
+          "load15": 4.89794921875
+        },
+        {
+          "utc": "2026-09-18T22:17:40.558428+00:00",
+          "load1": 3.58935546875,
+          "load5": 4.376953125,
+          "load15": 4.880859375
+        },
+        {
+          "utc": "2026-09-18T22:17:45.601857+00:00",
+          "load1": 3.6220703125,
+          "load5": 4.37060546875,
+          "load15": 4.87548828125
+        },
+        {
+          "utc": "2026-09-18T22:17:50.649800+00:00",
+          "load1": 3.57177734375,
+          "load5": 4.34765625,
+          "load15": 4.8642578125
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:17:55.710983+00:00",
+      "elapsed_seconds": 35.33994474999963,
+      "after": {
+        "utc": "2026-09-18T22:17:55.711008+00:00",
+        "load1": 3.52587890625,
+        "load5": 4.3251953125,
+        "load15": 4.85302734375,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "86240817bce81f233e83577cb2763ea81c05c03d3e378a9a7179323fdce92378",
+      "metrics": {
+        "bulk_bytes_per_cycle": 19.63,
+        "variable_bulk_bytes_per_cycle": 19.62,
+        "small_cycles_per_hash": 88.94,
+        "random_small_cycles_per_hash": 88.25
+      }
+    },
+    {
+      "name": "chainhash-ext-k1-256-b4",
+      "run": 3,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-256-b4",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T22:17:55.796723+00:00",
+      "gate": {
+        "utc": "2026-09-18T22:17:55.754525+00:00",
+        "load1": 3.52587890625,
+        "load5": 4.3251953125,
+        "load15": 4.85302734375,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-256-b4",
+        "run": 3,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-256-b4.run3.txt",
+      "overlapping_processes": [],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T22:17:55.798758+00:00",
+          "load1": 3.52587890625,
+          "load5": 4.3251953125,
+          "load15": 4.85302734375
+        },
+        {
+          "utc": "2026-09-18T22:18:00.842783+00:00",
+          "load1": 3.5634765625,
+          "load5": 4.3193359375,
+          "load15": 4.84765625
+        },
+        {
+          "utc": "2026-09-18T22:18:05.892283+00:00",
+          "load1": 3.75830078125,
+          "load5": 4.34716796875,
+          "load15": 4.85400390625
+        },
+        {
+          "utc": "2026-09-18T22:18:10.940834+00:00",
+          "load1": 3.77734375,
+          "load5": 4.34130859375,
+          "load15": 4.8486328125
+        },
+        {
+          "utc": "2026-09-18T22:18:15.991822+00:00",
+          "load1": 3.794921875,
+          "load5": 4.33544921875,
+          "load15": 4.84326171875
+        },
+        {
+          "utc": "2026-09-18T22:18:21.042604+00:00",
+          "load1": 3.73095703125,
+          "load5": 4.31298828125,
+          "load15": 4.83203125
+        },
+        {
+          "utc": "2026-09-18T22:18:26.091515+00:00",
+          "load1": 3.83251953125,
+          "load5": 4.32421875,
+          "load15": 4.8330078125
+        },
+        {
+          "utc": "2026-09-18T22:18:31.133546+00:00",
+          "load1": 3.765625,
+          "load5": 4.3017578125,
+          "load15": 4.822265625
+        },
+        {
+          "utc": "2026-09-18T22:18:36.183346+00:00",
+          "load1": 3.7041015625,
+          "load5": 4.27978515625,
+          "load15": 4.8115234375
+        }
+      ],
+      "replaces_archived_attempts": [],
+      "returncode": 0,
+      "finished": "2026-09-18T22:18:41.231318+00:00",
+      "elapsed_seconds": 45.43400037500032,
+      "after": {
+        "utc": "2026-09-18T22:18:41.231342+00:00",
+        "load1": 3.5673828125,
+        "load5": 4.24169921875,
+        "load15": 4.794921875,
+        "smhasher_processes": []
+      },
+      "raw_sha256": "c64ef6c63f8baa46935df8673119fd4726084d6d82efeb3e6c148db0c31a3b52",
+      "metrics": {
+        "bulk_bytes_per_cycle": 14.81,
+        "variable_bulk_bytes_per_cycle": 14.3,
+        "small_cycles_per_hash": 89.07,
+        "random_small_cycles_per_hash": 90.58
+      }
+    }
+  ],
+  "excluded_runs": [
+    {
+      "name": "chainhash-ext-k1-256",
+      "run": 1,
+      "command": [
+        "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-m2-adjacent-ext/build/SMHasher3",
+        "chainhash-ext-k1-256",
+        "--test=Speed"
+      ],
+      "started": "2026-09-18T20:37:52.581932+00:00",
+      "gate": {
+        "utc": "2026-09-18T20:37:52.502381+00:00",
+        "load1": 4.33349609375,
+        "load5": 5.57373046875,
+        "load15": 5.783203125,
+        "smhasher_processes": [],
+        "name": "chainhash-ext-k1-256",
+        "run": 1,
+        "accepted": true
+      },
+      "binary_sha256": "592010540dcc66e2f77dfd17e580f199286e4fdff9f85dc10b64b0420a654a4d",
+      "raw_file": "evidence/speeds/chainhash-ext-k1-256.run1.excluded-1789763913317458000.txt",
+      "overlapping_processes": [
+        {
+          "utc": "2026-09-18T20:37:57.886179+00:00",
+          "processes": [
+            {
+              "pid": 30233,
+              "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+            }
+          ]
+        },
+        {
+          "utc": "2026-09-18T20:38:02.937053+00:00",
+          "processes": [
+            {
+              "pid": 30233,
+              "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+            }
+          ]
+        },
+        {
+          "utc": "2026-09-18T20:38:07.999098+00:00",
+          "processes": [
+            {
+              "pid": 30233,
+              "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+            }
+          ]
+        },
+        {
+          "utc": "2026-09-18T20:38:13.055894+00:00",
+          "processes": [
+            {
+              "pid": 30233,
+              "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+            }
+          ]
+        },
+        {
+          "utc": "2026-09-18T20:38:18.105976+00:00",
+          "processes": [
+            {
+              "pid": 30233,
+              "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+            }
+          ]
+        },
+        {
+          "utc": "2026-09-18T20:38:23.168539+00:00",
+          "processes": [
+            {
+              "pid": 30233,
+              "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+            }
+          ]
+        },
+        {
+          "utc": "2026-09-18T20:38:28.221467+00:00",
+          "processes": [
+            {
+              "pid": 30233,
+              "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+            }
+          ]
+        }
+      ],
+      "load_samples": [
+        {
+          "utc": "2026-09-18T20:37:52.584195+00:00",
+          "load1": 4.33349609375,
+          "load5": 5.57373046875,
+          "load15": 5.783203125
+        },
+        {
+          "utc": "2026-09-18T20:37:57.886179+00:00",
+          "load1": 8.0703125,
+          "load5": 6.32763671875,
+          "load15": 6.0478515625
+        },
+        {
+          "utc": "2026-09-18T20:38:02.937053+00:00",
+          "load1": 8.14453125,
+          "load5": 6.37158203125,
+          "load15": 6.06494140625
+        },
+        {
+          "utc": "2026-09-18T20:38:07.999098+00:00",
+          "load1": 8.373046875,
+          "load5": 6.4482421875,
+          "load15": 6.09375
+        },
+        {
+          "utc": "2026-09-18T20:38:13.055894+00:00",
+          "load1": 8.4228515625,
+          "load5": 6.490234375,
+          "load15": 6.1103515625
+        },
+        {
+          "utc": "2026-09-18T20:38:18.105976+00:00",
+          "load1": 8.7890625,
+          "load5": 6.59814453125,
+          "load15": 6.150390625
+        },
+        {
+          "utc": "2026-09-18T20:38:23.168539+00:00",
+          "load1": 8.4052734375,
+          "load5": 6.5546875,
+          "load15": 6.1376953125
+        },
+        {
+          "utc": "2026-09-18T20:38:28.221467+00:00",
+          "load1": 8.05224609375,
+          "load5": 6.51220703125,
+          "load15": 6.125
+        }
+      ],
+      "returncode": 0,
+      "finished": "2026-09-18T20:38:33.267880+00:00",
+      "elapsed_seconds": 40.685723042000006,
+      "after": {
+        "utc": "2026-09-18T20:38:33.267921+00:00",
+        "load1": 8.1279296875,
+        "load5": 6.55322265625,
+        "load15": 6.1416015625,
+        "smhasher_processes": [
+          {
+            "pid": 30233,
+            "command": "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-128-adjacent/build-mac/SMHasher3"
+          }
+        ]
+      },
+      "raw_sha256": "3a3491bda7880f51602784c44cf68543286a7eeac7bb5394991f3009c72c4728",
+      "metrics": {
+        "bulk_bytes_per_cycle": 20.32,
+        "variable_bulk_bytes_per_cycle": 19.28,
+        "small_cycles_per_hash": 76.77,
+        "random_small_cycles_per_hash": 77.68
+      }
+    }
+  ],
+  "instruction_audit": {
+    "per_64_bytes_order": [
+      "LDP",
+      "LD2",
+      "EXT",
+      "PMULL",
+      "PMULL2",
+      "EOR3"
+    ],
+    "full_PH": {
+      "K1": [
+        4,
+        0,
+        2,
+        2,
+        2,
+        2
+      ],
+      "K2": [
+        2,
+        2,
+        0,
+        2,
+        2,
+        2
+      ],
+      "K3": [
+        2,
+        0,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "all_actual_bulk_loops_simd_stack_accesses": 0,
+    "all_actual_bulk_loops_SIMD_GPR_transfers": 0,
+    "objects": {
+      "chainhash_ext_k1_1024.cpp.o": {
+        "object": "build/CMakeFiles/SMHasher3Hashlib.dir/hashes/chainhash_ext_k1_1024.cpp.o",
+        "loops": [
+          {
+            "start": "0x1f0",
+            "end": "0x244",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x1e4",
+            "end": "0x274",
+            "counts": {
+              "mov": 2,
+              "movi": 2,
+              "add": 4,
+              "ldp": 4,
+              "eor": 5,
+              "ext": 3,
+              "pmull": 3,
+              "pmull2": 4,
+              "eor3": 5,
+              "cmp": 2,
+              "b": 2,
+              "sub": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x290",
+            "end": "0x2e4",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x318",
+            "end": "0x36c",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          }
+        ]
+      },
+      "chainhash_ext_k1_256.cpp.o": {
+        "object": "build/CMakeFiles/SMHasher3Hashlib.dir/hashes/chainhash_ext_k1_256.cpp.o",
+        "loops": [
+          {
+            "start": "0x1f0",
+            "end": "0x244",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x1e4",
+            "end": "0x274",
+            "counts": {
+              "mov": 2,
+              "movi": 2,
+              "add": 4,
+              "ldp": 4,
+              "eor": 5,
+              "ext": 3,
+              "pmull": 3,
+              "pmull2": 4,
+              "eor3": 5,
+              "cmp": 2,
+              "b": 2,
+              "sub": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x290",
+            "end": "0x2e4",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x318",
+            "end": "0x36c",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x5d0",
+            "end": "0x624",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x638",
+            "end": "0x688",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x6c0",
+            "end": "0x710",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x728",
+            "end": "0x778",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x5c4",
+            "end": "0x7fc",
+            "counts": {
+              "mov": 5,
+              "movi": 8,
+              "add": 13,
+              "ldp": 16,
+              "eor": 22,
+              "ext": 12,
+              "pmull": 15,
+              "pmull2": 22,
+              "eor3": 19,
+              "cmp": 5,
+              "b": 5,
+              "sub": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x834",
+            "end": "0x888",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x828",
+            "end": "0x8b8",
+            "counts": {
+              "mov": 2,
+              "movi": 2,
+              "add": 4,
+              "ldp": 4,
+              "eor": 5,
+              "ext": 3,
+              "pmull": 3,
+              "pmull2": 4,
+              "eor3": 5,
+              "cmp": 2,
+              "b": 2,
+              "sub": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x8d4",
+            "end": "0x928",
+            "counts": {
+              "add": 3,
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x950",
+            "end": "0x9a4",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          }
+        ]
+      },
+      "chainhash_ext_k2_1024.cpp.o": {
+        "object": "build/CMakeFiles/SMHasher3Hashlib.dir/hashes/chainhash_ext_k2_1024.cpp.o",
+        "loops": [
+          {
+            "start": "0x6f4",
+            "end": "0x748",
+            "counts": {
+              "add": 5,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x6e8",
+            "end": "0x778",
+            "counts": {
+              "mov": 2,
+              "movi": 2,
+              "add": 6,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 5,
+              "pmull": 3,
+              "pmull2": 4,
+              "eor3": 5,
+              "cmp": 2,
+              "b": 2,
+              "ext": 1,
+              "sub": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x790",
+            "end": "0x7e4",
+            "counts": {
+              "add": 5,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x818",
+            "end": "0x86c",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          }
+        ]
+      },
+      "chainhash_ext_k2_256.cpp.o": {
+        "object": "build/CMakeFiles/SMHasher3Hashlib.dir/hashes/chainhash_ext_k2_256.cpp.o",
+        "loops": [
+          {
+            "start": "0x2ec",
+            "end": "0x340",
+            "counts": {
+              "add": 5,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x2e0",
+            "end": "0x370",
+            "counts": {
+              "mov": 2,
+              "movi": 2,
+              "add": 6,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 5,
+              "pmull": 3,
+              "pmull2": 4,
+              "eor3": 5,
+              "cmp": 2,
+              "b": 2,
+              "ext": 1,
+              "sub": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x388",
+            "end": "0x3dc",
+            "counts": {
+              "add": 5,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x410",
+            "end": "0x464",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x6c4",
+            "end": "0x718",
+            "counts": {
+              "add": 5,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x72c",
+            "end": "0x784",
+            "counts": {
+              "add": 3,
+              "sub": 4,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x7bc",
+            "end": "0x814",
+            "counts": {
+              "add": 3,
+              "sub": 4,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x82c",
+            "end": "0x884",
+            "counts": {
+              "add": 3,
+              "sub": 4,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x6b8",
+            "end": "0x908",
+            "counts": {
+              "mov": 5,
+              "movi": 8,
+              "add": 15,
+              "ld2": 8,
+              "ldp": 8,
+              "eor": 22,
+              "pmull": 15,
+              "pmull2": 22,
+              "eor3": 19,
+              "cmp": 5,
+              "b": 5,
+              "sub": 13,
+              "ext": 4
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x93c",
+            "end": "0x990",
+            "counts": {
+              "add": 5,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x930",
+            "end": "0x9c0",
+            "counts": {
+              "mov": 2,
+              "movi": 2,
+              "add": 6,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 5,
+              "pmull": 3,
+              "pmull2": 4,
+              "eor3": 5,
+              "cmp": 2,
+              "b": 2,
+              "ext": 1,
+              "sub": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x9d8",
+            "end": "0xa2c",
+            "counts": {
+              "add": 5,
+              "ld2": 2,
+              "ldp": 2,
+              "eor": 4,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "cmp": 1,
+              "mov": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0xa54",
+            "end": "0xaa8",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          }
+        ]
+      },
+      "chainhash_ext_k3_256.cpp.o": {
+        "object": "build/CMakeFiles/SMHasher3Hashlib.dir/hashes/chainhash_ext_k3_256.cpp.o",
+        "loops": [
+          {
+            "start": "0x204",
+            "end": "0x318",
+            "counts": {
+              "movi": 2,
+              "ldp": 8,
+              "eor": 18,
+              "ext": 9,
+              "pmull": 9,
+              "pmull2": 10,
+              "eor3": 10,
+              "add": 1,
+              "sub": 1,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x45c",
+            "end": "0x4b0",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0x734",
+            "end": "0xb98",
+            "counts": {
+              "movi": 8,
+              "ldp": 32,
+              "eor": 74,
+              "ext": 36,
+              "pmull": 39,
+              "pmull2": 46,
+              "eor3": 40,
+              "add": 4,
+              "sub": 1,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0xbe0",
+            "end": "0xcf4",
+            "counts": {
+              "movi": 2,
+              "ldp": 8,
+              "eor": 18,
+              "ext": 9,
+              "pmull": 9,
+              "pmull2": 10,
+              "eor3": 10,
+              "add": 1,
+              "sub": 1,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          },
+          {
+            "start": "0xe2c",
+            "end": "0xe80",
+            "counts": {
+              "ldp": 4,
+              "eor": 4,
+              "ext": 2,
+              "pmull": 2,
+              "pmull2": 2,
+              "eor3": 2,
+              "sub": 1,
+              "add": 3,
+              "cmp": 1,
+              "b": 1
+            },
+            "simd_stack": [],
+            "gpr_transfers": []
+          }
+        ]
+      }
+    }
+  },
+  "verification": {
+    "kernel_definition_combinations": 5,
+    "cases_per_combination": 20535,
+    "random_lengths_0_4096_per_combination": 12000,
+    "long_inputs_through_bytes": 1048576,
+    "oracles": [
+      "chainhash_x86_portable",
+      "independent bit-serial polynomial long division"
+    ],
+    "guarded_ubsan_short_cases_per_combination": 8194,
+    "logs": "evidence/tests.log"
+  },
+  "load_microbenchmark": {
+    "gate": {
+      "utc": "2026-09-18T22:18:50.553093+00:00",
+      "load1": 3.47314453125,
+      "smhasher_processes": []
+    },
+    "during": [
+      {
+        "utc": "2026-09-18T22:18:50.592194+00:00",
+        "load1": 3.47314453125,
+        "smhasher_processes": []
+      },
+      {
+        "utc": "2026-09-18T22:18:51.641110+00:00",
+        "load1": 3.47314453125,
+        "smhasher_processes": []
+      }
+    ],
+    "overlap_detected": false,
+    "units": "wall-clock nanoseconds per instruction group; reciprocal throughput, not instruction latency or PMU cycles",
+    "iterations": 20000000,
+    "groups_per_iteration": 8,
+    "repeats": 7,
+    "raw_sha256": "4b13917c258c0a3a0c2842bfad49b2cd908b8b3693c6f0de346a5a33a7029062",
+    "summary": {
+      "ld2": {
+        "runs_ns_per_32B_group": [
+          0.298259375,
+          0.298424481,
+          0.298279425,
+          0.300052606,
+          0.30925625,
+          0.29915495,
+          0.305994531
+        ],
+        "median_ns_per_32B_group": 0.29915495,
+        "deviations_percent": [
+          -0.299368270523348,
+          -0.2441774739144198,
+          -0.2926660581748619,
+          0.30006389665289124,
+          3.376611351408365,
+          0.0,
+          2.2863004606810122
+        ]
+      },
+      "ldp": {
+        "runs_ns_per_32B_group": [
+          0.210743225,
+          0.210950519,
+          0.211186719,
+          0.217753125,
+          0.212211456,
+          0.211727344,
+          0.211933075
+        ],
+        "median_ns_per_32B_group": 0.211727344,
+        "deviations_percent": [
+          -0.46480486715027025,
+          -0.3668987601336937,
+          -0.2553401888421236,
+          2.846009819119044,
+          0.2286487852036556,
+          0.0,
+          0.09716789343938714
+        ]
+      },
+      "ldp_ext": {
+        "runs_ns_per_32B_group": [
+          0.211154425,
+          0.212561456,
+          0.212097394,
+          0.218613281,
+          0.211219788,
+          0.211575519,
+          0.21100365
+        ],
+        "median_ns_per_32B_group": 0.211575519,
+        "deviations_percent": [
+          -0.19902775235540737,
+          0.4659976752792616,
+          0.2466613351424618,
+          3.326359322318373,
+          -0.16813429156706805,
+          0.0,
+          -0.27029072300184254
+        ]
+      },
+      "ext_only": {
+        "runs_ns_per_32B_group": [
+          0.074535156,
+          0.07464505,
+          0.074577344,
+          0.076263025,
+          0.074737762,
+          0.074540625,
+          0.074419006
+        ],
+        "median_ns_per_32B_group": 0.074577344,
+        "deviations_percent": [
+          -0.05656945894989551,
+          0.09078628490710727,
+          0.0,
+          2.2603124616505488,
+          0.21510286019303937,
+          -0.04923613262495241,
+          -0.21231380940571754
+        ]
+      }
+    }
+  },
+  "best": {
+    "256": "chainhash-ext-k3-256",
+    "1024": "chainhash-ext-k1-1024"
+  }
+}

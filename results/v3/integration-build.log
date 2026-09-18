@@ -1,0 +1,2 @@
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/compile.c -o build/v3-compile
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -march=native+crypto -x c++ test/v3/compile.c -o build/v3-cpp

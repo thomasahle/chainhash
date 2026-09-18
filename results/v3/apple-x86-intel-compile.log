@@ -1,0 +1,202 @@
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:309:5: error: unknown token in expression
+  309 |     __cpuid(__leaf, __eax, __ebx, __ecx, __edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:271:12: note: expanded from macro '__cpuid'
+  271 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,rsi
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:309:5: error: unknown token in expression
+  309 |     __cpuid(__leaf, __eax, __ebx, __ecx, __edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:270:11: note: expanded from macro '__cpuid'
+  270 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,rsi
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:324:5: error: unknown token in expression
+  324 |     __cpuid(__leaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:271:12: note: expanded from macro '__cpuid'
+  271 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,rdi
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:324:5: error: unknown token in expression
+  324 |     __cpuid(__leaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:270:11: note: expanded from macro '__cpuid'
+  270 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,rdi
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:338:5: error: unknown token in expression
+  338 |     __cpuid_count(__leaf, __subleaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:278:12: note: expanded from macro '__cpuid_count'
+  278 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,rsi
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:338:5: error: unknown token in expression
+  338 |     __cpuid_count(__leaf, __subleaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:277:11: note: expanded from macro '__cpuid_count'
+  277 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,rsi
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:309:5: error: unknown token in expression
+  309 |     __cpuid(__leaf, __eax, __ebx, __ecx, __edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:271:12: note: expanded from macro '__cpuid'
+  271 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,rsi
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:309:5: error: unknown token in expression
+  309 |     __cpuid(__leaf, __eax, __ebx, __ecx, __edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:270:11: note: expanded from macro '__cpuid'
+  270 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,rsi
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:324:5: error: unknown token in expression
+  324 |     __cpuid(__leaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:271:12: note: expanded from macro '__cpuid'
+  271 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,r8
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:324:5: error: unknown token in expression
+  324 |     __cpuid(__leaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:270:11: note: expanded from macro '__cpuid'
+  270 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,r8
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:338:5: error: unknown token in expression
+  338 |     __cpuid_count(__leaf, __subleaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:278:12: note: expanded from macro '__cpuid_count'
+  278 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,rsi
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:338:5: error: unknown token in expression
+  338 |     __cpuid_count(__leaf, __subleaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:277:11: note: expanded from macro '__cpuid_count'
+  277 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,rsi
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:309:5: error: unknown token in expression
+  309 |     __cpuid(__leaf, __eax, __ebx, __ecx, __edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:271:12: note: expanded from macro '__cpuid'
+  271 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,rsi
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:309:5: error: unknown token in expression
+  309 |     __cpuid(__leaf, __eax, __ebx, __ecx, __edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:270:11: note: expanded from macro '__cpuid'
+  270 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,rsi
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:324:5: error: unknown token in expression
+  324 |     __cpuid(__leaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:271:12: note: expanded from macro '__cpuid'
+  271 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,r8
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:324:5: error: unknown token in expression
+  324 |     __cpuid(__leaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:270:11: note: expanded from macro '__cpuid'
+  270 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,r8
+      |          ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:338:5: error: unknown token in expression
+  338 |     __cpuid_count(__leaf, __subleaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:278:12: note: expanded from macro '__cpuid_count'
+  278 |           "  cpuid\n" \
+      |            ^
+<inline asm>:2:11: note: instantiated into assembly here
+    2 |           xchgq  %rbx,rsi
+      |                  ^
+In file included from test/v3/compile.c:1:
+In file included from include/chainhash3.h:65:
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:338:5: error: unknown token in expression
+  338 |     __cpuid_count(__leaf, __subleaf, *__eax, *__ebx, *__ecx, *__edx);
+      |     ^
+/Library/Developer/CommandLineTools/usr/lib/clang/17/include/cpuid.h:277:11: note: expanded from macro '__cpuid_count'
+  277 |     __asm("  xchgq  %%rbx,%q1\n" \
+      |           ^
+<inline asm>:4:10: note: instantiated into assembly here
+    4 |   xchgq  %rbx,rsi
+      |          ^
+18 errors generated.
+build/v3-x86-c99.o:   Mach-O 64-bit object x86_64
+build/v3-x86-cpp.o:   Mach-O 64-bit object x86_64
+build/v3-x86-intel.o: cannot open `build/v3-x86-intel.o' (No such file or directory)

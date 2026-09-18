@@ -1,0 +1,10 @@
+machdep.cpu.brand_string: Apple M2 Pro
+hw.physicalcpu: 12
+hw.logicalcpu: 12
+ProductName:		macOS
+ProductVersion:		27.0
+BuildVersion:		26A428
+Apple clang version 17.0.0 (clang-1700.6.4.2)
+Target: arm64-apple-darwin27.0.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin

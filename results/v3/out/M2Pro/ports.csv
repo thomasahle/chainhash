@@ -1,0 +1,11 @@
+# calibrated_cycles_per_ns=3.345180392
+operation,run,cycles_per_instruction
+pmull,1,0.373405750
+pmull,2,0.377378188
+pmull,3,0.373405750
+eor3,1,0.250261312
+eor3,2,0.253188313
+eor3,3,0.248797750
+eor,1,0.250261312
+eor,2,0.248797750
+eor,3,0.249006875

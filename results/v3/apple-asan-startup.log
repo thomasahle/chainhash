@@ -1,0 +1,3 @@
+cc -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/v3/guard.c -o build/v3-guard-sanitize
+./build/v3-guard-sanitize
+make: *** [sanitize-v3] Terminated: 15

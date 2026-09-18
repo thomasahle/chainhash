@@ -1,0 +1,31 @@
+{
+  "host": "Xeon",
+  "name": "komihash",
+  "test": "Speed",
+  "run": 1,
+  "command": [
+    "taskset",
+    "-c",
+    "16-23",
+    "/home/thomas-ahle/agents/chainhash-v3-horner/build/SMHasher3",
+    "komihash",
+    "--test=Speed"
+  ],
+  "raw_file": "out/Xeon/komihash.run1.txt",
+  "binary_sha256": "30cd33a25add387675c2de0d2cdc0ca4698012ef5be44614f6b7a38d6099170c",
+  "started": "2026-09-18T20:13:59.767893+00:00",
+  "load_before": [
+    6.99,
+    6.86,
+    5.78
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T20:15:21.897604+00:00",
+  "elapsed_seconds": 82.12964883598033,
+  "load_after": [
+    7.41,
+    7.0,
+    5.92
+  ],
+  "raw_sha256": "8d1c2b652a2ff2d434e7e8bd4653c6e333d6decf58f511130ed6d9c43caa10fd"
+}

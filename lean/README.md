@@ -1,5 +1,9 @@
 # Machine-checked ChainHash proofs
 
+This project proves **v1, the paper's function** in `include/chainhash.h`.
+ChainHash-Horner v3 has a different encoding and recurrence; its Lean status
+is **in progress**. See [the v3 statements](../docs/THEOREM_v3.md).
+
 This Lake project ships the shared ProvenHashes work and the complete
 concrete **41-independent-word** ChainHash theorem. The mathematical hash
 includes unreduced CLNH, strided byte encoding and length tags, the actual

@@ -1,0 +1,41 @@
+{
+  "audit_xmm": {
+    "lea": 1,
+    "vmovdqu": 17,
+    "vpxor": 31,
+    "add": 2,
+    "vpclmulhqhqdq": 8,
+    "vpclmullqlqdq": 8,
+    "vmovdqa": 2,
+    "cmp": 1,
+    "jne": 1,
+    "ret": 1,
+    "nop": 1
+  },
+  "audit_ymm": {
+    "push": 1,
+    "mov": 1,
+    "and": 1,
+    "vbroadcasti128": 32,
+    "vpxor": 62,
+    "vpclmulhqhqdq": 16,
+    "vpclmullqlqdq": 16,
+    "vmovdqa": 4,
+    "vmovdqu": 2,
+    "vzeroupper": 1,
+    "leave": 1,
+    "ret": 1,
+    "nop": 1
+  },
+  "audit_zmm": {
+    "vbroadcasti32x4": 16,
+    "vpxord": 31,
+    "vpclmulhqhqdq": 8,
+    "vpclmullqlqdq": 8,
+    "vmovdqu64": 1,
+    "vzeroupper": 1,
+    "ret": 1,
+    "data16": 1,
+    "nop": 1
+  }
+}

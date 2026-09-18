@@ -1,0 +1,31 @@
+{
+  "host": "Xeon",
+  "name": "chainhash-256",
+  "test": "Speed",
+  "run": 2,
+  "command": [
+    "taskset",
+    "-c",
+    "16-23",
+    "/home/thomas-ahle/agents/chainhash-v3-horner/build/SMHasher3",
+    "chainhash-256",
+    "--test=Speed"
+  ],
+  "raw_file": "out/Xeon/chainhash-256.run2.txt",
+  "binary_sha256": "ae7dd7f352102c79e5616e51695c39814f35f47a80ee6a9d95bf132d32f76e5a",
+  "started": "2026-09-18T20:23:14.620288+00:00",
+  "load_before": [
+    5.51,
+    6.02,
+    5.97
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T20:24:10.091843+00:00",
+  "elapsed_seconds": 55.47148370696232,
+  "load_after": [
+    6.19,
+    6.14,
+    6.01
+  ],
+  "raw_sha256": "3f10919d30f57238ee3eb8c790ceabe87c95bf9201628fce0f6258666d68b23f"
+}

@@ -1,0 +1,506 @@
+[
+  {
+    "name": "chainhash-v3",
+    "bytes": 3,
+    "run": 1,
+    "deviation_percent": 119.74783688889245
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 4,
+    "run": 1,
+    "deviation_percent": 117.7859912618974
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 5,
+    "run": 1,
+    "deviation_percent": 113.96472153203945
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 6,
+    "run": 1,
+    "deviation_percent": 54.12893709975541
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 6,
+    "run": 2,
+    "deviation_percent": -26.96756968689905
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 7,
+    "run": 1,
+    "deviation_percent": 57.367887845778284
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 9,
+    "run": 1,
+    "deviation_percent": -33.75866464976338
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 10,
+    "run": 1,
+    "deviation_percent": -52.98999945016796
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 18,
+    "run": 2,
+    "deviation_percent": -52.73222210507146
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 19,
+    "run": 2,
+    "deviation_percent": -51.74103201314495
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 20,
+    "run": 2,
+    "deviation_percent": -50.729362486266425
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 21,
+    "run": 2,
+    "deviation_percent": -44.823221829355454
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 22,
+    "run": 2,
+    "deviation_percent": -42.89364128336302
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 23,
+    "run": 2,
+    "deviation_percent": -41.68709538507432
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 27,
+    "run": 1,
+    "deviation_percent": -30.286886647290146
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 29,
+    "run": 1,
+    "deviation_percent": 71.68308848709736
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 32,
+    "run": 2,
+    "deviation_percent": -30.41524706343266
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 33,
+    "run": 2,
+    "deviation_percent": -27.324265010207938
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 34,
+    "run": 2,
+    "deviation_percent": -43.69799854934221
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 35,
+    "run": 1,
+    "deviation_percent": -39.97291003812799
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 36,
+    "run": 1,
+    "deviation_percent": -39.38767220787545
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 40,
+    "run": 3,
+    "deviation_percent": -25.82128165804297
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 41,
+    "run": 3,
+    "deviation_percent": -43.42468559564967
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 77,
+    "run": 3,
+    "deviation_percent": -36.238424723301286
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 78,
+    "run": 2,
+    "deviation_percent": 67.14349558393553
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 79,
+    "run": 2,
+    "deviation_percent": 67.14349558393553
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 100,
+    "run": 3,
+    "deviation_percent": -38.41328409117853
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 101,
+    "run": 3,
+    "deviation_percent": -38.41328409117853
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 102,
+    "run": 3,
+    "deviation_percent": -38.41328409117853
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 103,
+    "run": 3,
+    "deviation_percent": -38.18001720407685
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 104,
+    "run": 3,
+    "deviation_percent": -39.10270866500394
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 105,
+    "run": 3,
+    "deviation_percent": -38.41310164956136
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 106,
+    "run": 3,
+    "deviation_percent": -39.32896580873357
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 107,
+    "run": 3,
+    "deviation_percent": -39.329077036015406
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 108,
+    "run": 2,
+    "deviation_percent": 70.98600712516352
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 109,
+    "run": 2,
+    "deviation_percent": 77.0276788499061
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 110,
+    "run": 3,
+    "deviation_percent": -36.98640423179693
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 129,
+    "run": 2,
+    "deviation_percent": -26.02614872084983
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 129,
+    "run": 3,
+    "deviation_percent": 15.25312716072662
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 133,
+    "run": 2,
+    "deviation_percent": 21.96506543231409
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 145,
+    "run": 2,
+    "deviation_percent": 21.724960659024962
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 146,
+    "run": 3,
+    "deviation_percent": -25.097932325386186
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 147,
+    "run": 2,
+    "deviation_percent": -23.310993418393068
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 148,
+    "run": 1,
+    "deviation_percent": -15.609634224780866
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 153,
+    "run": 2,
+    "deviation_percent": 17.46966124352529
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 157,
+    "run": 1,
+    "deviation_percent": 28.019307452719477
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 159,
+    "run": 2,
+    "deviation_percent": 15.827458218048807
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 164,
+    "run": 3,
+    "deviation_percent": 27.115790873456035
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 168,
+    "run": 2,
+    "deviation_percent": 37.93982589634408
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 171,
+    "run": 2,
+    "deviation_percent": 21.799030920237918
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 172,
+    "run": 2,
+    "deviation_percent": -18.523903210275737
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 174,
+    "run": 2,
+    "deviation_percent": -15.279318602042979
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 175,
+    "run": 2,
+    "deviation_percent": 20.995171916510635
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 196,
+    "run": 2,
+    "deviation_percent": -18.754989297495563
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 200,
+    "run": 1,
+    "deviation_percent": 22.05485875854705
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 201,
+    "run": 1,
+    "deviation_percent": 22.687011152487102
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 201,
+    "run": 3,
+    "deviation_percent": -16.011833627678506
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 202,
+    "run": 1,
+    "deviation_percent": 32.309490087062585
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 203,
+    "run": 1,
+    "deviation_percent": 26.71907297564482
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 213,
+    "run": 1,
+    "deviation_percent": 29.5790579524863
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 214,
+    "run": 1,
+    "deviation_percent": 31.98967842022644
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 217,
+    "run": 3,
+    "deviation_percent": 20.82792137431366
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 220,
+    "run": 1,
+    "deviation_percent": 19.6037142277248
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 220,
+    "run": 3,
+    "deviation_percent": -15.317717624688875
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 221,
+    "run": 1,
+    "deviation_percent": 21.38869416014049
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 222,
+    "run": 3,
+    "deviation_percent": -28.79026614596266
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 227,
+    "run": 2,
+    "deviation_percent": -18.80911662812228
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 228,
+    "run": 2,
+    "deviation_percent": -21.892143903763596
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 230,
+    "run": 1,
+    "deviation_percent": 19.144587932815217
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 231,
+    "run": 1,
+    "deviation_percent": 19.144587932815217
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 232,
+    "run": 3,
+    "deviation_percent": -16.80344966009776
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 233,
+    "run": 3,
+    "deviation_percent": -18.237841503459673
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 234,
+    "run": 1,
+    "deviation_percent": 15.751471248022387
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 234,
+    "run": 3,
+    "deviation_percent": -16.80344966009776
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 237,
+    "run": 3,
+    "deviation_percent": -16.776155206895282
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 238,
+    "run": 1,
+    "deviation_percent": 16.417497930254644
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 239,
+    "run": 1,
+    "deviation_percent": 24.315503442940244
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 241,
+    "run": 2,
+    "deviation_percent": 15.086296421636035
+  },
+  {
+    "name": "chainhash-v3",
+    "bytes": 242,
+    "run": 2,
+    "deviation_percent": 15.013565255600646
+  },
+  {
+    "name": "shipped-256",
+    "bytes": 12,
+    "run": 1,
+    "deviation_percent": -33.3553045178479
+  },
+  {
+    "name": "shipped-256",
+    "bytes": 13,
+    "run": 1,
+    "deviation_percent": -64.01683550500054
+  },
+  {
+    "name": "shipped-256",
+    "bytes": 14,
+    "run": 1,
+    "deviation_percent": -57.346348423071134
+  },
+  {
+    "name": "shipped-256",
+    "bytes": 14,
+    "run": 2,
+    "deviation_percent": 19.25054156822452
+  },
+  {
+    "name": "shipped-256",
+    "bytes": 15,
+    "run": 3,
+    "deviation_percent": 15.037064983532344
+  }
+]

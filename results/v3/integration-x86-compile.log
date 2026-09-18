@@ -1,0 +1,3 @@
+build/v3-x86-c99.o:   Mach-O 64-bit object x86_64
+build/v3-x86-cpp.o:   Mach-O 64-bit object x86_64
+build/v3-x86-intel.o: Mach-O 64-bit object x86_64

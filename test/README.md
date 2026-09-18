@@ -88,3 +88,9 @@ The Lean integration adds `lean_vectors.cpp` and `../lean/check_vectors.sh`.
 On the Xeon these compare the reference and every available shipped path
 with a Lean executable evaluator using the proof's byte/index encoding.
 See [the pairing audit](../lean/PAIRING_AUDIT.md) for exact coverage and scope.
+
+## ChainHash v3
+
+`make test` also runs the separately versioned [v3 suite](v3/README.md).
+`make sanitize` includes its guards, alignment and property checks.
+The v1 reference, frozen vectors and tests above retain their original scope.

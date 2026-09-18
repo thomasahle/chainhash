@@ -1,0 +1,26 @@
+--- Testing chainhash-v3 "ChainHash v3 Horner, comb 256-byte blocks" [lazy-k4]
+
+[[[ Keyset 'Zeroes' Tests ]]]
+
+Keyset 'Zeroes' - 204800 keys
+Testing all collisions (      64-bit) - Expected        0.0, actual          0  (1.000x) (^ 0)
+Testing all collisions (high  32-bit) - Expected        4.9, actual          8  (1.638x) (^ 2)
+Testing all collisions (low   32-bit) - Expected        4.9, actual          2  (0.410x) (^ 0)
+Testing all collisions (high  27-bit) - Expected      156.2, actual        168  (1.076x) (^ 2)
+Testing all collisions (low   27-bit) - Expected      156.2, actual        164  (1.050x) (^ 1)
+Testing all collisions (high 16..30 bits) - Worst is 25 bits: 650/624           (1.042x) (^ 0)
+Testing all collisions (low  16..30 bits) - Worst is 25 bits: 645/624           (1.034x) (^ 0)
+Testing distribution   (any   8..15 bits) - Worst bias is 10 bits at bit   6:    0.695x  (^ 1)
+---Analyzing differential distribution
+Testing all collisions (      64-bit) - Expected        0.0, actual          0  (1.000x) (^ 0)
+Testing all collisions (high  32-bit) - Expected        4.9, actual          3  (0.614x) (^ 0)
+Testing all collisions (low   32-bit) - Expected        4.9, actual          4  (0.819x) (^ 0)
+Testing all collisions (high  27-bit) - Expected      156.2, actual        150  (0.960x) (^ 0)
+Testing all collisions (low   27-bit) - Expected      156.2, actual        151  (0.967x) (^ 0)
+Testing all collisions (high 16..30 bits) - Worst is 29 bits: 41/39             (1.050x) (^ 0)
+Testing all collisions (low  16..30 bits) - Worst is 18 bits: 62968/62674       (1.005x) (^ 0)
+Testing distribution   (any   8..15 bits) - Worst bias is 11 bits at bit  28:    0.694x  (^ 1)
+
+
+Verification value is 0x00000001 - Testing took 0.296534 seconds
+

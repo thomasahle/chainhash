@@ -1,0 +1,41 @@
+{
+  "chv3_bulk128": {
+    "opcodes": {
+      "vmovdqu": 16,
+      "vpxor": 132,
+      "vpclmulhqhqdq": 36,
+      "vpclmullqlqdq": 36,
+      "add": 1,
+      "sub": 1,
+      "jne": 1
+    },
+    "stack_memory_instructions": [],
+    "shuffle_instructions": []
+  },
+  "chv3_bulk256": {
+    "opcodes": {
+      "vbroadcasti128": 16,
+      "vpxor": 66,
+      "vpclmulhqhqdq": 18,
+      "vpclmullqlqdq": 18,
+      "add": 1,
+      "sub": 1,
+      "jne": 1
+    },
+    "stack_memory_instructions": [],
+    "shuffle_instructions": []
+  },
+  "chv3_bulk512": {
+    "opcodes": {
+      "vpxord": 21,
+      "add": 1,
+      "vpclmulhqhqdq": 9,
+      "vpclmullqlqdq": 9,
+      "vpternlogq": 6,
+      "sub": 1,
+      "jne": 1
+    },
+    "stack_memory_instructions": [],
+    "shuffle_instructions": []
+  }
+}

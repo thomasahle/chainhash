@@ -1,5 +1,9 @@
 # SMHasher3 adapter
 
+This adapter retains v1 and its historical block-size variant. It does not
+register ChainHash-Horner v3; [v3's retained measurements](../results/v3/README.md)
+come from the separate measured implementation and adapter described there.
+
 `chainhash.cpp` is the optimized registration for the author's SMHasher3 fork.
 It provides `chainhash-256` and `chainhash-1k` (the latter has two 512-byte
 recurrence sub-blocks per 1 KB block). It uses SplitMix64 to adapt SMHasher3’s
