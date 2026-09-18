@@ -4,8 +4,8 @@ Completed 2026-09-18 in `/Users/ahle/repos/chainhash`, based on main
 `47e681fe225ffa1a453bd6a51df8f63dc584b925`. Author:
 **Thomas Dybdahl Ahle <thomas@ahle.dk>**. Publication target: `origin main`.
 The previous [proof/key-model integration report](docs/KEY_MODEL_INTEGRATION_REPORT.md)
-is preserved verbatim; theorem documents, Lean sources, and README Guarantee
-and Machine-checked sections are unchanged.
+records that earlier work. The sections below describe the implementation
+and checks at the time of this integration; see the README for the current API.
 
 ## Integrated implementation
 
@@ -21,8 +21,8 @@ the delivered optimized header:
 ```
 
 The header retains canonical little-endian output, the 328-byte resident key,
-all A/B/C/D/legacy constructors, the portable implementation, PMULL, and the
-original PCLMUL implementation. It adds unreduced YMM/ZMM VPCLMUL PH sums,
+the key constructors present at integration, the portable implementation,
+PMULL, and the original PCLMUL implementation. It adds unreduced YMM/ZMM VPCLMUL PH sums,
 pipelining, and an exact recurrence reduction using a 16-entry register lookup
 for the second fold instead of a dependent CLMUL. Finalization and the public
 short-input path retain their original calculations.
@@ -60,7 +60,7 @@ of the dispatcher preference.
 
 Both hosts also passed the existing key-model checks: 10,000 independent field
 products, six edge seeds, 744 hash comparisons per backend, archived expanded
-keys and hash vectors, and the recommended model A alias. Differential coverage
+keys and hash vectors, and the then-default model A alias. Differential coverage
 includes zero/all-one keys, null/empty inputs, unaligned data, block boundaries,
 large messages, and guard pages. No vectors were regenerated.
 

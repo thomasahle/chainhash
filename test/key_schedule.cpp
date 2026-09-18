@@ -1,23 +1,27 @@
 #include "chainhash.h"
+#include "fixtures.h"
 #include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <vector>
 
 static uint64_t rng_state = UINT64_C(0x534545444544);
-static uint64_t random_word() { return ch_splitmix64(&rng_state); }
+static uint64_t random_word() { return test_random_word(&rng_state); }
 static void put64(uint8_t *p, uint64_t v) {
     for (unsigned i=0;i<8;++i) p[i]=(uint8_t)(v>>(8*i));
 }
 static void verify_key(const chainhash_key& k, const uint64_t *expected) {
     assert(std::memcmp(k.words,expected,328)==0);
     auto copy=chainhash_key_from_words(expected);
-    uint8_t bytes[328];
-    for (unsigned i=0;i<41;++i) put64(bytes+8*i,expected[i]);
-    auto decoded=chainhash_key_from_328_bytes(bytes);
+    uint8_t bytes[329]; // Both byte constructors must accept unaligned input.
+    for (unsigned i=0;i<41;++i) put64(bytes+1+8*i,expected[i]);
+    auto decoded=chainhash_key_from_328_bytes(bytes+1);
     assert(std::memcmp(&copy,&decoded,328)==0);
+    auto recommended=chainhash_key_from_bytes(bytes+1);
+    assert(std::memcmp(recommended.words,expected,328)==0);
 }
 int main(int argc,char**) {
+    static_assert(CHAINHASH_RANDOM_BYTES==328,"Default key needs 41 random words");
     assert(sizeof(chainhash_key)==328);
     assert(chainhash_schedule_mul(UINT64_C(1)<<63,2)==27);
     for (unsigned i=0;i<10000;++i) {
@@ -42,8 +46,6 @@ int main(int argc,char**) {
         auto a=chainhash_key_from_80_bytes(bytes+1);
         for (unsigned i=0;i<9;++i) words[32+i]=ch_load64(bytes+1+8*(i+1));
         verify_key(a,words);
-        auto recommended=chainhash_key_from_bytes(bytes+1);
-        assert(std::memcmp(&a,&recommended,sizeof a)==0);
         auto b=chainhash_key_from_seed2(s,t,c);
         words[32]=ch_mul(t,t);words[33]=ch_mul(words[32],t);words[34]=t;
         for (unsigned i=0;i<5;++i) words[35+i]=c[i];

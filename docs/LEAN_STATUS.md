@@ -1,7 +1,7 @@
 # Current Lean status
 
-The complete concrete 41-independent-word theorem and recommended 80-byte
-model-A fixed-length and at-most-length bounds are proved and shipped in
+The default’s complete concrete 41-independent-word theorem and the alternative
+80-byte model-A fixed-length and at-most-length bounds are proved and shipped in
 [../lean/](../lean/README.md), with Xeon build and axiom-audit evidence.
 The older assembly report's partial status is historical and superseded.
 

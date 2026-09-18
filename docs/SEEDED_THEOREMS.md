@@ -46,7 +46,7 @@ The symbols $c_i$ denote the five **circuit parameters** used in the code. Their
 | C | $s,c_0,\ldots,c_4$ | $k_i=s^{i+1}$; $(u,y,z)=(s^2,s^3,s)$; $\tau=s^4$ | 48 |
 | D, reference | $s$ | C's PH/chain keys; $c_i=s^{33+i}$; $\tau=s^{38}$ | 8 |
 
-The current repository header still stores **41 expanded words, 328 bytes**, in every model. These are entropy/input-size savings, not resident-state savings. In particular B is not a seven-word resident-key implementation under the paper's separate cache-line criterion. The legacy SplitMix64 expansion is not any of these models.
+The current repository header still stores **41 expanded words, 328 bytes**, in every model. These are entropy/input-size savings, not resident-state savings. In particular B is not a seven-word resident-key implementation under the paper's separate cache-line criterion.
 
 Independence of $\tau$ from the upstream keys is unnecessary: a fixed $\tau$, or any function of $(s,t,u,y,z)$, works in A/B/C. The sufficient condition used by the proof is that, after conditioning on the upstream keys and $\tau$, $c$ remains uniform on $F^5$. Thus $\tau=s^4$ costs no new random word. Arbitrary dependence on $c$ is not justified by the twist lemma. A retains an independent $\tau$ as requested; optional independent twists would make B/C 64/56 bytes.
 

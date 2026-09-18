@@ -1,6 +1,9 @@
 # ChainHash proof and key-model integration
 
 Repository: `/Users/ahle/repos/chainhash`. Work completed on 2026-09-18.
+
+This is a historical integration record. The [current API and guarantees](../README.md#exact-bounds-and-alternative-keys)
+are maintained in the README.
 All integration commits use **Thomas Dybdahl Ahle <thomas@ahle.dk>**.
 No push was performed. The earlier assembly report is preserved at
 `docs/ASSEMBLY_REPORT.md`.
@@ -56,40 +59,19 @@ The first integration attempt caught an unfinished early seeded proof
 snapshot. It was replaced by the later twelve-lemma snapshot and validated
 before the final clean build. No unfinished proof is shipped.
 
-## Recommended constructor and guarantees
+## Key-model proofs
 
-**Model A is the default/recommended constructor and the model cited by the
-repository write-up.** `chainhash_key_from_bytes` takes **80 random bytes**:
-`s,u,y,z,c0,c1,c2,c3,c4,tau`, all independent uniform words. PH words are
-`s^1,...,s^32` using field multiplication. `chainhash_key_from_80_bytes`
-is its explicit alias. Every model retains the 328-byte expanded resident key.
+The integrated write-up describes the original construction with 41 independent
+words and the reduced-randomness models A, B, C and D. Their schedules, exact
+collision bounds and assumptions are maintained in [THEOREM.md](THEOREM.md)
+and [SEEDED_THEOREMS.md](SEEDED_THEOREMS.md).
 
-The README and `docs/THEOREM.md` list all key distributions and distinguish
-fixed-length from at-most-length bounds. The complete seeded proofs are
-preserved in `docs/SEEDED_THEOREMS.md` and `.tex`.
-
-- A: fixed-length `min(1,(d+n+1)/2^64)`, score **62.4150374993**;
-  at-most-length `min(1,E_A/2^64)`, score **61**.
-- Paper's 41 independent words: `min(1,(n+2)/2^64)`, score
-  **62.4150374993**, through `chainhash_key_from_328_bytes` or
-  `chainhash_key_from_words`.
-- B: `chainhash_key_from_seed2(s,t,c5)`, 56 random bytes; fixed-length
-  `min(1,(d+3n)/2^64)`, score **62**; at-most-length
-  `min(1,E_B/2^64)`, score **60.8300749986**.
-- C: `chainhash_key_from_seed(s,c5)`, 48 random bytes; only the trivial
-  uniform collision certificate one is established. Its true score is unknown.
-- D remains an explicitly named single-word reference constructor with no
-  nontrivial uniform bound. The old one-word SplitMix64 constructor is now
-  `chainhash_key_from_splitmix64_legacy`; its output is unchanged.
-
-Definitions of `d,n,E_A,E_B`, including short-message and unequal-length
-cases, appear in both guarantee tables. A/B's full seeded bounds have
-written mathematical proofs but are **not yet complete Lean corollaries**
-in the shipped snapshot. The Lean README states precisely what remains.
-There is no useful C/D uniform bound claimed, no unconditional five-wise
-message independence, and no formal verification of C compilation/SIMD or
-memory accesses. The concrete Lean theorem uses `8L+255<2^64` and bounds
-collisions of the full 64-bit output for fixed messages independent of the key.
+At the time of this integration, A/B's full seeded bounds had written
+mathematical proofs but were not complete Lean corollaries. The current
+[Lean status](LEAN_STATUS.md) tracks subsequent proof work. This record makes
+no useful C/D uniform-bound claim, no unconditional five-wise message
+independence claim, and no claim to formal verification of C compilation,
+SIMD or memory accesses.
 
 ## Hash-path and test results
 
@@ -101,7 +83,7 @@ GCC renumbers assembly labels when constructors are added; the Xeon check
 therefore compares machine-code bytes rather than label text.
 
 - `make test` passed on **Apple M2 Pro and Xeon Platinum 8375C**:
-  9,479 differential cases and 92 legacy frozen vectors on native and
+  9,479 differential cases and 92 frozen vectors on native and
   forced-portable builds, C99 checks, and guard-page checks.
 - Seeded tests passed on both hosts and both backends: 10,000 independent
   field-product checks, six edge seeds, 744 native/portable hash comparisons,

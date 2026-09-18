@@ -2,8 +2,9 @@
 
 `chainhash.cpp` is the optimized registration for the author's SMHasher3 fork.
 It provides `chainhash-256` and `chainhash-1k` (the latter has two 512-byte
-recurrence sub-blocks per 1 KB block). It retains legacy SplitMix64 seeding,
-short-input caches, and native/swapped byte interpretations. The public
+recurrence sub-blocks per 1 KB block). It uses SplitMix64 to adapt SMHasher3’s
+64-bit seeds to full keys, with short-input caches and native/swapped byte
+interpretations. The public
 `include/chainhash.h` API specifies canonical little-endian 256-byte blocks.
 
 Copy this source over `hashes/chainhash.cpp` in a configured fork checkout and

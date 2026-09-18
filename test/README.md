@@ -59,11 +59,13 @@ hoisting/dead-code removal. Key generation is outside the timed region.
 
 `make test` also checks the A/B/C/D schedules against archived key words and
 hash vectors, 10,000 independently computed field products, six edge seeds,
-and 744 native-vs-portable hashes per backend. The recommended 80-byte
-constructor is compared with its explicit model A alias. C99 builds exercise
-all constructors. The old frozen vectors and SMHasher3 checks explicitly use
-`chainhash_key_from_splitmix64_legacy`; raw 41-word tests use
-`chainhash_key_from_328_bytes`.
+and 744 native-vs-portable hashes per backend. The default 328-byte
+constructor is checked against all 41 expected words using unaligned input.
+C99 builds also check decoding of the first and last words. All constructors
+are exercised, and `make sanitize` also runs the key-constructor suite.
+Deterministic fixture generation lives in `fixtures.h`, separate from the
+public API. It recreates the SMHasher3 keys for frozen-vector and source
+comparisons without changing the expected results.
 
 `ARCH_FLAGS=-mpclmul python3 test/check_hash_path.py` on x86, or
 `ARCH_FLAGS=-march=native+crypto python3 test/check_hash_path.py` on Apple ARM,

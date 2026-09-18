@@ -159,8 +159,7 @@ D, reference & \(s\) & C's PH/chain keys; \(c_i=s^{33+i}\);
 The current repository header still stores \textbf{41 expanded words,
 328 bytes}, in every model. These are entropy/input-size savings, not
 resident-state savings. In particular B is not a seven-word resident-key
-implementation under the paper's separate cache-line criterion. The
-legacy SplitMix64 expansion is not any of these models.
+implementation under the paper's separate cache-line criterion.
 
 Independence of \(\tau\) from the upstream keys is unnecessary: a fixed
 \(\tau\), or any function of \((s,t,u,y,z)\), works in A/B/C. The

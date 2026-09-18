@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include "chainhash.h"
+#include "fixtures.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -48,7 +49,7 @@ static uint64_t run_hash(const chainhash_key *k,const uint8_t *p,size_t n) {
 int main(void) {
     const size_t lengths[]={256,4096,262144};
     uint8_t *data=(uint8_t *)malloc(262144);
-    chainhash_key key=chainhash_key_from_splitmix64_legacy(42);
+    chainhash_key key=test_fixture_key(42);
     double scale=1.0;
     unsigned si;
     size_t i;

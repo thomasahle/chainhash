@@ -1,4 +1,5 @@
 #include "chainhash.h"
+#include "fixtures.h"
 #include "vendor/chainhash_ref.h"
 #include <cstdio>
 #include <cstdlib>
@@ -44,27 +45,27 @@ int main() {
     static_assert(sizeof(chainhash_key)==328,"key must be exactly 41 words");
     std::vector<uint8_t> data(262144+64);
     uint64_t rng=UINT64_C(0x123456789abcdef0);
-    for (auto &x:data) x=(uint8_t)ch_splitmix64(&rng);
+    for (auto &x:data) x=(uint8_t)test_random_word(&rng);
     for (unsigned ki=0;ki<6;++ki) {
         uint8_t raw[328];
-        for (unsigned j=0;j<328;++j) raw[j]=ki==0?0:ki==1?255:(uint8_t)ch_splitmix64(&rng);
+        for (unsigned j=0;j<328;++j) raw[j]=ki==0?0:ki==1?255:(uint8_t)test_random_word(&rng);
         chainhash_key k=chainhash_key_from_328_bytes(raw);
         for(unsigned j=0;j<41;++j) require(k.words[j]==ch_load64(raw+8*j),"byte key order");
         check(k,NULL,0);
         for(size_t n=0;n<=1024;++n) check(k,data.data()+(n%32),n);
         for(size_t n: {size_t(2047),size_t(2048),size_t(2049),size_t(4095),size_t(4096),size_t(4097),size_t(262143),size_t(262144)}) check(k,data.data()+ki,n);
     }
-    chainhash_key k=chainhash_key_from_splitmix64_legacy(42);
-    for(unsigned i=0;i<200;++i) check(k,data.data()+(i%32),ch_splitmix64(&rng)%8193);
+    chainhash_key k=test_fixture_key(42);
+    for(unsigned i=0;i<200;++i) check(k,data.data()+(i%32),test_random_word(&rng)%8193);
     /* Fresh messages and raw keys; at least 10,000 inputs enter every
      * available bulk path, independently of the CPU's dispatch preference. */
     size_t random_bulk=0;
     for(unsigned i=0;i<12000;++i) {
-        const size_t n=ch_splitmix64(&rng)%4097;
-        const size_t off=ch_splitmix64(&rng)%64;
-        for(size_t j=0;j<n;++j) data[off+j]=(uint8_t)ch_splitmix64(&rng);
+        const size_t n=test_random_word(&rng)%4097;
+        const size_t off=test_random_word(&rng)%64;
+        for(size_t j=0;j<n;++j) data[off+j]=(uint8_t)test_random_word(&rng);
         chainhash_key random_key;
-        for(auto &word:random_key.words) word=ch_splitmix64(&rng);
+        for(auto &word:random_key.words) word=test_random_word(&rng);
         check(random_key,data.data()+off,n);
         if(n>256) ++random_bulk;
     }
@@ -73,7 +74,7 @@ int main() {
     for(size_t n=0;n<=1024;++n) check(k,data.data(),n);
     for(size_t i=0;i<data.size();++i) data[i]=(uint8_t)(i*131+17);
     for(const auto &v: vectors) {
-        k=chainhash_key_from_splitmix64_legacy(v.seed);
+        k=test_fixture_key(v.seed);
         require(chainhash(&k,data.data(),v.len)==v.hash,"frozen reference vector");
         auto r=chainhash_ref::Key<>::from_seed(v.seed);
         auto s=refkey(k);
@@ -82,12 +83,12 @@ int main() {
     /* SMHasher3 HashInfo::_ComputedVerifyImpl, canonical LE serialization. */
     uint8_t input[256]={0}, hashes[2048];
     for(unsigned i=0;i<256;++i) {
-        k=chainhash_key_from_splitmix64_legacy(256-i);
+        k=test_fixture_key(256-i);
         uint64_t h=chainhash(&k,input,i);
         for(unsigned j=0;j<8;++j) hashes[8*i+j]=(uint8_t)(h>>(8*j));
         input[i]=(uint8_t)i;
     }
-    k=chainhash_key_from_splitmix64_legacy(0);
+    k=test_fixture_key(0);
     uint32_t verification=(uint32_t)chainhash(&k,hashes,sizeof(hashes));
     require(verification==UINT32_C(0xAA4E2A3B),"SMHasher3 verification code");
 #if defined(__unix__) || defined(__APPLE__)

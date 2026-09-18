@@ -8,18 +8,25 @@ This is the 256-byte specialization (`W=32`, `S=1`) of Theorem
 mathematical family implemented here; equivalence tests are not a formal
 verification of the C implementation.
 
-## Recommended model A and alternatives
+## Default: 41 independent words
 
-This repository recommends and cites **model A**, with 80 independent random
-input bytes and a 328-byte expanded key. The PH words are powers `s¹…s³²`;
-`u,y,z,c0…c4,tau` remain independent uniform words. The table distinguishes
-fixed equal byte lengths from arbitrary lengths up to a limit. All probabilities
-refer to the full output and fixed messages independent of the key.
+The default `chainhash_key_from_bytes` constructor takes **328 independent random
+bytes**, directly encoding the paper’s 41-word key. The explicit
+`chainhash_key_from_328_bytes` and `chainhash_key_from_words` constructors use the
+same key distribution. Both fixed-length and at-most-length bounds are
+`min(1,(n+2)/2^64)`.
+
+The 80-byte **model A** remains available through `chainhash_key_from_80_bytes`.
+It derives the PH words as powers `s¹…s³²`, with `u,y,z,c0…c4,tau` independent
+and uniform. It saves random input, not key storage, and has weaker bounds.
+The table distinguishes equal fixed lengths from arbitrary lengths up to a
+limit. All probabilities concern the full output and fixed messages chosen
+independently of the key.
 
 | Key model / constructor | Random input | Equal fixed length ε(L) | Any lengths ≤8L: ε(L) | Fixed / at-most score |
 | --- | ---: | --- | --- | --- |
-| **A (default)** `chainhash_key_from_bytes` | **80 bytes** | `min(1,(d+n+1)/q)` | `min(1,E_A/q)` | **62.4150374993 / 61** |
-| Paper: `chainhash_key_from_328_bytes` or `chainhash_key_from_words` | 328 bytes (41 words) | `min(1,(n+2)/q)` | `min(1,(n+2)/q)` | 62.4150374993 / 62.4150374993 |
+| **Default (paper)** `chainhash_key_from_bytes`, `chainhash_key_from_328_bytes` or `chainhash_key_from_words` | **328 bytes (41 words)** | `min(1,(n+2)/q)` | `min(1,(n+2)/q)` | **62.4150374993 / 62.4150374993** |
+| A: `chainhash_key_from_80_bytes` | 80 bytes | `min(1,(d+n+1)/q)` | `min(1,E_A/q)` | 62.4150374993 / 61 |
 | B: `chainhash_key_from_seed2(s,t,c)` | 56 bytes (7 words) | `min(1,(d+3n)/q)` | `min(1,E_B/q)` | 62 / 60.8300749986 |
 | C: `chainhash_key_from_seed(s,c)` | 48 bytes (6 words) | `1` only established | `1` only established | 0 / 0 from trivial certificate |
 | D, reference: `chainhash_key_from_single_word_reference(s)` | 8 bytes | `1` only established | `1` only established | 0 / 0 from trivial certificate |
@@ -41,16 +48,15 @@ E_B(L)=8G+1                       if n=1
 
 The score is `inf_{L≥1} log2(L / max(2^-64,ε(L)))`; all listed minima
 occur at `L=1`. These are guarantees from upper bounds, not measured attack
-costs. C/D's true worst-pair scores remain undetermined. SplitMix64 legacy
-expansion has no proved bound here and is not model C or D.
+costs. C/D's true worst-pair scores remain undetermined.
 
 The full derivations, schedules, pair-specific bounds, qualifications on
 five-wise independence, and the unresolved useful C/D bounds are in
-[SEEDED_THEOREMS.md](SEEDED_THEOREMS.md), preserved verbatim from the seeded
-proof work. Its [LaTeX version](SEEDED_THEOREMS.tex) is also included.
+[SEEDED_THEOREMS.md](SEEDED_THEOREMS.md), from the seeded proof work. Its
+[LaTeX version](SEEDED_THEOREMS.tex) is also included.
 For the implementation-facing guarantee use `8L+255<2^64`. The discussion
 below gives the original **41-word paper model**, whose bound does not
-transfer unchanged to the recommended model A.
+transfer unchanged to the alternative 80-byte model A.
 
 ## Domain and key distribution
 

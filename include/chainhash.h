@@ -1,5 +1,6 @@
 /* ChainHash, 256-byte blocks. Copyright 2026 Thomas Dybdahl Ahle. MIT.
- * C99 / C++11, header only. Model A is the default; see docs/THEOREM.md for all key models.
+ * C99 / C++11, header only. Default: 41 independent random 64-bit words.
+ * See docs/THEOREM.md for all key models.
  * Words and input bytes have canonical little-endian interpretation.
  * Baseline compile-time selection; x86 wide PH uses runtime CPUID/XGETBV:
  *   x86-64: -mpclmul; AArch64 GCC/Clang: -march=armv8-a+crypto
@@ -16,7 +17,7 @@
 #include <string.h>
 
 #define CHAINHASH_KEY_BYTES 328 /* expanded resident key size */
-#define CHAINHASH_RANDOM_BYTES 80 /* recommended model A input size */
+#define CHAINHASH_RANDOM_BYTES 328 /* default: 41 independent random words */
 #define CHAINHASH_KEY_WORDS 41
 #define CHAINHASH_BLOCK_BYTES 256
 
@@ -40,24 +41,6 @@ static inline chainhash_key chainhash_key_from_328_bytes(const uint8_t bytes[328
     for (i = 0; i < 41; ++i) key.words[i] = ch_load64(bytes + 8 * i);
     return key;
 }
-static inline uint64_t ch_splitmix64(uint64_t *state) {
-    uint64_t z = (*state += UINT64_C(0x9E3779B97F4A7C15));
-    z = (z ^ (z >> 30)) * UINT64_C(0xBF58476D1CE4E5B9);
-    z = (z ^ (z >> 27)) * UINT64_C(0x94D049BB133111EB);
-    return z ^ (z >> 31);
-}
-/* Exactly SMHasher3 chainhash_256 seed expansion: successive SplitMix64
- * outputs, starting with state=seed, in the word order above. Convenience
- * only: a 64-bit seed does NOT provide 41 independent uniform key words,
- * and this expansion has no guarantee from the proved collision bound.
- */
-static inline chainhash_key chainhash_key_from_splitmix64_legacy(uint64_t seed) {
-    chainhash_key key;
-    unsigned i;
-    for (i = 0; i < 41; ++i) key.words[i] = ch_splitmix64(&seed);
-    return key;
-}
-
 /* FIELD multiplication, NOT integer multiplication. X^64 = 0x1b.
  * Portable, fixed 64 iterations; used only during key construction.
  */
@@ -124,7 +107,7 @@ static inline chainhash_key chainhash_key_from_seed2(uint64_t s, uint64_t t,
 /* C: six independent uniform words, s and c[0..4]: 48 random bytes.
  * (u,y,z)=(s^2,s^3,s); tau=s^4. The conditional finalizer theorem holds,
  * but the reduced-PH degree argument DOES NOT prove a useful collision
- * bound for the raw-split hash. Experimental; see THEOREMS.md.
+ * bound for the raw-split hash. Experimental; see docs/THEOREM.md.
  */
 static inline chainhash_key chainhash_key_from_seed(uint64_t s, const uint64_t c[5]) {
     return chainhash_key_from_seed2(s, s, c);
@@ -150,11 +133,13 @@ static inline chainhash_key chainhash_key_from_single_word_reference(uint64_t s)
     return key;
 }
 
-/* Default/recommended model A: 80 independent uniform input bytes.
- * s,u,y,z,c0..c4,tau; the expanded resident key is still 328 bytes.
+/* Default: 328 independent uniform input bytes, decoded into 41 words.
+ * Order: k[0..31],u,y,z,c0..c4,tau. The resident key is also 328 bytes.
+ * Call chainhash_key_from_80_bytes explicitly for the reduced-randomness
+ * model A. Its bound and generated keys differ from this default.
  */
 static inline chainhash_key chainhash_key_from_bytes(const uint8_t bytes[CHAINHASH_RANDOM_BYTES]) {
-    return chainhash_key_from_80_bytes(bytes);
+    return chainhash_key_from_328_bytes(bytes);
 }
 
 /* Portable definition: no intrinsics or nonstandard 128-bit integer type. */

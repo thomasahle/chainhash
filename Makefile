@@ -16,15 +16,15 @@ endif
 all: build/selftest build/c99 build/speed
 build:
 	mkdir -p build
-build/selftest: test/selftest.cpp test/vectors.h test/vendor/chainhash_ref.h include/chainhash.h | build
+build/selftest: test/selftest.cpp test/vectors.h test/vendor/chainhash_ref.h test/fixtures.h include/chainhash.h | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) $< -o $@
 build/c99: test/c99.c include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
-build/portable: test/selftest.cpp test/vectors.h test/vendor/chainhash_ref.h include/chainhash.h | build
+build/portable: test/selftest.cpp test/vectors.h test/vendor/chainhash_ref.h test/fixtures.h include/chainhash.h | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
 build/c99-portable: test/c99.c include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
-build/speed: test/speed.c include/chainhash.h | build
+build/speed: test/speed.c test/fixtures.h include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
 test: build/selftest build/portable build/c99 build/c99-portable build/key-schedule build/key-schedule-portable build/key-schedule-c99 build/key-schedule-c99-portable
 	./build/selftest
@@ -41,15 +41,17 @@ speed: build/speed
 sanitize: | build
 	$(CXX) $(CPPFLAGS) -std=c++11 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
 	./build/sanitize
+	$(CXX) $(CPPFLAGS) -std=c++11 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/key_schedule.cpp -o build/key-schedule-sanitize
+	./build/key-schedule-sanitize
 vectors: | build
 	$(CXX) -O2 -std=c++11 test/generate_vectors.cpp -o build/generate_vectors
 	./build/generate_vectors > test/vectors.h
 clean:
 	rm -rf build
 
-build/key-schedule: test/key_schedule.cpp include/chainhash.h | build
+build/key-schedule: test/key_schedule.cpp test/fixtures.h include/chainhash.h | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) $< -o $@
-build/key-schedule-portable: test/key_schedule.cpp include/chainhash.h | build
+build/key-schedule-portable: test/key_schedule.cpp test/fixtures.h include/chainhash.h | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
 build/key-schedule-c99: test/key_schedule_c99.c include/chainhash.h | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
