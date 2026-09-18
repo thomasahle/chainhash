@@ -39,6 +39,8 @@ export LEAN_NUM_THREADS=32
 results in [VERIFICATION.txt](VERIFICATION.txt). The first run starts with
 no project `.lake` directory; only the pinned compiler and Mathlib download
 cache are reused. No proof `.olean` files are copied from a proof lane.
+The recorded clean build passed all 559 exported theorem/lemma audits.
+The alternate field certificate can take several minutes on a shared host.
 The scripts reject unapproved axioms. Standard Lean axioms `propext`,
 `Classical.choice`, and `Quot.sound` are allowed.
 

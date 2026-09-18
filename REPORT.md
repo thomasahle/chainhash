@@ -1,165 +1,143 @@
-# Standalone ChainHash assembly report
+# ChainHash proof and key-model integration
 
-Assembled locally on 2026-09-18 in **`/Users/ahle/repos/chainhash`**.
-The repository is initialized on `main`, with commits authored by
-**Thomas Dybdahl Ahle <thomas@ahle.dk>**. No GitHub repository was created,
-no Git remote was configured, and nothing was pushed. A source/test copy
-was transferred only to the explicitly requested Xeon directory,
-`thomas-ahle@hardware.normalcomputing.net:~/agents/chainhash-repo`.
+Repository: `/Users/ahle/repos/chainhash`. Work completed on 2026-09-18.
+All integration commits use **Thomas Dybdahl Ahle <thomas@ahle.dk>**.
+No push was performed. The earlier assembly report is preserved at
+`docs/ASSEMBLY_REPORT.md`.
 
-## Layout
+## Shipped proofs
 
-- `include/chainhash.h`: self-contained C99/C++11 header, exactly 41 key
-  words; byte-key and SplitMix64 seed constructors; portable, x86-64 PCLMUL,
-  and little-endian arm64 PMULL implementations with compile-time dispatch.
-- `test/`: frozen vectors, unchanged paper reference, differential and
-  guard-page tests, C99 checks, original-source comparison script, and
-  light throughput benchmark. `Makefile` builds and runs them.
-- `README.md`: API and build instructions, ideal-key guarantee and score,
-  full-output qualification, Lean status, measured speeds, historical
-  SMHasher3 tier, citation and license.
-- `docs/THEOREM.md`: exact appendix collision theorem, its 256-byte
-  specialization, explicit-decoder proof sketch, and qualified five-wise
-  statement. `docs/appendix_chainhash.tex` and `docs/LEAN_STATUS.md` are
-  byte-identical copies of the supplied snapshots.
-- `docs/checks/`: unchanged `verify5.py`, `anf_check.py`, `twist_results.md`.
-- `docs/provenance.json`: original source paths, SHA256 digests, source
-  repository HEADs and working-tree statuses. Working-tree files were used;
-  a HEAD alone would not identify these sources.
-- `docs/smhasher-record.json`: preserved ChainHash row from the blog data,
-  with the source path and digest.
-- `results/`: fresh test, comparison, speed and sanitizer logs.
-- `LICENSE`: MIT, Copyright 2026 Thomas Dybdahl Ahle, as requested; the
-  author can change the choice before publication.
+- A proper Lake project in `lean/`, pinned to Lean **4.24.0** and Mathlib
+  **v4.24.0**, commit `f897ebcf72cd16f89ab4577d0c826cd14afaafc7`, with
+  the full dependency manifest.
+- **67 proof modules**, importing through `lean/ChainHash.lean`, with
+  **559 exported theorem/lemma declarations** audited explicitly by
+  `lean/Verification.lean`. `lean/THEOREM_STATEMENTS.md` copies every source
+  signature; `lean/README.md` includes the principal exact statements.
+- The **complete concrete 41-independent-word collision theorem**, including
+  byte encoding, unreduced carry-less NH, the actual irreducible field
+  modulus, recurrence, integer-add twist, quintic finalizer, and key layout.
+  Both the UInt8/UInt64 and BitVec interfaces are retained. No abstract
+  stage-bound assumptions remain in these concrete theorems.
+- Shared polynomial hashing, NH, tabulation, recurrence decoder/bounds and
+  conditional composition. The stronger CommRing NH lemmas replace their
+  Field-only duplicates. Distinct Opus CLNH/encoding/finalizer results are
+  included; identical verification-lane copies are deduplicated.
+- Twelve seeded-PH algebra/root-bound lemmas from the model A lane. The
+  conditional root budget required a local classical decidability instance
+  when elaborating its theorem statement. No mathematical hypothesis was added.
+- Source and integrated SHA256 hashes in `lean/PROVENANCE.json`; source HEADs
+  in `lean/SOURCE_HEADS.txt`. Working-tree snapshots, including the active
+  seeded lane, are identified by content hashes rather than HEAD alone.
 
-## Equivalence and correctness results
+## Build and axiom verification
 
-| Check | Apple M2 Pro | Xeon Platinum 8375C |
-| --- | --- | --- |
-| Hardware vs portable vs unchanged paper reference | PASS, 9,479 cases, PMULL | PASS, 9,479 cases, PCLMUL |
-| Separately compiled forced-portable self-test | PASS, same 9,479 cases | PASS, same 9,479 cases |
-| Frozen vectors, generated only by paper reference | PASS, 92 | PASS, 92 |
-| Original SMHasher3 native backend, byte-for-byte | PASS, 6,278 cases | PASS, 6,278 cases |
-| Original SMHasher3 portable backend, byte-for-byte | PASS, 6,278 cases | PASS, 6,278 cases |
-| Original PMULL benchmark header | PASS, same 6,278 cases | Not an ARM host |
-| C99 API, hardware and portable builds | PASS | PASS |
-| ASan + UBSan | PASS, Homebrew Clang 22.1.6 | PASS, Clang 21.1.8 |
-| SMHasher3 native LE verification value | `0xAA4E2A3B` | `0xAA4E2A3B` |
+The repository was cloned from a Git bundle into the requested Xeon path,
+`~/agents/chainhash-repo-check`, then advanced to source commit `7baf172`.
+All project build artifacts were removed (`rm -rf lean/.lake/build`).
+`lake exe cache get` and `lake build` ran with **nice 10**, **CPU affinity
+0–31**, and **LEAN_NUM_THREADS=32**. Only the pinned compiler and Mathlib
+cache/dependencies were reused; no compiled proof artifacts came from the lanes.
 
-The differential cases cover every length 0–1024 for six raw key patterns
-(all-zero, all-one, and four deterministic pseudorandom byte keys), rotating
-unaligned input offsets, boundaries through 256 KiB, 200 additional
-pseudorandom lengths, all-zero messages, and inputs abutting inaccessible
-pages on either side. Null input with zero length is checked. The 92 frozen
-vectors use four seeds (0, 1, all-one, `0x0123456789abcdef`) and 23 lengths
-from empty through 256 KiB; message byte i is `(131*i+17) mod 256`.
-Seed expansion is compared word-for-word to both original sources.
+The clean build completed successfully (**7,422 jobs**). All **559**
+exported theorem/lemma declarations reported only the three allowed standard
+axioms. The complete build output, source SHA256 manifest, standalone axiom
+output, and grep results are recorded in `lean/VERIFICATION.txt`.
+The alternate certificate data module takes about eight minutes on this
+shared Xeon; clean build/audit reproduction is not instantaneous.
 
-The SMHasher3 comparison compiles an unchanged scratch copy of
-`hashes/chainhash.cpp`, invoking its actual `chainhash_seed_init<32,5>`
-and `ChainHash<32,5,1,false>`. Only registration macros are disabled by a
-scratch include. Thus no full fork build or fork modification was needed.
-The source SHA256 on both hosts is
-`0bb191c1f4d36534e7ed87cda4374d3c1638e07caf0724b63af9d77ce2242f7d`.
-The original ARM benchmark is compiled unchanged in a separate translation
-unit and tested with the same key words, after its required `setup()`.
+The proof sources contain no `sorry`, `admit`, `native_decide`, custom axiom,
+or unsafe declaration. The recorded grep checks cover the shipped proof
+modules. The complete exported-theorem axiom audit additionally checks
+transitive dependencies; only `propext`, `Classical.choice`, and `Quot.sound`
+are accepted. Standard linter warnings do not weaken the statements.
 
-`verify5.py` passed its symbolic coefficient identities, unit-pivot
-structure and both decoder compositions, plus 2,000 random GF(2^64)
-round-trip/evaluation trials and exhaustive sanity checks over GF(2),
-GF(4) and GF(8). The symbolic explicit decoder is the proof argument;
-finite tests are not a substitute for it. `anf_check.py` was preserved but
-not rerun. No Lean build was attempted.
+The first integration attempt caught an unfinished early seeded proof
+snapshot. It was replaced by the later twelve-lemma snapshot and validated
+before the final clean build. No unfinished proof is shipped.
 
-Sanitizer environment issues were resolved without changing source:
-Apple Clang 17's ASan runtime hung before `main` in allocator initialization
-(the saved process sample identifies the recursive initialization/spin).
-That run was terminated. Apple Clang UBSan alone passed, and the full
-ASan+UBSan suite passed under installed Homebrew Clang 22.1.6. The Xeon's
-GCC 11.5 ASan link failed because `libasan.so.6.0.0` was missing; installed
-Clang 21.1.8 successfully ran the full ASan+UBSan suite instead. The original
-fork's generated x86 includes emitted warnings about unused AVX/AVX512
-helper return types when compiled with the narrower test flags; the actual
-PCLMUL comparison passed. These includes are not part of the shipped header.
+## Recommended constructor and guarantees
 
-## Fresh speeds
+**Model A is the default/recommended constructor and the model cited by the
+repository write-up.** `chainhash_key_from_bytes` takes **80 random bytes**:
+`s,u,y,z,c0,c1,c2,c3,c4,tau`, all independent uniform words. PH words are
+`s^1,...,s^32` using field multiplication. `chainhash_key_from_80_bytes`
+is its explicit alias. Every model retains the 328-byte expanded resident key.
 
-Five trials of 16 MiB per size, median; reused hot input; key setup excluded.
-Mac: Apple Clang 17.0.0, `-O3 -std=c99 -march=native+crypto`.
-Xeon: GCC 11.5.0, `-O3 -std=c99 -mpclmul`, pinned to logical CPU 2 with
-`taskset`. Runs are intentionally light, especially on the Mac.
+The README and `docs/THEOREM.md` list all key distributions and distinguish
+fixed-length from at-most-length bounds. The complete seeded proofs are
+preserved in `docs/SEEDED_THEOREMS.md` and `.tex`.
 
-| Host | Input | Bytes/cycle | GB/s | ns/hash |
-| --- | ---: | ---: | ---: | ---: |
-| M2 Pro | 256 B | 9.0615 | 30.2838 | 8.4534 |
-| M2 Pro | 4 KiB | 18.1886 | 60.7870 | 67.3828 |
-| M2 Pro | 256 KiB | 20.9169 | 69.9051 | 3750.0000 |
-| Xeon 8375C | 256 B | 2.6193 | 7.5956 | 33.7036 |
-| Xeon 8375C | 4 KiB | 5.7931 | 16.7979 | 243.8398 |
-| Xeon 8375C | 256 KiB | 6.5964 | 19.1267 | 13705.6875 |
+- A: fixed-length `min(1,(d+n+1)/2^64)`, score **62.4150374993**;
+  at-most-length `min(1,E_A/2^64)`, score **61**.
+- Paper's 41 independent words: `min(1,(n+2)/2^64)`, score
+  **62.4150374993**, through `chainhash_key_from_328_bytes` or
+  `chainhash_key_from_words`.
+- B: `chainhash_key_from_seed2(s,t,c5)`, 56 random bytes; fixed-length
+  `min(1,(d+3n)/2^64)`, score **62**; at-most-length
+  `min(1,E_B/2^64)`, score **60.8300749986**.
+- C: `chainhash_key_from_seed(s,c5)`, 48 random bytes; only the trivial
+  uniform collision certificate one is established. Its true score is unknown.
+- D remains an explicitly named single-word reference constructor with no
+  nontrivial uniform bound. The old one-word SplitMix64 constructor is now
+  `chainhash_key_from_splitmix64_legacy`; its output is unchanged.
 
-M2 cycle counts are **estimates**, elapsed nanoseconds multiplied by the
-program's dependent-add frequency calibration (3.342037 GHz in this run).
-Xeon counts are invariant **TSC reference cycles**, not actual core cycles
-at turbo frequency. Both distinctions are printed by the program and in
-the README. These figures measure this header, not a transplanted historical
-benchmark row. They are indicative and do not establish a performance
-ranking across architectures. The Mac was not isolated from other work.
+Definitions of `d,n,E_A,E_B`, including short-message and unequal-length
+cases, appear in both guarantee tables. A/B's full seeded bounds have
+written mathematical proofs but are **not yet complete Lean corollaries**
+in the shipped snapshot. The Lean README states precisely what remains.
+There is no useful C/D uniform bound claimed, no unconditional five-wise
+message independence, and no formal verification of C compilation/SIMD or
+memory accesses. The concrete Lean theorem uses `8L+255<2^64` and bounds
+collisions of the full 64-bit output for fixed messages independent of the key.
 
-## Decisions and scope
+## Hash-path and test results
 
-1. **41 words means exactly 328 bytes.** The source keys cache additional
-   vectors and small-input constants. This API stores only the requested
-   random words. The implementation keeps the same function and bulk PH
-   layout, but does not promise the original wrapper's short-key latency.
-2. **Compile-time dispatch.** This follows the original benchmark/fork
-   convention. Feature flags select hardware; otherwise the portable path
-   is used. There is no runtime CPUID/sysctl probe. ARM multiplication
-   forms are pinned with inline asm and recurrence state stays in SIMD
-   lane 0. The portable implementation does not need `__int128`.
-3. **Bounded partial-group copy.** The last incomplete 32-byte group is
-   copied to a zeroed stack buffer instead of porting the ARM benchmark's
-   C++ gather tables. Only the intersected groups are hashed; length is
-   XORed into both digest halves. Guard-page and sanitizer checks cover
-   the loads. Full blocks keep two accumulators and strided vector pairing.
-4. **Canonical little-endian API.** Input words and byte-key words decode
-   little-endian. The returned integer serializes little-endian to match
-   SMHasher3 native bytes on both hosts. The fork's alternate byte-swapped
-   function (`0x11037F6F`) is not exposed. Only the 256-byte variant ships.
-5. **Bound and score.** The exact theorem is `(n+2)/2^64` for at most n
-   blocks. In the blog's word-length metric,
-   `epsilon(L)=(ceil(L/32)+2)/2^64`, yielding lower score guarantee
-   `64-log2(3)=62.415037499…`. The empty-message block count is retained.
-   The event is equality of all 64 bits, with independent uniform key words;
-   SplitMix64 convenience seeding is explicitly outside that guarantee.
-6. **Lean status is a snapshot.** The concrete byte-string theorem is not
-   yet Lean-checked in the supplied file. Recurrence decoding/bounds and
-   conditional composition compile, but unreduced CLNH encoding and the
-   concrete finalizer/twist are still assumptions of the composition.
-   A separate job is working on this; no claim is made about its outcome.
-7. **SMHasher3 verdict is historical.** The blog records 200/200 at the
-   author's fork tier (no `--extra`, with default SeedDifferential), not
-   upstream's 250-test suite. That expensive full suite was not rerun here.
-8. **Source repositories stayed read-only.** Their before/after porcelain
-   status snapshots were identical. Compilation used new-repository builds
-   and disposable copies. No paper or fork source file was written.
+The hashing source suffix is **byte-identical** to pre-integration commit
+`6680c66bff52bb8b57d0bae18a09c98b528c7ff4`, SHA256
+`3edb24bcc45412b57112b2f0ec78d4870bc74b482a16702ae9465ebc27ae1d63`.
+The compiled Mac PMULL assembly and Xeon PCLMUL `.text` bytes also match.
+GCC renumbers assembly labels when constructors are added; the Xeon check
+therefore compares machine-code bytes rather than label text.
 
-## Reproduction
+- `make test` passed on **Apple M2 Pro and Xeon Platinum 8375C**:
+  9,479 differential cases and 92 legacy frozen vectors on native and
+  forced-portable builds, C99 checks, and guard-page checks.
+- Seeded tests passed on both hosts and both backends: 10,000 independent
+  field-product checks, six edge seeds, 744 native/portable hash comparisons,
+  archived A/B/C/D expanded-key and hash vectors, and default-A alias checks.
+- Mac ASan+UBSan passed both the original differential suite and the new
+  seeded constructor suite using Homebrew Clang.
+- Original source files in the proof lanes and reference repositories were
+  not modified. The installed compiler and Mathlib download cache were reused;
+  builds ran in the new `~/agents/chainhash-repo-check` checkout.
 
-```
+Logs are in `results/integration-*`; `test/check_hash_path.py` reproduces
+source and compiled-code identity checks. `make test` includes the new
+constructor/vector tests. Existing performance numbers and historical
+SMHasher3 results are retained with their original scope; no new speed or
+full SMHasher3 claim is made.
+
+## Commits and reproduction
+
+Source commits:
+
+- `19a1974`: collect proofs and Lake scaffolding.
+- `7baf172`: recommend A, integrate constructors, refresh the seeded lemmas,
+  and document all guarantees and remaining formalization work.
+
+The final verification-evidence commit adds this report, the full Lean log,
+and the new constructor sanitizer result. Its identifier is reported in the
+task's final response. Every commit uses the requested author, with no
+attribution trailer. Nothing was pushed.
+
+```sh
 cd /Users/ahle/repos/chainhash
 make test
-make speed
-make sanitize CXX=/opt/homebrew/opt/llvm/bin/clang++ ARCH_FLAGS=-march=armv8-a+crypto
-python3 test/check_sources.py \
-  --smhasher /Users/ahle/repos/smhasher3 \
-  --platform /Users/ahle/repos/smhasher3/build-chainhash/include \
-  --bench /Users/ahle/repos/fast-polynomials/tools/bench/chainhash
-# Repeat the source check with --portable.
-python3 docs/checks/verify5.py
+cd lean
+lake exe cache get
+lake build
+lake env lean Verification.lean
+# Xeon, with elan on PATH:
+./verify.sh
 ```
-
-The remote commands and snapshot-check design are documented in
-[test/README.md](test/README.md). The implementation/test commit is
-`60ffc99`; the documentation/results commit follows it on local `main`.
-This report is also copied to the task workspace's `./REPORT.md`.
