@@ -1,0 +1,53 @@
+# Reproducing the checks
+
+`make test` runs hardware-vs-portable-vs-paper-reference comparisons,
+frozen vectors, seed/byte-key checks, C99 API smoke tests, and Unix guard
+pages. It also builds a separate forced-portable executable. This requires
+C99 and C++11 compilers; only the test oracle uses `unsigned __int128`.
+The public portable header does not require it.
+
+`make vectors` regenerates `vectors.h` solely from the unchanged
+`vendor/chainhash_ref.h`. Test messages have byte `i` equal to
+`(131*i+17) mod 256`; the vector table lists lengths and seeds explicitly.
+Do not regenerate vectors to resolve a mismatch without investigating it.
+
+Compare the actual original SMHasher3 source without changing its checkout:
+
+```
+python3 test/check_sources.py \
+  --smhasher /Users/ahle/repos/smhasher3 \
+  --platform /Users/ahle/repos/smhasher3/build-chainhash/include \
+  --bench /Users/ahle/repos/fast-polynomials/tools/bench/chainhash
+```
+
+`--platform` must identify a CMake-configured SMHasher3 build on this host.
+The script copies the source, generated platform headers, and supporting
+includes to a temporary directory and compiles the actual `ChainHash<32,5,1,false>`
+and `chainhash_seed_init<32,5>` functions. A scratch `Hashlib.h` disables only
+registration macros; no hash implementation is rewritten. The ARM benchmark
+check uses its unchanged header in a separate translation unit. Use
+`--portable` for the fork's bit-serial implementation too. C++17 is needed
+only when checking the original ARM benchmark's compile-time tables.
+
+The Xeon check used:
+
+```
+cd ~/agents/chainhash-repo
+make test
+python3 test/check_sources.py \
+  --smhasher ~/agents/speedbench/source \
+  --platform ~/agents/speedbench/build-release-20260917/include
+# Repeat with --portable.
+taskset -c 2 ./build/speed
+```
+
+`make sanitize` enables ASan and UBSan. Toolchain runtimes must support the
+host OS. See the report for runtime failures and the successful alternatives
+used during assembly. Override `CXX=/path/to/clang++` when needed.
+
+`make speed` runs a small throughput benchmark (five trials, 16 MiB each
+for each size). It prints both bytes/cycle and GB/s. ARM uses calibrated
+estimated cycles; x86 uses invariant TSC reference cycles. It does not
+silently label ARM timer ticks as CPU cycles. Inputs are reused and hot,
+with a compiler barrier per hash call and a checksum sink to prevent
+hoisting/dead-code removal. Key generation is outside the timed region.
