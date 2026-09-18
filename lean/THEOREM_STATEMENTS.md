@@ -156,7 +156,7 @@ lemma uniformProb_coord {I A : Type*} [Fintype I] [DecidableEq I] [Fintype A] [N
 `ProvenHashes.CLNH.wordPoly_injective`
 
 ```lean
-lemma wordPoly_injective {b : ℕ} : Function.Injective (wordPoly (b
+lemma wordPoly_injective {b : ℕ} : Function.Injective (wordPoly (b := b))
 ```
 
 `ProvenHashes.CLNH.wordPoly_add`
@@ -365,13 +365,13 @@ theorem clnh_extra_pairs_zero_constant_exceeds {b : ℕ} (hb : 0 < b)
 `ProvenHashes.CLNH.posStrided_injective`
 
 ```lean
-lemma posStrided_injective {G : ℕ} : Function.Injective (posStrided (G
+lemma posStrided_injective {G : ℕ} : Function.Injective (posStrided (G := G))
 ```
 
 `ProvenHashes.CLNH.posStrided_bijective`
 
 ```lean
-lemma posStrided_bijective {G : ℕ} : Function.Bijective (posStrided (G
+lemma posStrided_bijective {G : ℕ} : Function.Bijective (posStrided (G := G))
 ```
 
 `ProvenHashes.CLNH.posStridedEquiv_apply`
@@ -928,7 +928,7 @@ theorem decode_encode (m : List (F × F)) : decode m.length (encode m) = m
 `ProvenHashes.Recurrence.encode_injective`
 
 ```lean
-theorem encode_injective : Function.Injective (encode (F
+theorem encode_injective : Function.Injective (encode (F := F))
 ```
 
 ## [Encoding.lean](ProvenHashes/Encoding.lean)
@@ -2223,6 +2223,204 @@ theorem maskedNH_difference_nonzero_bound {I W R : Type*}
     (m m' : I × Bool → W) (C : R) (hC : C ≠ 0) :
     uniformProb (fun k => maskedNH e s m k - maskedNH e t m' k = C) ≤
       1 / Fintype.card W
+```
+
+## [ModelA.lean](ProvenHashes/ModelA.lean)
+
+`ProvenHashes.ChainHash.ModelA.chainhash_equal_length_from_seeded_stages`
+
+```lean
+theorem chainhash_equal_length_from_seeded_stages {F K J : Type*}
+    [Field F] [Fintype F] [Fintype K] [Fintype J] [Nonempty K] [Nonempty J]
+    (D p : ℕ) (s s' : K → List (F × F)) (g : J → F → F)
+    (hlen : ∀ k, (s k).length = (s' k).length)
+    (hmax : ∀ k, (s k).length ≤ p)
+    (hstream : uniformProb (fun k => s k = s' k) ≤ (D : ℚ≥0) / Fintype.card F)
+    (hfinal : ∀ v v', v ≠ v' → uniformProb (fun j => g j v = g j v') ≤ 1 / Fintype.card F) :
+    uniformProb (fun k : (K × (Fin 3 → F)) × J =>
+      g k.2 (Recurrence.hash (s k.1.1) k.1.2) =
+        g k.2 (Recurrence.hash (s' k.1.1) k.1.2)) ≤
+      ((D + p + 1 : ℕ) : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.ModelA.key_card`
+
+```lean
+theorem key_card : Fintype.card Key = (2 ^ 64) ^ 10
+```
+
+`ProvenHashes.ChainHash.ModelA.expandedKey_power`
+
+```lean
+theorem expandedKey_power (k : Key) (j : Fin 32) :
+    fieldRepr (expandedKey k ⟨j.val, by omega⟩) = k.1.1 ^ (j.val + 1)
+```
+
+`ProvenHashes.ChainHash.ModelA.referenceHash_expanded`
+
+```lean
+theorem referenceHash_expanded (k : Key) (m : Message) :
+    referenceHash (expandedKey k) m = fieldRepr.symm (hash k m)
+```
+
+`ProvenHashes.ChainHash.ModelA.probability_le_one`
+
+```lean
+theorem probability_le_one {K : Type*} [Fintype K] [Nonempty K] (E : K → Prop) :
+    uniformProb E ≤ 1
+```
+
+`ProvenHashes.ChainHash.ModelA.collision_bound_fixed`
+
+```lean
+theorem collision_bound_fixed (L : ℕ) (hL : 0 < L) (m m' : Message)
+    (hm : m.length = 8 * L) (hm' : m'.length = 8 * L) (hne : m ≠ m') :
+    uniformProb (fun k : Key => hash k m = hash k m') ≤ epsilonFixed L
+```
+
+`ProvenHashes.ChainHash.ModelA.reference_collision_bound_fixed`
+
+```lean
+theorem reference_collision_bound_fixed (L : ℕ) (hL : 0 < L)
+    (m m' : Message) (hm : m.length = 8 * L) (hm' : m'.length = 8 * L) (hne : m ≠ m') :
+    uniformProb (fun k : Key => referenceHash (expandedKey k) m = referenceHash (expandedKey k) m') ≤
+      epsilonFixed L
+```
+
+`ProvenHashes.ChainHash.ModelA.collision_bound_different_blocks`
+
+```lean
+theorem collision_bound_different_blocks (p : ℕ) (m m' : Message)
+    (hlen : blockCount m ≠ blockCount m') (hm : blockCount m ≤ p) (hm' : blockCount m' ≤ p) :
+    uniformProb (fun k : Key => hash k m = hash k m') ≤
+      min 1 (((p + 2 : ℕ) : ℚ≥0) / 2 ^ 64)
+```
+
+`ProvenHashes.ChainHash.ModelA.envelope_arithmetic`
+
+```lean
+theorem envelope_arithmetic (L : ℕ) (hL : 0 < L) :
+    0 < wordBlocks L ∧ 0 < lastGroups L ∧ lastGroups L ≤ 8 ∧
+      wordBlocks L + 2 ≤ envelopeNumerator L ∧
+      countBudget (wordBlocks L) (lastGroups L) + wordBlocks L + 1 ≤ envelopeNumerator L ∧
+      ∀ k, 0 < k → k < wordBlocks L → countBudget k 8 + k + 1 ≤ envelopeNumerator L
+```
+
+`ProvenHashes.ChainHash.ModelA.message_cap_arithmetic`
+
+```lean
+theorem message_cap_arithmetic (L : ℕ) (hL : 0 < L) (m : Message) (hm : m.length ≤ 8 * L) :
+    blockCount m ≤ wordBlocks L ∧
+      (blockCount m = wordBlocks L → blockGroups m (blockCount m - 1) ≤ lastGroups L)
+```
+
+`ProvenHashes.ChainHash.ModelA.collision_bound_common_blocks`
+
+```lean
+theorem collision_bound_common_blocks (G : ℕ) (hG : 0 < G) (hG8 : G ≤ 8)
+    (m m' : Message) (hm : m.length < 2 ^ 64) (hm' : m'.length < 2 ^ 64)
+    (hne : m ≠ m') (hc : blockCount m = blockCount m')
+    (hg : blockGroups m (blockCount m - 1) ≤ G)
+    (hg' : blockGroups m' (blockCount m - 1) ≤ G) :
+    uniformProb (fun k : Key => hash k m = hash k m') ≤
+      ((countBudget (blockCount m) G + blockCount m + 1 : ℕ) : ℚ≥0) / 2 ^ 64
+```
+
+`ProvenHashes.ChainHash.ModelA.collision_bound_atMost`
+
+```lean
+theorem collision_bound_atMost (L : ℕ) (hL : 0 < L) (hcap : 8 * L < 2 ^ 64)
+    (m m' : Message) (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+    uniformProb (fun k : Key => hash k m = hash k m') ≤ epsilonAtMost L
+```
+
+`ProvenHashes.ChainHash.ModelA.reference_collision_bound_atMost`
+
+```lean
+theorem reference_collision_bound_atMost (L : ℕ) (hL : 0 < L) (hcap : 8 * L < 2 ^ 64)
+    (m m' : Message) (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+    uniformProb (fun k : Key => referenceHash (expandedKey k) m = referenceHash (expandedKey k) m') ≤
+      epsilonAtMost L
+```
+
+## [ModelAStream.lean](ProvenHashes/ModelAStream.lean)
+
+`ProvenHashes.ChainHash.ModelA.wordAt_zero`
+
+```lean
+theorem wordAt_zero (m : Message) (j : ℕ) (hj : m.length ≤ 8 * j) : wordAt m j = 0
+```
+
+`ProvenHashes.ChainHash.ModelA.reduce_seeded_clnh`
+
+```lean
+theorem reduce_seeded_clnh (a : Finset (Fin 16)) (m : Slot → Word 64) (s : F) :
+    AdjoinRoot.mk modulus (clnh a m (seededKey s)) =
+      ph a (fun j => fieldRepr (m j)) s
+```
+
+`ProvenHashes.ChainHash.ModelA.seededStream_equal_length_component`
+
+```lean
+theorem seededStream_equal_length_component (m m' : Message) (hl : m.length = m'.length)
+    (t : ℕ) (ht : t < blockCount m) (s : F)
+    (hs : seededStream m s = seededStream m' s) :
+    ph (activePairs m t) (fun j => fieldRepr (blockData m t j)) s =
+      ph (activePairs m t) (fun j => fieldRepr (blockData m' t j)) s
+```
+
+`ProvenHashes.ChainHash.ModelA.partner_exponent_budget`
+
+```lean
+theorem partner_exponent_budget (L : ℕ) (hL : 3 ≤ L) (j : Slot)
+    (hj : (pairPosition j).val < L) : exponent (partner j) ≤ degreeBudget L
+```
+
+`ProvenHashes.ChainHash.ModelA.seededStream_fixed_bound`
+
+```lean
+theorem seededStream_fixed_bound (L : ℕ) (hL : 0 < L) (m m' : Message)
+    (hm : m.length = 8 * L) (hm' : m'.length = 8 * L) (hne : m ≠ m') :
+    uniformProb (fun s : F => seededStream m s = seededStream m' s) ≤
+      (degreeBudget L : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.ModelA.reduced_lengthMask_injective`
+
+```lean
+theorem reduced_lengthMask_injective {n n' : ℕ} (hn : n < 2 ^ 64) (hn' : n' < 2 ^ 64)
+    (h : AdjoinRoot.mk modulus (lengthMask n) = AdjoinRoot.mk modulus (lengthMask n')) :
+    n = n'
+```
+
+`ProvenHashes.ChainHash.ModelA.blockGroups_properties`
+
+```lean
+theorem blockGroups_properties (m : Message) (t : ℕ) :
+    blockGroups m t ≤ 8 ∧ activePairs m t = groupPairs (blockGroups m t)
+```
+
+`ProvenHashes.ChainHash.ModelA.seededStream_last_component`
+
+```lean
+theorem seededStream_last_component (m m' : Message) (hc : blockCount m = blockCount m')
+    (s : F) (hs : seededStream m s = seededStream m' s) :
+    let t := blockCount m - 1
+    ph (activePairs m t) (fun j => fieldRepr (blockData m t j)) s -
+      ph (activePairs m' t) (fun j => fieldRepr (blockData m' t j)) s =
+      AdjoinRoot.mk modulus (lengthMask m'.length) - AdjoinRoot.mk modulus (lengthMask m.length)
+```
+
+`ProvenHashes.ChainHash.ModelA.seededStream_common_count_bound`
+
+```lean
+theorem seededStream_common_count_bound (G : ℕ) (hG : 0 < G) (hG8 : G ≤ 8)
+    (m m' : Message) (hm : m.length < 2 ^ 64) (hm' : m'.length < 2 ^ 64)
+    (hne : m ≠ m') (hc : blockCount m = blockCount m')
+    (hg : blockGroups m (blockCount m - 1) ≤ G)
+    (hg' : blockGroups m' (blockCount m - 1) ≤ G) :
+    uniformProb (fun s : F => seededStream m s = seededStream m' s) ≤
+      (countBudget (blockCount m) G : ℚ≥0) / Fintype.card F
 ```
 
 ## [Modulus.lean](ProvenHashes/Modulus.lean)
@@ -3700,7 +3898,7 @@ theorem decode_keyPolynomial (m : List (F × F)) :
 `ProvenHashes.Recurrence.keyPolynomial_injective`
 
 ```lean
-theorem keyPolynomial_injective : Function.Injective (keyPolynomial (F
+theorem keyPolynomial_injective : Function.Injective (keyPolynomial (F := F))
 ```
 
 `ProvenHashes.Recurrence.keyCoefficients_injective`
@@ -3958,7 +4156,8 @@ theorem phPoly_group_degree {F : Type*} [Field F] (g : ℕ) (hg : 0 < g)
 ```lean
 theorem ph_unequal_groups_polynomial {F : Type*} [Field F]
     (g h : ℕ) (hgh : g < h) (hh : h ≤ 8) (m m' : Slot → F) (t : F) :
-    let p
+    let p := phPoly (groupPairs g) m - phPoly (groupPairs h) m' - C t
+    p ≠ 0 ∧ p.natDegree = 8 * h - 2
 ```
 
 `ProvenHashes.ChainHash.ModelA.ph_unequal_groups_bound`
@@ -3973,10 +4172,31 @@ theorem ph_unequal_groups_bound {F : Type*} [Field F] [Fintype F]
 `ProvenHashes.ChainHash.ModelA.cubic_linear_probability`
 
 ```lean
-theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F]
+theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F] [DecidableEq F]
     (a b : F) (hne : a ≠ 0 ∨ b ≠ 0) :
     uniformProb (fun s : F => s ^ 3 * (a + b * s) = 0) ≤
       ((if b = 0 then 1 else 2 : ℕ) : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.ModelA.ph_small_bound`
+
+```lean
+theorem ph_small_bound {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    (m m' : Slot → F)
+    (hpad : ∀ i : Fin 16, i.val < 2 → m (i, true) = 0 ∧ m' (i, true) = 0)
+    (hne : m (0, false) ≠ m' (0, false) ∨ m (1, false) ≠ m' (1, false)) :
+    uniformProb (fun s : F => ph (groupPairs 1) m s = ph (groupPairs 1) m' s) ≤
+      ((if m (1, false) = m' (1, false) then 1 else 2 : ℕ) : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.ModelA.ph_nonzero_target_bound`
+
+```lean
+theorem ph_nonzero_target_bound {F : Type*} [Field F] [Fintype F]
+    (g h G : ℕ) (hg : g ≤ G) (hh : h ≤ G) (hG : 0 < G) (hG8 : G ≤ 8)
+    (m m' : Slot → F) (t : F) (ht : t ≠ 0) :
+    uniformProb (fun s : F => ph (groupPairs g) m s - ph (groupPairs h) m' s = t) ≤
+      ((8 * G - 2 : ℕ) : ℚ≥0) / Fintype.card F
 ```
 
 ## [Stream.lean](ProvenHashes/Stream.lean)
@@ -4042,7 +4262,8 @@ theorem rawStream_collision_bound (m m' : Message)
 
 ```lean
 lemma readWord_at_byte (m : Bytes) (i : ℕ) (b : Fin 8) :
-    readWord m (i / 8) ⟨8 * (i % 8) + b.val, by have
+    readWord m (i / 8) ⟨8 * (i % 8) + b.val, by have := b.isLt; omega⟩ =
+      m.getD i 0 b
 ```
 
 `ProvenHashes.ChainEncoding.byte_block_lt`

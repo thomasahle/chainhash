@@ -67,10 +67,11 @@ layout. The two concrete formulations are retained, with explicit source
 signatures and an axiom audit of every exported theorem. Build evidence is
 in [lean/VERIFICATION.txt](lean/VERIFICATION.txt).
 
-**A/B's seeded collision bounds above are written mathematical proofs,
-not yet complete Lean theorems.** The shipped seeded-PH algebra and root-bound lemmas are
-machine-checked; the remaining seeded statements are listed in
-[lean/README.md](lean/README.md). Five-output independence is conditional
+**Model A's fixed-length and at-most-length collision bounds are complete
+Lean theorems**, including the exact `E_A(L)` envelope and the independent
+80-byte key distribution. **Model B has a written mathematical proof but
+no complete Lean theorem** in the shipped sources. Exact signatures and
+scope are in [lean/README.md](lean/README.md). Five-output independence is conditional
 on distinct pre-finalizer values, not unconditional independence of the
 message hash. The Lean proofs describe the mathematical reference function;
 they do not verify C compilation, pointer safety, or SIMD lowering.

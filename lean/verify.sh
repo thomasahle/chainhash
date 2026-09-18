@@ -16,8 +16,8 @@ export LEAN_NUM_THREADS=32
   nice -n 10 taskset -c 0-31 lake build
   echo '$ lake env lean Verification.lean'
   nice -n 10 taskset -c 0-31 lake env lean Verification.lean
-  echo '$ grep -nE "\b(sorry|admit|native_decide)\b" ProvenHashes/*.lean'
-  if grep -nE '\b(sorry|admit|native_decide)\b' ProvenHashes/*.lean; then exit 1; else echo 'No matches (exit 1).'; fi
+  echo '$ grep -nE "\b(sorry|admit|native_decide|unsafe)\b" ProvenHashes/*.lean'
+  if grep -nE '\b(sorry|admit|native_decide|unsafe)\b' ProvenHashes/*.lean; then exit 1; else echo 'No matches (exit 1).'; fi
   echo '$ grep -nE "\baxiom\b" ProvenHashes/*.lean'
   if grep -nE '\baxiom\b' ProvenHashes/*.lean; then exit 1; else echo 'No matches (exit 1).'; fi
 } 2>&1 | tee VERIFICATION.txt

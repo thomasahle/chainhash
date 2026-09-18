@@ -215,9 +215,7 @@ theorem ph_unequal_groups_bound {F : Type*} [Field F] [Fintype F]
   exact polynomial_probability_le _ hp.1 _ hp.2.le
 -- checkpoint: ph_unequal_groups_bound
 
-attribute [local instance] Classical.propDecidable
-
-theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F]
+theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F] [DecidableEq F]
     (a b : F) (hne : a ≠ 0 ∨ b ≠ 0) :
     uniformProb (fun s : F => s ^ 3 * (a + b * s) = 0) ≤
       ((if b = 0 then 1 else 2 : ℕ) : ℚ≥0) / Fintype.card F := by
@@ -250,5 +248,78 @@ theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F]
   rw [he]
   exact polynomial_probability_le _ hp _ hd
 -- checkpoint: cubic_linear_probability
+
+theorem ph_small_bound {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    (m m' : Slot → F)
+    (hpad : ∀ i : Fin 16, i.val < 2 → m (i, true) = 0 ∧ m' (i, true) = 0)
+    (hne : m (0, false) ≠ m' (0, false) ∨ m (1, false) ≠ m' (1, false)) :
+    uniformProb (fun s : F => ph (groupPairs 1) m s = ph (groupPairs 1) m' s) ≤
+      ((if m (1, false) = m' (1, false) then 1 else 2 : ℕ) : ℚ≥0) / Fintype.card F := by
+  classical
+  have ha : groupPairs 1 = ({0, 1} : Finset (Fin 16)) := by
+    ext i
+    simp only [groupPairs, Finset.mem_filter, Finset.mem_univ, true_and,
+      Finset.mem_insert, Finset.mem_singleton, Fin.ext_iff]
+    omega
+  have he (s : F) : ph (groupPairs 1) m s - ph (groupPairs 1) m' s =
+      s ^ 3 * ((m (0, false) - m' (0, false)) + (m (1, false) - m' (1, false)) * s) := by
+    simp [ph, ha, powerKey, exponent, pairPosition, (hpad 0 (by decide)).1,
+      (hpad 0 (by decide)).2, (hpad 1 (by decide)).1, (hpad 1 (by decide)).2]
+    ring
+  have hprob := cubic_linear_probability (m (0, false) - m' (0, false))
+    (m (1, false) - m' (1, false)) (hne.imp sub_ne_zero.mpr sub_ne_zero.mpr)
+  have hevent : (fun s : F => ph (groupPairs 1) m s = ph (groupPairs 1) m' s) =
+      (fun s : F => s ^ 3 * ((m (0, false) - m' (0, false)) +
+        (m (1, false) - m' (1, false)) * s) = 0) := by
+    funext s
+    exact propext (sub_eq_zero.symm.trans (by rw [he]))
+  rw [hevent]
+  simpa only [sub_eq_zero] using hprob
+-- checkpoint: ph_small_bound
+
+/-- Seeded counterpart of CLNH (ii): nested group counts and a nonzero
+constant target. Equal counts and identical padded words are included. -/
+theorem ph_nonzero_target_bound {F : Type*} [Field F] [Fintype F]
+    (g h G : ℕ) (hg : g ≤ G) (hh : h ≤ G) (hG : 0 < G) (hG8 : G ≤ 8)
+    (m m' : Slot → F) (t : F) (ht : t ≠ 0) :
+    uniformProb (fun s : F => ph (groupPairs g) m s - ph (groupPairs h) m' s = t) ≤
+      ((8 * G - 2 : ℕ) : ℚ≥0) / Fintype.card F := by
+  classical
+  rcases lt_trichotomy g h with hlt | rfl | hgt
+  · exact (ph_unequal_groups_bound g h hlt (by omega) m m' t).trans
+      (div_le_div_of_nonneg_right (by exact_mod_cast (show 8 * h - 2 ≤ 8 * G - 2 by omega))
+        (by positivity))
+  · by_cases hne : ∃ j : Slot, j.1 ∈ groupPairs g ∧ m j ≠ m' j
+    · apply ph_equal_groups_bound _ _ _ _ _ hne
+      intro j hj _
+      have hjg : j.1.val < 2 * g := by simpa [groupPairs] using hj
+      rcases j with ⟨i, b⟩
+      change i.val < 2 * g at hjg
+      cases b <;> simp [exponent, partner, pairPosition] <;> omega
+    · have he (s : F) : ph (groupPairs g) m s = ph (groupPairs g) m' s := by
+        apply Finset.sum_congr rfl
+        intro i hi
+        have h₀ : m (i, false) = m' (i, false) := by
+          by_contra hc
+          exact hne ⟨(i, false), hi, hc⟩
+        have h₁ : m (i, true) = m' (i, true) := by
+          by_contra hc
+          exact hne ⟨(i, true), hi, hc⟩
+        rw [h₀, h₁]
+      have hempty : (fun s : F => ph (groupPairs g) m s - ph (groupPairs g) m' s = t) =
+          (fun _ : F => False) := by
+        funext s
+        simp [he s, Ne.symm ht]
+      rw [hempty]
+      simp [uniformProb]
+  · have hevent : (fun s : F => ph (groupPairs g) m s - ph (groupPairs h) m' s = t) =
+        (fun s : F => ph (groupPairs h) m' s - ph (groupPairs g) m s = -t) := by
+      funext s
+      exact propext (by constructor <;> intro he <;> linear_combination -he)
+    rw [hevent]
+    exact (ph_unequal_groups_bound h g hgt (by omega) m' m (-t)).trans
+      (div_le_div_of_nonneg_right (by exact_mod_cast (show 8 * g - 2 ≤ 8 * G - 2 by omega))
+        (by positivity))
+-- checkpoint: ph_nonzero_target_bound
 
 end ProvenHashes.ChainHash.ModelA

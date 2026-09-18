@@ -79,3 +79,8 @@ The optimized SMHasher3 registration is in `smhasher3/chainhash.cpp`; see
 `smhasher3/README.md` for installation and Sanity commands. Historical proof
 integration logs describe the old full-source identity check; the current
 check preserves baseline identity while allowing the new x86 dispatch paths.
+
+The Lean integration adds `lean_vectors.cpp` and `../lean/check_vectors.sh`.
+On the Xeon these compare the reference and every available shipped path
+with a Lean executable evaluator using the proof's byte/index encoding.
+See [the pairing audit](../lean/PAIRING_AUDIT.md) for exact coverage and scope.

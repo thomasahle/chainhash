@@ -4,6 +4,20 @@ Models A and B below have proved nontrivial collision bounds for the **unchanged
 
 This document and `THEOREMS.tex` contain the same mathematical text. The reference is the supplied `appendix_chainhash.tex`, especially `lem:ph:stream`, `lem:ph:injective`, `lem:ph:twist`, and `thm:ph:kwise`. No pseudorandom-generator assumption is used. Computation is evidence reported in `REFEREE.md`, not a substitute for the proofs.
 
+**Formalization status.** The model-A portions of Theorems 1 and 2 are
+Lean-proved in [ModelA.lean](../lean/ProvenHashes/ModelA.lean), as
+`ProvenHashes.ChainHash.ModelA.reference_collision_bound_fixed` and
+`reference_collision_bound_atMost`. They use exactly `d(L)` and `E_A(L)`
+below, with the ten independent uniform words in the table. All stage,
+field, encoding, and finalizer obligations are discharged; the axiom audit
+allows only `propext`, `Classical.choice`, and `Quot.sound`.
+Model B's portions of Theorems 1 and 2, including the recurrence substitution
+in Lemma 7, remain written proofs: the completed model-A lane contains no
+model-B Lean theorem to import. This status does not claim that every
+auxiliary statement, score, or sharper pair-specific formula in this
+write-up is formalized. See [the Lean catalogue](../lean/THEOREM_STATEMENTS.md)
+for the exact checked statements.
+
 ## 1. Assumptions, schedules, and interpretation of the numbers
 
 Put $q=2^{64}$ and $F=\mathbb F_2[X]/(X^{64}+X^4+X^3+X+1)$. A word is its polynomial-basis representative of degree below 64. Write $\operatorname{clmul}$ for the **unreduced** binary-polynomial product, and juxtaposition for multiplication in $F$ when the operands are field elements. Reduction sends $X^{64}$ to $r=27$; consequently $1+r=26\ne0$ in $F$.

@@ -7,9 +7,11 @@ irreducible modulus `X^64+X^4+X^3+X+1`, the recurrence, integer-add twist,
 and quintic circuit. There are no outstanding stage-bound or field
 hypotheses in the concrete collision theorem.
 
-The repository recommends **seeded model A**. Its complete collision bounds,
-and model B's, currently have [written proofs](../docs/SEEDED_THEOREMS.md),
-not complete Lean proofs. Twelve seeded-PH algebra and root-bound lemmas are included; principal signatures follow.
+The recommended **seeded model A is Lean-proved**, including the exact
+fixed-length bound and at-most-length envelope `E_A(L)`. The ten words
+`s,u,y,z,c0..c4,tau` are independent and uniform; PH keys are powers of `s`.
+Model B has a [written proof](../docs/SEEDED_THEOREMS.md), but no complete
+Lean theorem in the source lane or this repository.
 
 ## Build and toolchain
 
@@ -29,17 +31,21 @@ lake env lean Verification.lean
 On the Xeon, the recorded check uses:
 
 ```sh
-cd ~/agents/chainhash-repo-check/lean
+cd ~/agents/chainhash-integrate/lean
 export LEAN_NUM_THREADS=32
 ./verify.sh
 ```
 
+`reproduce.sh` repeats the per-lemma integration builds, vector comparison,
+C/C++ tests, and final `verify.sh` audit. Incremental work uses CPUs 0–7 and
+eight Lean threads; only the final audit uses CPUs 0–31 and 32 threads.
+
 `verify.sh` runs cache retrieval, build, and the explicit axiom audit with
 `nice -n 10 taskset -c 0-31`; it records all output and the source grep
-results in [VERIFICATION.txt](VERIFICATION.txt). The first run starts with
-no project `.lake` directory; only the pinned compiler and Mathlib download
-cache are reused. No proof `.olean` files are copied from a proof lane.
-The recorded clean build passed all 559 exported theorem/lemma audits.
+results in [VERIFICATION.txt](VERIFICATION.txt). The integration build reuses
+the existing project and Mathlib cache from
+`chainhash-repo-check`; changed modules and their dependents are rebuilt.
+The recorded build passes all 583 exported theorem/lemma audits.
 The alternate field certificate can take several minutes on a shared host.
 The scripts reject unapproved axioms. Standard Lean axioms `propext`,
 `Classical.choice`, and `Quot.sound` are allowed.
@@ -56,6 +62,31 @@ These signatures are copied verbatim from the integrated source; namespace
 qualifications are shown above them. Context definitions, typeclass instances,
 and section variables are in their source modules. The complete catalogue of
 all exported signatures is [THEOREM_STATEMENTS.md](THEOREM_STATEMENTS.md).
+
+Model A uses `ModelA.Key = (F × (Fin 3 → F)) × (F × (Fin 5 → F))`,
+with cardinality `(2^64)^10`. `epsilonFixed L = min 1 ((d(L)+n+1)/2^64)`;
+`epsilonAtMost L = min 1 (E_A(L)/2^64)`, with exactly the piecewise formulas
+in [SEEDED_THEOREMS.md](../docs/SEEDED_THEOREMS.md). The at-most theorem
+includes empty messages and byte tails. The fixed-length theorem needs no
+upper length cap because the equal length masks cancel.
+
+`ProvenHashes.ChainHash.ModelA.reference_collision_bound_fixed`
+
+```lean
+theorem reference_collision_bound_fixed (L : ℕ) (hL : 0 < L)
+    (m m' : Message) (hm : m.length = 8 * L) (hm' : m'.length = 8 * L) (hne : m ≠ m') :
+    uniformProb (fun k : Key => referenceHash (expandedKey k) m = referenceHash (expandedKey k) m') ≤
+      epsilonFixed L
+```
+
+`ProvenHashes.ChainHash.ModelA.reference_collision_bound_atMost`
+
+```lean
+theorem reference_collision_bound_atMost (L : ℕ) (hL : 0 < L) (hcap : 8 * L < 2 ^ 64)
+    (m m' : Message) (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+    uniformProb (fun k : Key => referenceHash (expandedKey k) m = referenceHash (expandedKey k) m') ≤
+      epsilonAtMost L
+```
 
 `ProvenHashes.ChainHash.collision_bound_bytes`
 
@@ -142,7 +173,7 @@ theorem ph_unequal_groups_bound {F : Type*} [Field F] [Fintype F]
 `ProvenHashes.ChainHash.ModelA.cubic_linear_probability`
 
 ```lean
-theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F]
+theorem cubic_linear_probability {F : Type*} [Field F] [Fintype F] [DecidableEq F]
     (a b : F) (hne : a ≠ 0 ∨ b ≠ 0) :
     uniformProb (fun s : F => s ^ 3 * (a + b * s) = 0) ≤
       ((if b = 0 then 1 else 2 : ℕ) : ℚ≥0) / Fintype.card F
@@ -171,7 +202,7 @@ pre-finalizer values. It is not unconditional five-wise independence.
 ## Modules and resolution of proof lanes
 
 [PROVENANCE.json](PROVENANCE.json) records source and integrated SHA256
-hashes for all 67 modules. Sources were copied from the specified Xeon lanes;
+hashes for all 69 modules. Sources were copied from the specified Xeon lanes;
 all source lanes remain untouched.
 
 - Shared `Probability`, `Polynomial`, `NH`, `Tabulation`, `Decoder`,
@@ -195,43 +226,52 @@ all source lanes remain untouched.
   `verify-finalizer` copies matched their respective source lane modules
   byte-for-byte and were deduplicated. All baseline modules in `lean-hash`
   matched the collected baseline (except the deliberate strengthening of NH).
-- `SeededPH` is the compiling snapshot from `lean-chainhash-modelA`.
-  It proves polynomial evaluation, injectivity of partner exponents, the
-  PH difference identity, nonzero/degree bounds, equal/unequal-group PH
-  probability bounds, and a cubic-linear root bound. It does not yet
-  compose these into a complete byte-message collision theorem. A local
-  `Classical.propDecidable` instance was added to elaborate the conditional
-  root budget in the theorem statement; its mathematical statement is unchanged.
+- `SeededPH`, `ModelAStream`, and `ModelA` are copied unchanged from the
+  completed model-A lane at `a3939c01b87d962ae170776b656a154300d5f3ca`.
+  They prove the seeded PH bounds, connect them to the raw low/high stream,
+  compose the independent recurrence and finalizer, and prove the exact
+  fixed-length and at-most-length model-A reference theorems. The imported
+  declarations have per-lemma build evidence in
+  [MODELA_BUILDS.txt](MODELA_BUILDS.txt); this integration also builds after
+  each of its 24 newly imported theorem checkpoints, recorded in
+  [MODELA_INTEGRATION_BUILDS.txt](MODELA_INTEGRATION_BUILDS.txt).
+  `cubic_linear_probability` now uses the source lane's explicit
+  `DecidableEq F` instance instead of the earlier local classical instance.
 
 Different concrete encodings are retained as different verified interfaces;
 identical shared statements are not duplicated merely to preserve lane names.
 
 ## Precise remaining statements and scope
 
-Nothing remains to prove for the displayed **41-word mathematical collision
-bound**. The following stronger or differently distributed claims are not
+Nothing remains to prove for the displayed **41-word and model-A mathematical
+collision bounds**. The following stronger or differently distributed claims are not
 established by the Lean files shipped here:
 
-1. **Model A:** for independent uniform `s,u,y,z,c0..c4,tau`, PH words
-   `s^(i+1)`, and distinct messages, prove
-   `Pr[H_A(m)=H_A(m′)] ≤ min(1,(d(L)+n+1)/2^64)` when both lengths equal
-   `8L`, and `≤ min(1,E_A(L)/2^64)` when both lengths are at most `8L`.
-2. **Model B:** for independent uniform `s,t,c0..c4`, PH words `s^(i+1)`,
+1. **Model B:** for independent uniform `s,t,c0..c4`, PH words `s^(i+1)`,
    `(u,y,z)=(t²,t³,t)` and `tau=s⁴`, prove the corresponding bounds
    `min(1,(d(L)+3n)/2^64)` and `min(1,E_B(L)/2^64)`.
    Here `n,d,E_A,E_B` are exactly those defined in
    [SEEDED_THEOREMS.md, Theorems 1–2](../docs/SEEDED_THEOREMS.md).
-   These are written proved results still awaiting complete formalization.
-3. **Model C:** with `t=s` and independent `c0..c4`, the written exact
+   These model-B results have written proofs and still await complete formalization.
+2. **Model C:** with `t=s` and independent `c0..c4`, the written exact
    reduction is `Pr[H_C(m)=H_C(m′)] = (q+(q-1)N_C(m,m′))/q²`, where
    `N_C` counts seeds colliding before the finalizer and `q=2^64`.
    A useful uniform bound on `N_C` for all fixed distinct messages remains
    mathematically unresolved here. Only ε=1 is certified uniformly.
    The D reference model likewise lacks a useful uniform bound.
-4. No theorem transfers any of these distributions to the one-word
+3. No theorem transfers any of these distributions to the one-word
    SplitMix64 expansion. No C/compiler/SIMD refinement theorem, truncated
    output bound, or adaptive-input guarantee is supplied.
 
 The raw PH low/high halves cannot simply be treated as degree-32 field
 polynomials after sharing the PH seed with the recurrence. The seeded
 write-up explains this obstruction and gives counterexamples to that shortcut.
+
+## Shipped pairing and vector agreement
+
+All header paths use `(w0,w2),(w1,w3)` in every four-word group, including
+portable, NEON, baseline/pipelined XMM, YMM, and ZMM. `ByteEncoding.pairPosition`,
+`KeyLayout`, and `referenceHash_matches` already use this strided map and
+remain unchanged. The separate ChainHash-x86 SPEC describes a different
+1024-byte adjacent-pair hash, which is not this header. See
+[PAIRING_AUDIT.md](PAIRING_AUDIT.md) for the path audit and vector reproduction.

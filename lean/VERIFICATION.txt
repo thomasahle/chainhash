@@ -1,9 +1,10 @@
-Verification UTC: 2026-09-18T12:20:17Z
-7baf172cce11ac83ed3eb24d1c7750b4c8d925e0
+Verification UTC: 2026-09-18T19:52:22Z
+8d18348ffc5a18ed284b45c0270089a5b5e63992
 Source SHA256 manifest:
 e68211f74d749ebbbb88cdc876c99b0a17432ae3a97028c7cbd522c74618847d  ./ChainHash.lean
-b1db8843c361513028be37528841c247b13b3da6612ef089d7d8e2854829c615  ./ProvenHashes.lean
-81702e75f2425d1e8c161c40fce3641a52e17836b6d30208a83b3e0fcb6928a0  ./Verification.lean
+ab91578c0146a1fd81311409c602bd7133e18839b8833c8f1fb0248f82e28cc9  ./ProvenHashes.lean
+8f719b21395db7e5a672a43d26da7c48953ccc246d2589cc096844fdcc7e2529  ./VectorAgreement.lean
+e85aba4a005ffaf4369769bc1e80313596cc679276503eac6ce6b4205044653f  ./Verification.lean
 967dda365b51e55d92e023a982f9f38b9f997f42a288e6e75e81efe4717cd3cb  ProvenHashes/BinaryRabin.lean
 d810ce90a0db876474b62331d8939868b3113636aafdb35a3ee734cc921438b1  ProvenHashes/ByteEncoding.lean
 994848bdda7d32ac336598e765f6316fbec3b343043d2c13594b02894a8a0129  ProvenHashes/ByteInterface.lean
@@ -40,6 +41,8 @@ ebf105171dd7a3b2effda4b1e52866034d29f34eb752c833874a27bad7592858  ProvenHashes/G
 3f6613163b037a6b957516b111636f355e230dc2b0643f63905e01d1a0299c25  ProvenHashes/KeyLayout.lean
 b18052e845646ed063ddb93eafd4aa1f9fd436025ea3916eb044ca0be64e3fb2  ProvenHashes/MachineTwist.lean
 3f3c77a86ed070f39409d3ff06989080c55c9c4c1871d6e4ae52b6a6d6c36122  ProvenHashes/MaskedNH.lean
+a9fe40218d5a8dd838e3f8074b194864dbd6144f28dcd4643c22cd2c7c7ed66f  ProvenHashes/ModelA.lean
+eb3da5737767e9018e82b1e9b6c770c94f0e4da067e24de36dbc8ad4ce0d8927  ProvenHashes/ModelAStream.lean
 1ada1ff3ed3bd0d7db9d05d99dc9c5cd12848be6eda1fe537940767336655acc  ProvenHashes/Modulus.lean
 f412e1f662a6cb2f8583a776896400dffc62fca26525f813113642c3e1016c29  ProvenHashes/ModulusCertificate.lean
 571e4937e4beead30113f68d1dfff396352fca5960a1be670f7f1be8c2f71971  ProvenHashes/ModulusIrreducible.lean
@@ -64,7 +67,7 @@ a826cb1fb30b4b4c1c02387fc2a6357b83c252540f4b3198e1692518dd15c850  ProvenHashes/P
 246aec06a594994a6cc543a52251b06aec9b0da8fcaa689ae212ad29a46055c0  ProvenHashes/Recurrence.lean
 99372b641209fc0be36048a60f95ffa2035661e2743210e762ac7299756dda0d  ProvenHashes/ReferenceChainHash.lean
 74f766e7318942bdf9c78b0c2a1793ff93da4f7708cf244a09aec528b3baf486  ProvenHashes/ReferenceOperations.lean
-65dc3fa0ff0ae6426d7abf119bc457126a1c75b2ba8ab5cf39fd3ad37c84bb58  ProvenHashes/SeededPH.lean
+532466f9e5d06a09d987ca902b05d5dd8fbe8e5ae08ff32b365f57e4e331fb8e  ProvenHashes/SeededPH.lean
 97dfd272a4fdc98b161b1c6f8ebf6a77da8f24943a271de09219da94c01e316f  ProvenHashes/Stream.lean
 f9a8b2059f08d00dd35c6c5ace3286dc716a3ddeae41e8a11c4887f87a87bd0d  ProvenHashes/Subblocks.lean
 d9e263573ac8fb37cab05dfce17a97604ca13e9172aabe09e98d37a47106b20a  ProvenHashes/Tabulation.lean
@@ -82,21 +85,10 @@ Current branch: HEAD
 Using cache (Azure) from origin: leanprover-community/mathlib4
 No files to download
 Decompressing 7335 file(s)
-Unpacked in 321 ms
+Unpacked in 184 ms
 Completed successfully!
 $ lake build
-✔ [7351/7422] Built ProvenHashes.Probability (12s)
-✔ [7352/7422] Built ProvenHashes.Decoder (13s)
-✔ [7353/7422] Built ProvenHashes.NH (10s)
-✔ [7354/7422] Built ProvenHashes.MultiplyShift (11s)
-✔ [7355/7422] Built ProvenHashes.Polynomial (11s)
-✔ [7356/7422] Built ProvenHashes.Tabulation (11s)
-✔ [7357/7422] Built ProvenHashes.Recurrence (14s)
-✔ [7358/7422] Built ProvenHashes.Composition (8.5s)
-✔ [7359/7422] Built ProvenHashes.Counting (13s)
-✔ [7360/7422] Built ProvenHashes.Finalizer (16s)
-✔ [7361/7422] Built ProvenHashes.OpusFinalizer (18s)
-⚠ [7362/7422] Built ProvenHashes.CLNH (18s)
+⚠ [7385/7424] Replayed ProvenHashes.CLNH
 warning: ProvenHashes/CLNH.lean:407:4: try 'simp' instead of 'simpa'
 
 Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
@@ -106,44 +98,7 @@ Note: This linter can be disabled with `set_option linter.unnecessarySimpa false
 warning: ProvenHashes/CLNH.lean:602:4: try 'simp' instead of 'simpa'
 
 Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
-✔ [7363/7422] Built ProvenHashes.Encoding (20s)
-✔ [7364/7422] Built ProvenHashes.UnreducedNH (9.2s)
-✔ [7365/7422] Built ProvenHashes.FinalizerIndependence (11s)
-✔ [7366/7422] Built ProvenHashes.Carryless (16s)
-✔ [7367/7422] Built ProvenHashes.MaskedNH (11s)
-✔ [7368/7422] Built ProvenHashes.ByteEncoding (13s)
-✔ [7369/7422] Built ProvenHashes.BinaryRabin (13s)
-✔ [7370/7422] Built ProvenHashes.CarrylessBlock (9.2s)
-✔ [7371/7422] Built ProvenHashes.CarrylessVariable (14s)
-✔ [7372/7422] Built ProvenHashes.WordRepresentation (8.4s)
-✔ [7373/7422] Built ProvenHashes.Modulus (9.5s)
-✔ [7374/7422] Built ProvenHashes.Stream (11s)
-✔ [7375/7422] Built ProvenHashes.PiecesFinalizer (13s)
-✔ [7376/7422] Built ProvenHashes.FieldStream (10s)
-✔ [7377/7422] Built ProvenHashes.ModulusResidues (14s)
-✔ [7378/7422] Built ProvenHashes.FinalizerKwise (12s)
-✔ [7379/7422] Built ProvenHashes.ChainHashModel (11s)
-✔ [7380/7422] Built ProvenHashes.ConcreteWords (13s)
-✔ [7381/7422] Built ProvenHashes.ModulusSteps1 (17s)
-✔ [7382/7422] Built ProvenHashes.ModulusSteps0 (19s)
-✔ [7383/7422] Built ProvenHashes.ReferenceOperations (16s)
-✔ [7384/7422] Built ProvenHashes.KeyLayout (20s)
-✔ [7385/7422] Built ProvenHashes.PiecesByteEncoding (22s)
-✔ [7386/7422] Built ProvenHashes.ModulusSteps5 (35s)
-✔ [7387/7422] Built ProvenHashes.ModulusSteps4 (38s)
-✔ [7388/7422] Built ProvenHashes.ModulusSteps2 (38s)
-✔ [7389/7422] Built ProvenHashes.ModulusSteps3 (41s)
-✔ [7390/7422] Built ProvenHashes.ModulusSteps7 (41s)
-✔ [7391/7422] Built ProvenHashes.ModulusSteps6 (41s)
-✔ [7392/7422] Built ProvenHashes.Subblocks (10s)
-✔ [7393/7422] Built ProvenHashes.WordSplit (9.8s)
-✔ [7394/7422] Built ProvenHashes.PiecesStream (10s)
-✔ [7395/7422] Built ProvenHashes.ModulusCertificate (28s)
-✔ [7396/7422] Built ProvenHashes.ChainHash256 (10s)
-✔ [7397/7422] Built ProvenHashes.ModulusIrreducible (13s)
-✔ [7398/7422] Built ProvenHashes.ConcreteChainHash (13s)
-✔ [7399/7422] Built ProvenHashes.ReferenceChainHash (12s)
-⚠ [7400/7422] Built ProvenHashes.SeededPH (13s)
+⚠ [7413/7424] Replayed ProvenHashes.SeededPH
 warning: ProvenHashes/SeededPH.lean:64:50: This simp argument is unused:
   map_sub
 
@@ -158,26 +113,22 @@ Hint: Omit it from the simp argument list.
   simp [Polynomial.coeff_monomial, hne,̵ ̵N̵e̵.̵s̵y̵m̵m̵ ̵h̵n̵e̵]
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-✔ [7401/7422] Built ProvenHashes.FlatKey (44s)
-✔ [7402/7422] Built ProvenHashes.ByteInterface (10s)
-✔ [7403/7422] Built ProvenHashes.MachineTwist (12s)
-✔ [7404/7422] Built ProvenHashes.GF64CertificateData (480s)
-✔ [7405/7422] Built ProvenHashes.GF64Square0 (13s)
-✔ [7406/7422] Built ProvenHashes.GF64Square1 (17s)
-✔ [7407/7422] Built ProvenHashes.GF64Representation (17s)
-✔ [7408/7422] Built ProvenHashes.GF64Square4 (54s)
-✔ [7409/7422] Built ProvenHashes.GF64Square2 (55s)
-✔ [7410/7422] Built ProvenHashes.GF64Square5 (64s)
-✔ [7411/7422] Built ProvenHashes.GF64Square3 (68s)
-✔ [7412/7422] Built ProvenHashes.GF64Square7 (72s)
-✔ [7413/7422] Built ProvenHashes.GF64Square6 (73s)
-✔ [7414/7422] Built ProvenHashes.GF64Bezout (87s)
-✔ [7415/7422] Built ProvenHashes.GF64Certificate (19s)
-✔ [7416/7422] Built ProvenHashes.GF64Irreducible (10s)
-✔ [7417/7422] Built ProvenHashes.PiecesConcreteChainHash (8.3s)
-✔ [7418/7422] Built ProvenHashes (9.3s)
-✔ [7419/7422] Built ChainHash (6.3s)
-ℹ [7421/7422] Built Verification (217s)
+⚠ [7414/7424] Replayed ProvenHashes.ModelAStream
+warning: ProvenHashes/ModelAStream.lean:132:35: This simp argument is unused:
+  if_false
+
+Hint: Omit it from the simp argument list.
+  simp only [degreeBudget, h2, if_f̵a̵l̵s̵e̵,̵ ̵i̵f̵_̵true, reduceCtorEq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: ProvenHashes/ModelAStream.lean:132:54: This simp argument is unused:
+  reduceCtorEq
+
+Hint: Omit it from the simp argument list.
+  simp only [degreeBudget, h2, if_false, if_true,̵ ̵r̵e̵d̵u̵c̵e̵C̵t̵o̵r̵E̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ℹ [7423/7424] Built Verification (93s)
 info: Verification.lean:4:0: 'ProvenHashes.ChainHash.irreducible_dvd_frobenius_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: Verification.lean:5:0: 'ProvenHashes.ChainHash.binary_rabin64' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: Verification.lean:6:0: 'ProvenHashes.ChainHash.wordAt_read_byte' depends on axioms: [propext, Quot.sound]
@@ -462,288 +413,324 @@ info: Verification.lean:282:0: 'ProvenHashes.maskedNH_overlap_bound' depends on 
 info: Verification.lean:283:0: 'ProvenHashes.maskedNH_nonzero_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: Verification.lean:284:0: 'ProvenHashes.maskedNH_difference_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]
 info: Verification.lean:285:0: 'ProvenHashes.maskedNH_difference_nonzero_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:286:0: 'ProvenHashes.ChainHash.modulus_tail_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:287:0: 'ProvenHashes.ChainHash.modulus_monic' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:288:0: 'ProvenHashes.ChainHash.modulus_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:289:0: 'ProvenHashes.ChainHash.square_test' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:290:0: 'ProvenHashes.ChainHash.residue_bezout' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:291:0: 'ProvenHashes.ChainHash.residue_power_step' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:292:0: 'ProvenHashes.ChainHash.modulus_frobenius_certificates' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:293:0: 'ProvenHashes.ChainHash.modulus_irreducible' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:294:0: 'ProvenHashes.ChainHash.poly_num_2' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:295:0: 'ProvenHashes.ChainHash.poly_num_3' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:296:0: 'ProvenHashes.ChainHash.poly_num_4' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:297:0: 'ProvenHashes.ChainHash.poly_num_5' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:298:0: 'ProvenHashes.ChainHash.poly_num_6' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:299:0: 'ProvenHashes.ChainHash.poly_num_7' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:300:0: 'ProvenHashes.ChainHash.poly_num_8' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:301:0: 'ProvenHashes.ChainHash.poly_num_9' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:302:0: 'ProvenHashes.ChainHash.poly_num_10' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:303:0: 'ProvenHashes.ChainHash.poly_num_11' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:304:0: 'ProvenHashes.ChainHash.poly_num_12' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:305:0: 'ProvenHashes.ChainHash.poly_num_13' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:306:0: 'ProvenHashes.ChainHash.poly_num_14' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:307:0: 'ProvenHashes.ChainHash.poly_num_15' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:308:0: 'ProvenHashes.ChainHash.poly_num_16' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:309:0: 'ProvenHashes.ChainHash.poly_num_17' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:310:0: 'ProvenHashes.ChainHash.poly_num_18' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:311:0: 'ProvenHashes.ChainHash.poly_num_19' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:312:0: 'ProvenHashes.ChainHash.poly_num_20' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:313:0: 'ProvenHashes.ChainHash.poly_num_21' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:314:0: 'ProvenHashes.ChainHash.poly_num_22' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:315:0: 'ProvenHashes.ChainHash.poly_num_23' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:316:0: 'ProvenHashes.ChainHash.poly_num_24' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:317:0: 'ProvenHashes.ChainHash.poly_num_25' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:318:0: 'ProvenHashes.ChainHash.poly_num_26' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:319:0: 'ProvenHashes.ChainHash.poly_num_27' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:320:0: 'ProvenHashes.ChainHash.poly_num_28' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:321:0: 'ProvenHashes.ChainHash.poly_num_29' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:322:0: 'ProvenHashes.ChainHash.poly_num_30' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:323:0: 'ProvenHashes.ChainHash.poly_num_31' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:324:0: 'ProvenHashes.ChainHash.poly_num_32' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:325:0: 'ProvenHashes.ChainHash.poly_num_33' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:326:0: 'ProvenHashes.ChainHash.poly_num_34' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:327:0: 'ProvenHashes.ChainHash.poly_num_35' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:328:0: 'ProvenHashes.ChainHash.poly_num_36' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:329:0: 'ProvenHashes.ChainHash.poly_num_37' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:330:0: 'ProvenHashes.ChainHash.poly_num_38' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:331:0: 'ProvenHashes.ChainHash.poly_num_39' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:332:0: 'ProvenHashes.ChainHash.poly_num_40' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:333:0: 'ProvenHashes.ChainHash.poly_num_41' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:334:0: 'ProvenHashes.ChainHash.poly_num_42' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:335:0: 'ProvenHashes.ChainHash.poly_num_43' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:336:0: 'ProvenHashes.ChainHash.poly_num_44' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:337:0: 'ProvenHashes.ChainHash.poly_num_45' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:338:0: 'ProvenHashes.ChainHash.poly_num_46' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:339:0: 'ProvenHashes.ChainHash.poly_num_47' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:340:0: 'ProvenHashes.ChainHash.poly_num_48' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:341:0: 'ProvenHashes.ChainHash.poly_num_49' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:342:0: 'ProvenHashes.ChainHash.poly_num_50' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:343:0: 'ProvenHashes.ChainHash.poly_num_51' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:344:0: 'ProvenHashes.ChainHash.poly_num_52' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:345:0: 'ProvenHashes.ChainHash.poly_num_53' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:346:0: 'ProvenHashes.ChainHash.poly_num_54' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:347:0: 'ProvenHashes.ChainHash.poly_num_55' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:348:0: 'ProvenHashes.ChainHash.poly_num_56' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:349:0: 'ProvenHashes.ChainHash.poly_num_57' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:350:0: 'ProvenHashes.ChainHash.poly_num_58' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:351:0: 'ProvenHashes.ChainHash.poly_num_59' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:352:0: 'ProvenHashes.ChainHash.poly_num_60' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:353:0: 'ProvenHashes.ChainHash.poly_num_61' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:354:0: 'ProvenHashes.ChainHash.poly_num_62' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:355:0: 'ProvenHashes.ChainHash.poly_num_63' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:356:0: 'ProvenHashes.ChainHash.poly_num_64' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:357:0: 'ProvenHashes.ChainHash.residue_step_0' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:358:0: 'ProvenHashes.ChainHash.residue_step_1' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:359:0: 'ProvenHashes.ChainHash.residue_step_2' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:360:0: 'ProvenHashes.ChainHash.residue_step_3' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:361:0: 'ProvenHashes.ChainHash.residue_step_4' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:362:0: 'ProvenHashes.ChainHash.residue_step_5' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:363:0: 'ProvenHashes.ChainHash.residue_step_6' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:364:0: 'ProvenHashes.ChainHash.residue_step_7' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:365:0: 'ProvenHashes.ChainHash.residue_step_8' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:366:0: 'ProvenHashes.ChainHash.residue_step_9' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:367:0: 'ProvenHashes.ChainHash.residue_step_10' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:368:0: 'ProvenHashes.ChainHash.residue_step_11' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:369:0: 'ProvenHashes.ChainHash.residue_step_12' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:370:0: 'ProvenHashes.ChainHash.residue_step_13' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:371:0: 'ProvenHashes.ChainHash.residue_step_14' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:372:0: 'ProvenHashes.ChainHash.residue_step_15' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:373:0: 'ProvenHashes.ChainHash.residue_step_16' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:374:0: 'ProvenHashes.ChainHash.residue_step_17' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:375:0: 'ProvenHashes.ChainHash.residue_step_18' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:376:0: 'ProvenHashes.ChainHash.residue_step_19' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:377:0: 'ProvenHashes.ChainHash.residue_step_20' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:378:0: 'ProvenHashes.ChainHash.residue_step_21' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:379:0: 'ProvenHashes.ChainHash.residue_step_22' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:380:0: 'ProvenHashes.ChainHash.residue_step_23' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:381:0: 'ProvenHashes.ChainHash.residue_step_24' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:382:0: 'ProvenHashes.ChainHash.residue_step_25' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:383:0: 'ProvenHashes.ChainHash.residue_step_26' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:384:0: 'ProvenHashes.ChainHash.residue_step_27' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:385:0: 'ProvenHashes.ChainHash.residue_step_28' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:386:0: 'ProvenHashes.ChainHash.residue_step_29' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:387:0: 'ProvenHashes.ChainHash.residue_step_30' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:388:0: 'ProvenHashes.ChainHash.residue_step_31' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:389:0: 'ProvenHashes.ChainHash.residue_step_32' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:390:0: 'ProvenHashes.ChainHash.residue_step_33' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:391:0: 'ProvenHashes.ChainHash.residue_step_34' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:392:0: 'ProvenHashes.ChainHash.residue_step_35' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:393:0: 'ProvenHashes.ChainHash.residue_step_36' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:394:0: 'ProvenHashes.ChainHash.residue_step_37' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:395:0: 'ProvenHashes.ChainHash.residue_step_38' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:396:0: 'ProvenHashes.ChainHash.residue_step_39' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:397:0: 'ProvenHashes.ChainHash.residue_step_40' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:398:0: 'ProvenHashes.ChainHash.residue_step_41' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:399:0: 'ProvenHashes.ChainHash.residue_step_42' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:400:0: 'ProvenHashes.ChainHash.residue_step_43' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:401:0: 'ProvenHashes.ChainHash.residue_step_44' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:402:0: 'ProvenHashes.ChainHash.residue_step_45' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:403:0: 'ProvenHashes.ChainHash.residue_step_46' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:404:0: 'ProvenHashes.ChainHash.residue_step_47' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:405:0: 'ProvenHashes.ChainHash.residue_step_48' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:406:0: 'ProvenHashes.ChainHash.residue_step_49' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:407:0: 'ProvenHashes.ChainHash.residue_step_50' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:408:0: 'ProvenHashes.ChainHash.residue_step_51' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:409:0: 'ProvenHashes.ChainHash.residue_step_52' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:410:0: 'ProvenHashes.ChainHash.residue_step_53' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:411:0: 'ProvenHashes.ChainHash.residue_step_54' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:412:0: 'ProvenHashes.ChainHash.residue_step_55' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:413:0: 'ProvenHashes.ChainHash.residue_step_56' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:414:0: 'ProvenHashes.ChainHash.residue_step_57' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:415:0: 'ProvenHashes.ChainHash.residue_step_58' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:416:0: 'ProvenHashes.ChainHash.residue_step_59' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:417:0: 'ProvenHashes.ChainHash.residue_step_60' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:418:0: 'ProvenHashes.ChainHash.residue_step_61' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:419:0: 'ProvenHashes.ChainHash.residue_step_62' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:420:0: 'ProvenHashes.ChainHash.residue_step_63' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:421:0: 'ProvenHashes.same_bucket_close' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:422:0: 'ProvenHashes.multiplyShift_collision_close' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:423:0: 'ProvenHashes.odd_mul_mod_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:424:0: 'ProvenHashes.affine_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:425:0: 'ProvenHashes.sum_mul_update' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:426:0: 'ProvenHashes.affine_sum_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:427:0: 'ProvenHashes.nh_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:428:0: 'ProvenHashes.nh_difference_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:429:0: 'ProvenHashes.nh_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:430:0: 'ProvenHashes.OpusFinalizer.chain5_eq' depends on axioms: [propext]
-info: Verification.lean:431:0: 'ProvenHashes.OpusFinalizer.coeffDecode_coeffMap' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:432:0: 'ProvenHashes.OpusFinalizer.coeffMap_coeffDecode' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:433:0: 'ProvenHashes.OpusFinalizer.coeffMap_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:434:0: 'ProvenHashes.OpusFinalizer.eval_chainPoly' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:435:0: 'ProvenHashes.OpusFinalizer.chainPoly_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:436:0: 'ProvenHashes.OpusFinalizer.chainPoly_monic' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:437:0: 'ProvenHashes.OpusFinalizer.chainPoly_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:438:0: 'ProvenHashes.OpusFinalizer.chainPoly_eq_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:439:0: 'ProvenHashes.OpusFinalizer.chainPoly_coeff' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:440:0: 'ProvenHashes.OpusFinalizer.chainPoly_coeff_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:441:0: 'ProvenHashes.OpusFinalizer.chain5_update_three' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:442:0: 'ProvenHashes.OpusFinalizer.chain5_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:443:0: 'ProvenHashes.OpusFinalizer.twist_apply' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:444:0: 'ProvenHashes.OpusFinalizer.chain5_collision_twisted' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:445:0: 'ProvenHashes.OpusFinalizer.finalizer_stage_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:446:0: 'ProvenHashes.OpusFinalizer.chainhash_equal_length_finalized' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:447:0: 'ProvenHashes.OpusFinalizer.chainhash_different_lengths_finalized' depends on axioms: [propext,
+info: Verification.lean:286:0: 'ProvenHashes.ChainHash.ModelA.chainhash_equal_length_from_seeded_stages' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-info: Verification.lean:448:0: 'ProvenHashes.OpusFinalizer.chain5_collision_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:449:0: 'ProvenHashes.OpusFinalizer.twist_gf64_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:450:0: 'ProvenHashes.OpusFinalizer.chain5_eq_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:451:0: 'ProvenHashes.OpusFinalizer.evalLower_apply' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:452:0: 'ProvenHashes.OpusFinalizer.evalLower_interpKey' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:453:0: 'ProvenHashes.OpusFinalizer.uniformProb_of_linear_section' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:454:0: 'ProvenHashes.OpusFinalizer.chain5_kwise_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:455:0: 'ProvenHashes.OpusFinalizer.chain5_kwise_uniform_twisted' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:456:0: 'ProvenHashes.OpusFinalizer.chain5_kwise_uniform_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:457:0: 'ProvenHashes.OpusFinalizer.exists_word_encoding_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:458:0: 'ProvenHashes.ChainEncoding.bits_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:459:0: 'ProvenHashes.ChainEncoding.lengthWord_injective_below' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:460:0: 'ProvenHashes.ChainEncoding.readWord_byte' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:461:0: 'ProvenHashes.ChainEncoding.readWords_injective' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:462:0: 'ProvenHashes.ChainEncoding.blockCount_pos' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:463:0: 'ProvenHashes.ChainEncoding.pairCount_le' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:464:0: 'ProvenHashes.ChainEncoding.pairCount_even' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:465:0: 'ProvenHashes.ChainEncoding.blockCount_covers' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:466:0: 'ProvenHashes.ChainEncoding.blockCount_bound' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:467:0: 'ProvenHashes.ConcreteChainHash.key_card' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:468:0: 'ProvenHashes.ConcreteChainHash.collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:469:0: 'ProvenHashes.Finalizer.decode_coefficients' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:470:0: 'ProvenHashes.Finalizer.coefficients_decode' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:471:0: 'ProvenHashes.Finalizer.circuit_eq_monicEval' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:472:0: 'ProvenHashes.Finalizer.monicEval_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:473:0: 'ProvenHashes.Finalizer.difference_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:474:0: 'ProvenHashes.Finalizer.collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:475:0: 'ProvenHashes.Finalizer.twist_bijective' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:476:0: 'ProvenHashes.Finalizer.twisted_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:477:0: 'ProvenHashes.Finalizer.keyed_twisted_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:478:0: 'ProvenHashes.ChainEncoding.stream_length' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:479:0: 'ProvenHashes.ChainEncoding.streamPair_of_equal' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:480:0: 'ProvenHashes.ChainEncoding.streams_ne_of_blockCount_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:481:0: 'ProvenHashes.ChainEncoding.stream_equal_byte_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:482:0: 'ProvenHashes.ChainEncoding.blockValue_nonzero_target_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:483:0: 'ProvenHashes.ChainEncoding.stream_different_byte_length_bound' depends on axioms: [propext,
+info: Verification.lean:287:0: 'ProvenHashes.ChainHash.ModelA.key_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:288:0: 'ProvenHashes.ChainHash.ModelA.expandedKey_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:289:0: 'ProvenHashes.ChainHash.ModelA.referenceHash_expanded' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:290:0: 'ProvenHashes.ChainHash.ModelA.probability_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:291:0: 'ProvenHashes.ChainHash.ModelA.collision_bound_fixed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:292:0: 'ProvenHashes.ChainHash.ModelA.reference_collision_bound_fixed' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
-info: Verification.lean:484:0: 'ProvenHashes.ChainEncoding.stream_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:485:0: 'ProvenHashes.polynomialHash_eq_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:486:0: 'ProvenHashes.polynomial_zero_count' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:487:0: 'ProvenHashes.polynomial_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:488:0: 'ProvenHashes.polynomial_collision_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:489:0: 'ProvenHashes.gf64_card' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:490:0: 'ProvenHashes.polynomial_collision_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:491:0: 'ProvenHashes.uniformProb_equiv' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:492:0: 'ProvenHashes.uniformProb_fst' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:493:0: 'ProvenHashes.uniformProb_of_bijective_slices' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:494:0: 'ProvenHashes.uniformProb_of_bijective_update' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:495:0: 'ProvenHashes.Recurrence.slice_lift' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:496:0: 'ProvenHashes.Recurrence.slice_X' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:497:0: 'ProvenHashes.Recurrence.extract_keyPolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:498:0: 'ProvenHashes.Recurrence.decode_keyPolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:499:0: 'ProvenHashes.Recurrence.keyPolynomial_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:500:0: 'ProvenHashes.Recurrence.keyCoefficients_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:501:0: 'ProvenHashes.Recurrence.fold_expansion' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:502:0: 'ProvenHashes.Recurrence.eval_lift' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:503:0: 'ProvenHashes.Recurrence.eval_keyPolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:504:0: 'ProvenHashes.Recurrence.lift_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:505:0: 'ProvenHashes.Recurrence.component_difference_degrees' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:506:0: 'ProvenHashes.Recurrence.keyPolynomial_difference_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:507:0: 'ProvenHashes.Recurrence.collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:508:0: 'ProvenHashes.Recurrence.collision_bound_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:509:0: 'ProvenHashes.Recurrence.keyPolynomial_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:510:0: 'ProvenHashes.Recurrence.collision_bound_any_length' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:511:0: 'ProvenHashes.ChainHash.wordStream_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:512:0: 'ProvenHashes.ChainHash.wordAdd_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:513:0: 'ProvenHashes.ChainHash.referenceHash_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:514:0: 'ProvenHashes.ChainHash.reference_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:515:0: 'ProvenHashes.ChainHash.fieldRepr_wordMul' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:516:0: 'ProvenHashes.ChainHash.wordChain5_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:517:0: 'ProvenHashes.ChainHash.lowWord_add' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:518:0: 'ProvenHashes.ChainHash.highWord_add' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:519:0: 'ProvenHashes.ChainHash.lengthMask_low' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:520:0: 'ProvenHashes.ChainHash.lengthMask_high' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:521:0: 'ProvenHashes.ChainHash.wordDigest_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:522:0: 'ProvenHashes.ChainHash.wordFold_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:523:0: 'ProvenHashes.ChainHash.ModelA.eval_phPoly' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:524:0: 'ProvenHashes.ChainHash.ModelA.partnerExponent_injective' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:525:0: 'ProvenHashes.ChainHash.ModelA.phPoly_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:526:0: 'ProvenHashes.ChainHash.ModelA.differencePoly_coeff' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:527:0: 'ProvenHashes.ChainHash.ModelA.differencePoly_nonzero_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:528:0: 'ProvenHashes.ChainHash.ModelA.polynomial_probability_le' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:529:0: 'ProvenHashes.ChainHash.ModelA.ph_equal_groups_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:530:0: 'ProvenHashes.ChainHash.ModelA.pairPoly_monic_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:531:0: 'ProvenHashes.ChainHash.ModelA.phPoly_group_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:532:0: 'ProvenHashes.ChainHash.ModelA.ph_unequal_groups_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:533:0: 'ProvenHashes.ChainHash.ModelA.ph_unequal_groups_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:534:0: 'ProvenHashes.ChainHash.ModelA.cubic_linear_probability' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:535:0: 'ProvenHashes.ChainHash.lengthMask_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:536:0: 'ProvenHashes.ChainHash.rawStream_length' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:537:0: 'ProvenHashes.ChainHash.rawStream_eq_digest' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:538:0: 'ProvenHashes.ChainHash.rawStream_different_counts' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:539:0: 'ProvenHashes.ChainHash.rawStream_equal_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:540:0: 'ProvenHashes.ChainHash.rawStream_different_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:541:0: 'ProvenHashes.ChainHash.rawStream_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:542:0: 'ProvenHashes.ChainEncoding.readWord_at_byte' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:543:0: 'ProvenHashes.ChainEncoding.byte_block_lt' depends on axioms: [propext, Quot.sound]
-info: Verification.lean:544:0: 'ProvenHashes.ChainEncoding.byte_pair_active' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:545:0: 'ProvenHashes.ChainEncoding.subblocks_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:546:0: 'ProvenHashes.ChainEncoding.exists_different_active_word' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:547:0: 'ProvenHashes.tabulation_difference_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:548:0: 'ProvenHashes.tabulation_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:549:0: 'ProvenHashes.sum_mul_embedded_update' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:550:0: 'ProvenHashes.embeddedNH_difference_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:551:0: 'ProvenHashes.Carryless.toPoly_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:552:0: 'ProvenHashes.Carryless.word_card' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:553:0: 'ProvenHashes.Carryless.xor_difference_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:554:0: 'ProvenHashes.Carryless.collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:555:0: 'ProvenHashes.ChainHash.bitsOfBitVec_bitVecOfBits' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:556:0: 'ProvenHashes.ChainHash.bitVecOfBits_bitsOfBitVec' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:557:0: 'ProvenHashes.ChainHash.wordIntegerEquiv_length' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:558:0: 'ProvenHashes.ChainEncoding.unpack_pack' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:559:0: 'ProvenHashes.ChainEncoding.pack_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:560:0: 'ProvenHashes.ChainEncoding.pack_unpack' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:561:0: 'ProvenHashes.ChainEncoding.length_target_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
-info: Verification.lean:562:0: 'ProvenHashes.ChainEncoding.tagged_equality_target' depends on axioms: [propext, Classical.choice, Quot.sound]
-Build completed successfully (7422 jobs).
+info: Verification.lean:293:0: 'ProvenHashes.ChainHash.ModelA.collision_bound_different_blocks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: Verification.lean:294:0: 'ProvenHashes.ChainHash.ModelA.envelope_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:295:0: 'ProvenHashes.ChainHash.ModelA.message_cap_arithmetic' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:296:0: 'ProvenHashes.ChainHash.ModelA.collision_bound_common_blocks' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:297:0: 'ProvenHashes.ChainHash.ModelA.collision_bound_atMost' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:298:0: 'ProvenHashes.ChainHash.ModelA.reference_collision_bound_atMost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: Verification.lean:299:0: 'ProvenHashes.ChainHash.ModelA.wordAt_zero' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:300:0: 'ProvenHashes.ChainHash.ModelA.reduce_seeded_clnh' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:301:0: 'ProvenHashes.ChainHash.ModelA.seededStream_equal_length_component' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: Verification.lean:302:0: 'ProvenHashes.ChainHash.ModelA.partner_exponent_budget' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:303:0: 'ProvenHashes.ChainHash.ModelA.seededStream_fixed_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:304:0: 'ProvenHashes.ChainHash.ModelA.reduced_lengthMask_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:305:0: 'ProvenHashes.ChainHash.ModelA.blockGroups_properties' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:306:0: 'ProvenHashes.ChainHash.ModelA.seededStream_last_component' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:307:0: 'ProvenHashes.ChainHash.ModelA.seededStream_common_count_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: Verification.lean:308:0: 'ProvenHashes.ChainHash.modulus_tail_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:309:0: 'ProvenHashes.ChainHash.modulus_monic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:310:0: 'ProvenHashes.ChainHash.modulus_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:311:0: 'ProvenHashes.ChainHash.square_test' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:312:0: 'ProvenHashes.ChainHash.residue_bezout' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:313:0: 'ProvenHashes.ChainHash.residue_power_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:314:0: 'ProvenHashes.ChainHash.modulus_frobenius_certificates' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:315:0: 'ProvenHashes.ChainHash.modulus_irreducible' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:316:0: 'ProvenHashes.ChainHash.poly_num_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:317:0: 'ProvenHashes.ChainHash.poly_num_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:318:0: 'ProvenHashes.ChainHash.poly_num_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:319:0: 'ProvenHashes.ChainHash.poly_num_5' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:320:0: 'ProvenHashes.ChainHash.poly_num_6' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:321:0: 'ProvenHashes.ChainHash.poly_num_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:322:0: 'ProvenHashes.ChainHash.poly_num_8' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:323:0: 'ProvenHashes.ChainHash.poly_num_9' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:324:0: 'ProvenHashes.ChainHash.poly_num_10' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:325:0: 'ProvenHashes.ChainHash.poly_num_11' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:326:0: 'ProvenHashes.ChainHash.poly_num_12' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:327:0: 'ProvenHashes.ChainHash.poly_num_13' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:328:0: 'ProvenHashes.ChainHash.poly_num_14' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:329:0: 'ProvenHashes.ChainHash.poly_num_15' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:330:0: 'ProvenHashes.ChainHash.poly_num_16' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:331:0: 'ProvenHashes.ChainHash.poly_num_17' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:332:0: 'ProvenHashes.ChainHash.poly_num_18' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:333:0: 'ProvenHashes.ChainHash.poly_num_19' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:334:0: 'ProvenHashes.ChainHash.poly_num_20' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:335:0: 'ProvenHashes.ChainHash.poly_num_21' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:336:0: 'ProvenHashes.ChainHash.poly_num_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:337:0: 'ProvenHashes.ChainHash.poly_num_23' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:338:0: 'ProvenHashes.ChainHash.poly_num_24' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:339:0: 'ProvenHashes.ChainHash.poly_num_25' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:340:0: 'ProvenHashes.ChainHash.poly_num_26' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:341:0: 'ProvenHashes.ChainHash.poly_num_27' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:342:0: 'ProvenHashes.ChainHash.poly_num_28' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:343:0: 'ProvenHashes.ChainHash.poly_num_29' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:344:0: 'ProvenHashes.ChainHash.poly_num_30' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:345:0: 'ProvenHashes.ChainHash.poly_num_31' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:346:0: 'ProvenHashes.ChainHash.poly_num_32' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:347:0: 'ProvenHashes.ChainHash.poly_num_33' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:348:0: 'ProvenHashes.ChainHash.poly_num_34' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:349:0: 'ProvenHashes.ChainHash.poly_num_35' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:350:0: 'ProvenHashes.ChainHash.poly_num_36' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:351:0: 'ProvenHashes.ChainHash.poly_num_37' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:352:0: 'ProvenHashes.ChainHash.poly_num_38' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:353:0: 'ProvenHashes.ChainHash.poly_num_39' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:354:0: 'ProvenHashes.ChainHash.poly_num_40' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:355:0: 'ProvenHashes.ChainHash.poly_num_41' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:356:0: 'ProvenHashes.ChainHash.poly_num_42' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:357:0: 'ProvenHashes.ChainHash.poly_num_43' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:358:0: 'ProvenHashes.ChainHash.poly_num_44' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:359:0: 'ProvenHashes.ChainHash.poly_num_45' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:360:0: 'ProvenHashes.ChainHash.poly_num_46' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:361:0: 'ProvenHashes.ChainHash.poly_num_47' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:362:0: 'ProvenHashes.ChainHash.poly_num_48' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:363:0: 'ProvenHashes.ChainHash.poly_num_49' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:364:0: 'ProvenHashes.ChainHash.poly_num_50' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:365:0: 'ProvenHashes.ChainHash.poly_num_51' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:366:0: 'ProvenHashes.ChainHash.poly_num_52' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:367:0: 'ProvenHashes.ChainHash.poly_num_53' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:368:0: 'ProvenHashes.ChainHash.poly_num_54' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:369:0: 'ProvenHashes.ChainHash.poly_num_55' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:370:0: 'ProvenHashes.ChainHash.poly_num_56' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:371:0: 'ProvenHashes.ChainHash.poly_num_57' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:372:0: 'ProvenHashes.ChainHash.poly_num_58' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:373:0: 'ProvenHashes.ChainHash.poly_num_59' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:374:0: 'ProvenHashes.ChainHash.poly_num_60' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:375:0: 'ProvenHashes.ChainHash.poly_num_61' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:376:0: 'ProvenHashes.ChainHash.poly_num_62' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:377:0: 'ProvenHashes.ChainHash.poly_num_63' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:378:0: 'ProvenHashes.ChainHash.poly_num_64' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:379:0: 'ProvenHashes.ChainHash.residue_step_0' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:380:0: 'ProvenHashes.ChainHash.residue_step_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:381:0: 'ProvenHashes.ChainHash.residue_step_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:382:0: 'ProvenHashes.ChainHash.residue_step_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:383:0: 'ProvenHashes.ChainHash.residue_step_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:384:0: 'ProvenHashes.ChainHash.residue_step_5' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:385:0: 'ProvenHashes.ChainHash.residue_step_6' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:386:0: 'ProvenHashes.ChainHash.residue_step_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:387:0: 'ProvenHashes.ChainHash.residue_step_8' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:388:0: 'ProvenHashes.ChainHash.residue_step_9' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:389:0: 'ProvenHashes.ChainHash.residue_step_10' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:390:0: 'ProvenHashes.ChainHash.residue_step_11' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:391:0: 'ProvenHashes.ChainHash.residue_step_12' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:392:0: 'ProvenHashes.ChainHash.residue_step_13' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:393:0: 'ProvenHashes.ChainHash.residue_step_14' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:394:0: 'ProvenHashes.ChainHash.residue_step_15' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:395:0: 'ProvenHashes.ChainHash.residue_step_16' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:396:0: 'ProvenHashes.ChainHash.residue_step_17' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:397:0: 'ProvenHashes.ChainHash.residue_step_18' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:398:0: 'ProvenHashes.ChainHash.residue_step_19' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:399:0: 'ProvenHashes.ChainHash.residue_step_20' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:400:0: 'ProvenHashes.ChainHash.residue_step_21' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:401:0: 'ProvenHashes.ChainHash.residue_step_22' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:402:0: 'ProvenHashes.ChainHash.residue_step_23' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:403:0: 'ProvenHashes.ChainHash.residue_step_24' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:404:0: 'ProvenHashes.ChainHash.residue_step_25' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:405:0: 'ProvenHashes.ChainHash.residue_step_26' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:406:0: 'ProvenHashes.ChainHash.residue_step_27' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:407:0: 'ProvenHashes.ChainHash.residue_step_28' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:408:0: 'ProvenHashes.ChainHash.residue_step_29' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:409:0: 'ProvenHashes.ChainHash.residue_step_30' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:410:0: 'ProvenHashes.ChainHash.residue_step_31' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:411:0: 'ProvenHashes.ChainHash.residue_step_32' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:412:0: 'ProvenHashes.ChainHash.residue_step_33' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:413:0: 'ProvenHashes.ChainHash.residue_step_34' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:414:0: 'ProvenHashes.ChainHash.residue_step_35' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:415:0: 'ProvenHashes.ChainHash.residue_step_36' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:416:0: 'ProvenHashes.ChainHash.residue_step_37' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:417:0: 'ProvenHashes.ChainHash.residue_step_38' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:418:0: 'ProvenHashes.ChainHash.residue_step_39' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:419:0: 'ProvenHashes.ChainHash.residue_step_40' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:420:0: 'ProvenHashes.ChainHash.residue_step_41' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:421:0: 'ProvenHashes.ChainHash.residue_step_42' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:422:0: 'ProvenHashes.ChainHash.residue_step_43' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:423:0: 'ProvenHashes.ChainHash.residue_step_44' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:424:0: 'ProvenHashes.ChainHash.residue_step_45' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:425:0: 'ProvenHashes.ChainHash.residue_step_46' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:426:0: 'ProvenHashes.ChainHash.residue_step_47' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:427:0: 'ProvenHashes.ChainHash.residue_step_48' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:428:0: 'ProvenHashes.ChainHash.residue_step_49' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:429:0: 'ProvenHashes.ChainHash.residue_step_50' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:430:0: 'ProvenHashes.ChainHash.residue_step_51' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:431:0: 'ProvenHashes.ChainHash.residue_step_52' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:432:0: 'ProvenHashes.ChainHash.residue_step_53' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:433:0: 'ProvenHashes.ChainHash.residue_step_54' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:434:0: 'ProvenHashes.ChainHash.residue_step_55' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:435:0: 'ProvenHashes.ChainHash.residue_step_56' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:436:0: 'ProvenHashes.ChainHash.residue_step_57' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:437:0: 'ProvenHashes.ChainHash.residue_step_58' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:438:0: 'ProvenHashes.ChainHash.residue_step_59' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:439:0: 'ProvenHashes.ChainHash.residue_step_60' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:440:0: 'ProvenHashes.ChainHash.residue_step_61' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:441:0: 'ProvenHashes.ChainHash.residue_step_62' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:442:0: 'ProvenHashes.ChainHash.residue_step_63' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:443:0: 'ProvenHashes.same_bucket_close' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:444:0: 'ProvenHashes.multiplyShift_collision_close' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:445:0: 'ProvenHashes.odd_mul_mod_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:446:0: 'ProvenHashes.affine_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:447:0: 'ProvenHashes.sum_mul_update' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:448:0: 'ProvenHashes.affine_sum_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:449:0: 'ProvenHashes.nh_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:450:0: 'ProvenHashes.nh_difference_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:451:0: 'ProvenHashes.nh_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:452:0: 'ProvenHashes.OpusFinalizer.chain5_eq' depends on axioms: [propext]
+info: Verification.lean:453:0: 'ProvenHashes.OpusFinalizer.coeffDecode_coeffMap' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:454:0: 'ProvenHashes.OpusFinalizer.coeffMap_coeffDecode' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:455:0: 'ProvenHashes.OpusFinalizer.coeffMap_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:456:0: 'ProvenHashes.OpusFinalizer.eval_chainPoly' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:457:0: 'ProvenHashes.OpusFinalizer.chainPoly_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:458:0: 'ProvenHashes.OpusFinalizer.chainPoly_monic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:459:0: 'ProvenHashes.OpusFinalizer.chainPoly_natDegree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:460:0: 'ProvenHashes.OpusFinalizer.chainPoly_eq_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:461:0: 'ProvenHashes.OpusFinalizer.chainPoly_coeff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:462:0: 'ProvenHashes.OpusFinalizer.chainPoly_coeff_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:463:0: 'ProvenHashes.OpusFinalizer.chain5_update_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:464:0: 'ProvenHashes.OpusFinalizer.chain5_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:465:0: 'ProvenHashes.OpusFinalizer.twist_apply' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:466:0: 'ProvenHashes.OpusFinalizer.chain5_collision_twisted' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:467:0: 'ProvenHashes.OpusFinalizer.finalizer_stage_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:468:0: 'ProvenHashes.OpusFinalizer.chainhash_equal_length_finalized' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:469:0: 'ProvenHashes.OpusFinalizer.chainhash_different_lengths_finalized' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: Verification.lean:470:0: 'ProvenHashes.OpusFinalizer.chain5_collision_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:471:0: 'ProvenHashes.OpusFinalizer.twist_gf64_bijective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:472:0: 'ProvenHashes.OpusFinalizer.chain5_eq_sum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:473:0: 'ProvenHashes.OpusFinalizer.evalLower_apply' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:474:0: 'ProvenHashes.OpusFinalizer.evalLower_interpKey' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:475:0: 'ProvenHashes.OpusFinalizer.uniformProb_of_linear_section' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:476:0: 'ProvenHashes.OpusFinalizer.chain5_kwise_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:477:0: 'ProvenHashes.OpusFinalizer.chain5_kwise_uniform_twisted' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:478:0: 'ProvenHashes.OpusFinalizer.chain5_kwise_uniform_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:479:0: 'ProvenHashes.OpusFinalizer.exists_word_encoding_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:480:0: 'ProvenHashes.ChainEncoding.bits_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:481:0: 'ProvenHashes.ChainEncoding.lengthWord_injective_below' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:482:0: 'ProvenHashes.ChainEncoding.readWord_byte' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:483:0: 'ProvenHashes.ChainEncoding.readWords_injective' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:484:0: 'ProvenHashes.ChainEncoding.blockCount_pos' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:485:0: 'ProvenHashes.ChainEncoding.pairCount_le' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:486:0: 'ProvenHashes.ChainEncoding.pairCount_even' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:487:0: 'ProvenHashes.ChainEncoding.blockCount_covers' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:488:0: 'ProvenHashes.ChainEncoding.blockCount_bound' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:489:0: 'ProvenHashes.ConcreteChainHash.key_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:490:0: 'ProvenHashes.ConcreteChainHash.collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:491:0: 'ProvenHashes.Finalizer.decode_coefficients' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:492:0: 'ProvenHashes.Finalizer.coefficients_decode' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:493:0: 'ProvenHashes.Finalizer.circuit_eq_monicEval' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:494:0: 'ProvenHashes.Finalizer.monicEval_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:495:0: 'ProvenHashes.Finalizer.difference_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:496:0: 'ProvenHashes.Finalizer.collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:497:0: 'ProvenHashes.Finalizer.twist_bijective' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:498:0: 'ProvenHashes.Finalizer.twisted_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:499:0: 'ProvenHashes.Finalizer.keyed_twisted_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:500:0: 'ProvenHashes.ChainEncoding.stream_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:501:0: 'ProvenHashes.ChainEncoding.streamPair_of_equal' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:502:0: 'ProvenHashes.ChainEncoding.streams_ne_of_blockCount_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:503:0: 'ProvenHashes.ChainEncoding.stream_equal_byte_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:504:0: 'ProvenHashes.ChainEncoding.blockValue_nonzero_target_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:505:0: 'ProvenHashes.ChainEncoding.stream_different_byte_length_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: Verification.lean:506:0: 'ProvenHashes.ChainEncoding.stream_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:507:0: 'ProvenHashes.polynomialHash_eq_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:508:0: 'ProvenHashes.polynomial_zero_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:509:0: 'ProvenHashes.polynomial_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:510:0: 'ProvenHashes.polynomial_collision_zmod' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:511:0: 'ProvenHashes.gf64_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:512:0: 'ProvenHashes.polynomial_collision_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:513:0: 'ProvenHashes.uniformProb_equiv' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:514:0: 'ProvenHashes.uniformProb_fst' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:515:0: 'ProvenHashes.uniformProb_of_bijective_slices' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:516:0: 'ProvenHashes.uniformProb_of_bijective_update' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:517:0: 'ProvenHashes.Recurrence.slice_lift' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:518:0: 'ProvenHashes.Recurrence.slice_X' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:519:0: 'ProvenHashes.Recurrence.extract_keyPolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:520:0: 'ProvenHashes.Recurrence.decode_keyPolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:521:0: 'ProvenHashes.Recurrence.keyPolynomial_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:522:0: 'ProvenHashes.Recurrence.keyCoefficients_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:523:0: 'ProvenHashes.Recurrence.fold_expansion' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:524:0: 'ProvenHashes.Recurrence.eval_lift' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:525:0: 'ProvenHashes.Recurrence.eval_keyPolynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:526:0: 'ProvenHashes.Recurrence.lift_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:527:0: 'ProvenHashes.Recurrence.component_difference_degrees' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:528:0: 'ProvenHashes.Recurrence.keyPolynomial_difference_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:529:0: 'ProvenHashes.Recurrence.collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:530:0: 'ProvenHashes.Recurrence.collision_bound_gf64' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:531:0: 'ProvenHashes.Recurrence.keyPolynomial_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:532:0: 'ProvenHashes.Recurrence.collision_bound_any_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:533:0: 'ProvenHashes.ChainHash.wordStream_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:534:0: 'ProvenHashes.ChainHash.wordAdd_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:535:0: 'ProvenHashes.ChainHash.referenceHash_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:536:0: 'ProvenHashes.ChainHash.reference_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:537:0: 'ProvenHashes.ChainHash.fieldRepr_wordMul' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:538:0: 'ProvenHashes.ChainHash.wordChain5_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:539:0: 'ProvenHashes.ChainHash.lowWord_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:540:0: 'ProvenHashes.ChainHash.highWord_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:541:0: 'ProvenHashes.ChainHash.lengthMask_low' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:542:0: 'ProvenHashes.ChainHash.lengthMask_high' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:543:0: 'ProvenHashes.ChainHash.wordDigest_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:544:0: 'ProvenHashes.ChainHash.wordFold_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:545:0: 'ProvenHashes.ChainHash.ModelA.eval_phPoly' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:546:0: 'ProvenHashes.ChainHash.ModelA.partnerExponent_injective' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:547:0: 'ProvenHashes.ChainHash.ModelA.phPoly_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:548:0: 'ProvenHashes.ChainHash.ModelA.differencePoly_coeff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:549:0: 'ProvenHashes.ChainHash.ModelA.differencePoly_nonzero_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:550:0: 'ProvenHashes.ChainHash.ModelA.polynomial_probability_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:551:0: 'ProvenHashes.ChainHash.ModelA.ph_equal_groups_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:552:0: 'ProvenHashes.ChainHash.ModelA.pairPoly_monic_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:553:0: 'ProvenHashes.ChainHash.ModelA.phPoly_group_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:554:0: 'ProvenHashes.ChainHash.ModelA.ph_unequal_groups_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:555:0: 'ProvenHashes.ChainHash.ModelA.ph_unequal_groups_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:556:0: 'ProvenHashes.ChainHash.ModelA.cubic_linear_probability' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:557:0: 'ProvenHashes.ChainHash.ModelA.ph_small_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:558:0: 'ProvenHashes.ChainHash.ModelA.ph_nonzero_target_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:559:0: 'ProvenHashes.ChainHash.lengthMask_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:560:0: 'ProvenHashes.ChainHash.rawStream_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:561:0: 'ProvenHashes.ChainHash.rawStream_eq_digest' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:562:0: 'ProvenHashes.ChainHash.rawStream_different_counts' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:563:0: 'ProvenHashes.ChainHash.rawStream_equal_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:564:0: 'ProvenHashes.ChainHash.rawStream_different_length_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:565:0: 'ProvenHashes.ChainHash.rawStream_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:566:0: 'ProvenHashes.ChainEncoding.readWord_at_byte' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:567:0: 'ProvenHashes.ChainEncoding.byte_block_lt' depends on axioms: [propext, Quot.sound]
+info: Verification.lean:568:0: 'ProvenHashes.ChainEncoding.byte_pair_active' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:569:0: 'ProvenHashes.ChainEncoding.subblocks_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:570:0: 'ProvenHashes.ChainEncoding.exists_different_active_word' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:571:0: 'ProvenHashes.tabulation_difference_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:572:0: 'ProvenHashes.tabulation_collision_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:573:0: 'ProvenHashes.sum_mul_embedded_update' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:574:0: 'ProvenHashes.embeddedNH_difference_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:575:0: 'ProvenHashes.Carryless.toPoly_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:576:0: 'ProvenHashes.Carryless.word_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:577:0: 'ProvenHashes.Carryless.xor_difference_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:578:0: 'ProvenHashes.Carryless.collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:579:0: 'ProvenHashes.ChainHash.bitsOfBitVec_bitVecOfBits' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:580:0: 'ProvenHashes.ChainHash.bitVecOfBits_bitsOfBitVec' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:581:0: 'ProvenHashes.ChainHash.wordIntegerEquiv_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:582:0: 'ProvenHashes.ChainEncoding.unpack_pack' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:583:0: 'ProvenHashes.ChainEncoding.pack_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:584:0: 'ProvenHashes.ChainEncoding.pack_unpack' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:585:0: 'ProvenHashes.ChainEncoding.length_target_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Verification.lean:586:0: 'ProvenHashes.ChainEncoding.tagged_equality_target' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (7424 jobs).
 $ lake env lean Verification.lean
 'ProvenHashes.ChainHash.irreducible_dvd_frobenius_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.binary_rabin64' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -1029,6 +1016,40 @@ $ lake env lean Verification.lean
 'ProvenHashes.maskedNH_nonzero_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.maskedNH_difference_of_agree' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.maskedNH_difference_nonzero_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.chainhash_equal_length_from_seeded_stages' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'ProvenHashes.ChainHash.ModelA.key_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.expandedKey_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.referenceHash_expanded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.probability_le_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.collision_bound_fixed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.reference_collision_bound_fixed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'ProvenHashes.ChainHash.ModelA.collision_bound_different_blocks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'ProvenHashes.ChainHash.ModelA.envelope_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.message_cap_arithmetic' depends on axioms: [propext, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.collision_bound_common_blocks' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.collision_bound_atMost' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.reference_collision_bound_atMost' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'ProvenHashes.ChainHash.ModelA.wordAt_zero' depends on axioms: [propext, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.reduce_seeded_clnh' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.seededStream_equal_length_component' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'ProvenHashes.ChainHash.ModelA.partner_exponent_budget' depends on axioms: [propext, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.seededStream_fixed_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.reduced_lengthMask_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.blockGroups_properties' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.seededStream_last_component' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.seededStream_common_count_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
 'ProvenHashes.ChainHash.modulus_tail_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.modulus_monic' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.modulus_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -1282,6 +1303,8 @@ $ lake env lean Verification.lean
 'ProvenHashes.ChainHash.ModelA.ph_unequal_groups_polynomial' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.ModelA.ph_unequal_groups_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.ModelA.cubic_linear_probability' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.ph_small_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'ProvenHashes.ChainHash.ModelA.ph_nonzero_target_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.lengthMask_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.rawStream_length' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainHash.rawStream_eq_digest' depends on axioms: [propext, Classical.choice, Quot.sound]
@@ -1310,8 +1333,8 @@ $ lake env lean Verification.lean
 'ProvenHashes.ChainEncoding.pack_unpack' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainEncoding.length_target_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
 'ProvenHashes.ChainEncoding.tagged_equality_target' depends on axioms: [propext, Classical.choice, Quot.sound]
-$ grep -nE "\b(sorry|admit|native_decide)\b" ProvenHashes/*.lean
+$ grep -nE "\b(sorry|admit|native_decide|unsafe)\b" ProvenHashes/*.lean
 No matches (exit 1).
 $ grep -nE "\baxiom\b" ProvenHashes/*.lean
 No matches (exit 1).
-PASS: 559 exported theorem/lemma declarations; only propext, Classical.choice, Quot.sound.
+PASS: 583 exported theorem/lemma declarations; only propext, Classical.choice, Quot.sound.

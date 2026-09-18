@@ -398,7 +398,22 @@
   {
     "source": "lean-chainhash-modelA/lean/ProvenHashes/SeededPH.lean",
     "target": "ProvenHashes/SeededPH.lean",
-    "source_sha256": "4d330cd55ffa087746908dd50e288a4e283c61c071041eff26e05a8528924d7b",
-    "integrated_sha256": "65dc3fa0ff0ae6426d7abf119bc457126a1c75b2ba8ab5cf39fd3ad37c84bb58"
+    "source_sha256": "532466f9e5d06a09d987ca902b05d5dd8fbe8e5ae08ff32b365f57e4e331fb8e",
+    "integrated_sha256": "532466f9e5d06a09d987ca902b05d5dd8fbe8e5ae08ff32b365f57e4e331fb8e",
+    "source_commit": "a3939c01b87d962ae170776b656a154300d5f3ca"
+  },
+  {
+    "source": "lean-chainhash-modelA/lean/ProvenHashes/ModelAStream.lean",
+    "target": "ProvenHashes/ModelAStream.lean",
+    "source_sha256": "eb3da5737767e9018e82b1e9b6c770c94f0e4da067e24de36dbc8ad4ce0d8927",
+    "integrated_sha256": "eb3da5737767e9018e82b1e9b6c770c94f0e4da067e24de36dbc8ad4ce0d8927",
+    "source_commit": "a3939c01b87d962ae170776b656a154300d5f3ca"
+  },
+  {
+    "source": "lean-chainhash-modelA/lean/ProvenHashes/ModelA.lean",
+    "target": "ProvenHashes/ModelA.lean",
+    "source_sha256": "a9fe40218d5a8dd838e3f8074b194864dbd6144f28dcd4643c22cd2c7c7ed66f",
+    "integrated_sha256": "a9fe40218d5a8dd838e3f8074b194864dbd6144f28dcd4643c22cd2c7c7ed66f",
+    "source_commit": "a3939c01b87d962ae170776b656a154300d5f3ca"
   }
 ]

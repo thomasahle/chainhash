@@ -34,6 +34,8 @@ import ProvenHashes.GF64Square7
 import ProvenHashes.KeyLayout
 import ProvenHashes.MachineTwist
 import ProvenHashes.MaskedNH
+import ProvenHashes.ModelA
+import ProvenHashes.ModelAStream
 import ProvenHashes.Modulus
 import ProvenHashes.ModulusCertificate
 import ProvenHashes.ModulusIrreducible

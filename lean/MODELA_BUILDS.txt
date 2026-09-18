@@ -1,0 +1,42 @@
+All builds ran on hardware.normalcomputing.net, in ~/agents/lean-chainhash-modelA.
+Command: LEAN_NUM_THREADS=32 nice -n 10 taskset -c 0-31 lake build
+Existing dependency and toolchain caches were retained.
+
+SeededPH.eval_phPoly: Build completed successfully (7390 jobs).
+SeededPH.partnerExponent_injective: Build completed successfully (7390 jobs).
+SeededPH.phPoly_difference: Build completed successfully (7390 jobs).
+SeededPH.differencePoly_coeff: Build completed successfully (7390 jobs).
+SeededPH.differencePoly_nonzero_degree: Build completed successfully (7390 jobs).
+SeededPH.polynomial_probability_le: Build completed successfully (7390 jobs).
+SeededPH.ph_equal_groups_bound: Build completed successfully (7390 jobs).
+SeededPH.pairPoly_monic_degree: Build completed successfully (7390 jobs).
+SeededPH.phPoly_group_degree: Build completed successfully (7390 jobs).
+SeededPH.ph_unequal_groups_polynomial: Build completed successfully (7390 jobs).
+SeededPH.ph_unequal_groups_bound: Build completed successfully (7390 jobs).
+SeededPH.cubic_linear_probability: Build completed successfully (7390 jobs).
+SeededPH.ph_small_bound: Build completed successfully (7390 jobs).
+SeededPH.ph_nonzero_target_bound: Build completed successfully (7391 jobs).
+ModelAStream.wordAt_zero: Build completed successfully (7391 jobs).
+ModelAStream.reduce_seeded_clnh: Build completed successfully (7391 jobs).
+ModelAStream.seededStream_equal_length_component: Build completed successfully (7391 jobs).
+ModelAStream.partner_exponent_budget: Build completed successfully (7391 jobs).
+ModelAStream.seededStream_fixed_bound: Build completed successfully (7391 jobs).
+ModelAStream.reduced_lengthMask_injective: Build completed successfully (7391 jobs).
+ModelAStream.blockGroups_properties: Build completed successfully (7391 jobs).
+ModelAStream.seededStream_last_component: Build completed successfully (7391 jobs).
+ModelAStream.seededStream_common_count_bound: Build completed successfully (7391 jobs).
+ModelA.chainhash_equal_length_from_seeded_stages: Build completed successfully (7392 jobs).
+ModelA.key_card: Build completed successfully (7392 jobs).
+ModelA.expandedKey_power: Build completed successfully (7392 jobs).
+ModelA.referenceHash_expanded: Build completed successfully (7392 jobs).
+ModelA.probability_le_one: Build completed successfully (7392 jobs).
+ModelA.collision_bound_fixed: Build completed successfully (7392 jobs).
+ModelA.reference_collision_bound_fixed: Build completed successfully (7392 jobs).
+ModelA.collision_bound_different_blocks: Build completed successfully (7392 jobs).
+ModelA.envelope_arithmetic: Build completed successfully (7392 jobs).
+ModelA.message_cap_arithmetic: Build completed successfully (7392 jobs).
+ModelA.collision_bound_common_blocks: Build completed successfully (7392 jobs).
+ModelA.collision_bound_atMost: Build completed successfully (7392 jobs).
+ModelA.reference_collision_bound_atMost: Build completed successfully (7392 jobs).
+
+36 new theorem declarations; a successful lake build after each.
