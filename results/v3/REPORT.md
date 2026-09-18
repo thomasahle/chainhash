@@ -221,7 +221,7 @@ eight alignments, and the median of three samples per alignment. A sample
 averages 512 calls after warmup. The reported bulk row averages the eight
 alignment throughputs; raw rows are retained. It also records every length
 1..256 with median-of-three 2048-call samples, including call overhead.
-SMHasher3 uses a scratch copy of `~/agents/speedbench/source`, two full Speed
+SMHasher3 uses a scratch copy of `<xeon-work>/speedbench/source`, two full Speed
 passes, and selects the higher fixed-262144-byte bulk result. Small-message
 SMHasher3 results select the lower 1..31 average independently.
 

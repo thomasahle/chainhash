@@ -35,7 +35,7 @@ lake env lean Verification.lean
 On the Xeon, the recorded check uses:
 
 ```sh
-cd ~/agents/chainhash-integrate/lean
+cd <xeon-work>/chainhash-integrate/lean
 export LEAN_NUM_THREADS=32
 ./verify.sh
 ```

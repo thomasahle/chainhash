@@ -1,6 +1,6 @@
 # ChainHash VPCLMULQDQ integration
 
-Completed 2026-09-18 in `/Users/ahle/repos/chainhash`, based on main
+Completed 2026-09-18 in `<repos>/chainhash`, based on main
 `47e681fe225ffa1a453bd6a51df8f63dc584b925`. Author:
 **Thomas Dybdahl Ahle <thomas@ahle.dk>**. Publication target: `origin main`.
 The previous [proof/key-model integration report](docs/KEY_MODEL_INTEGRATION_REPORT.md)
@@ -134,12 +134,12 @@ ARCH_FLAGS=-march=native+crypto python3 test/check_hash_path.py
 make sanitize CXX=/opt/homebrew/opt/llvm/bin/clang++
 ```
 
-On `thomas-ahle@hardware.normalcomputing.net`, the tests ran in the newly
-created `~/agents/chainhash-repo-check2` checkout, initialized from a Git bundle
+On `<xeon-host>`, the tests ran in the newly
+created `<xeon-work>/chainhash-repo-check2` checkout, initialized from a Git bundle
 of the base main and overlaid with the integrated header and tests:
 
 ```sh
-cd ~/agents/chainhash-repo-check2
+cd <xeon-work>/chainhash-repo-check2
 nice -n 10 make test
 ARCH_FLAGS=-mpclmul python3 test/check_hash_path.py
 nice -n 10 make sanitize CXX=clang++
@@ -157,7 +157,7 @@ nice -n 10 g++ -O3 -std=c++11 -mpclmul -mssse3 -msse4.1 -Iexperiments \
 nice -n 10 ./verify
 ```
 
-Sanity used `~/agents/speedbench-chainhash/build/SMHasher3` with each of
+Sanity used `<xeon-work>/speedbench-chainhash/build/SMHasher3` with each of
 `chainhash-256` and `chainhash-1k`, `--test=Sanity`, repeated with
 `--endian=nondefault`. See `smhasher3/README.md` for adapter installation.
 

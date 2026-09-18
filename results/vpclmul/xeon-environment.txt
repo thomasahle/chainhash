@@ -1,5 +1,5 @@
 Fri Sep 18 16:24:31 UTC 2026
-Linux hardware.normalcomputing.net 5.14.0-687.20.1.el9_8.x86_64 #1 SMP PREEMPT_DYNAMIC Sun Jun 28 21:16:58 EDT 2026 x86_64 x86_64 x86_64 GNU/Linux
+Linux <xeon-host> 5.14.0-687.20.1.el9_8.x86_64 #1 SMP PREEMPT_DYNAMIC Sun Jun 28 21:16:58 EDT 2026 x86_64 x86_64 x86_64 GNU/Linux
 g++ (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14)
 clang version 21.1.8 (Red Hat, Inc. 21.1.8-2.el9)
 963b6000faaf0a0bc5430bfdad791f14ab056e9271c2163d3a4301233d1345f6  include/chainhash.h

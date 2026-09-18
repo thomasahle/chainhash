@@ -1,8 +1,8 @@
 The timing runners retain raw stdout and SHA-256 provenance. They never
 change the definition or silently select a different block size.
 
-Xeon source/build live in `~/agents/chainhash-v3-horner`, a scratch copy of
-`~/agents/speedbench/source`. Add `chainhash_v3.cpp` to Hashsrc.cmake and
+Xeon source/build live in `<xeon-work>/chainhash-v3-horner`, a scratch copy of
+`<xeon-work>/speedbench/source`. Add `chainhash_v3.cpp` to Hashsrc.cmake and
 copy the header beside it. Build with CPU affinity 32–95. Run Speed and
 microbenchmarks with `taskset -c 16-23`. `rdtsc.c` includes exactly the
 supplied shipped headers; it does not substitute the SMHasher registration

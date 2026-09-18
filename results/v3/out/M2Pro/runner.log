@@ -98,14 +98,14 @@
 2026-09-18T23:51:39.238279 Shift polling phase once; same gate, then 60-second polling
 2026-09-18T23:53:03.703529 WAIT prep (4.64794921875, 5.748046875, 6.08056640625)
 2026-09-18T23:54:03.731011 WAIT prep (5.13232421875, 5.650390625, 6.017578125)
-c++ -O3 -march=native+crypto -std=c++11 -DNDEBUG -DHAVE_THREADS -I/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/m2-rerun/build-fixed/include -I/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/m2-rerun/smhasher3/include/hashlib -I/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/m2-rerun/smhasher3/include/common -I/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner -c /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/bench/chainhash_v3.cpp -o /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/v3.o
-/usr/bin/c++ -Xclang -target-feature -Xclang +aes -O3 -march=native -g -ggdb3 -Wall -Wextra -Wvla -Wpedantic -Wno-unused-function -Wno-unknown-pragmas -DNDEBUG -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/SMHasher3.dir/main.cpp.o -o /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3 libSMHasher3Tests.a libSMHasher3Hashlib.a /opt/homebrew/opt/openssl@3/lib/libcrypto.dylib /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/v3.o
+c++ -O3 -march=native+crypto -std=c++11 -DNDEBUG -DHAVE_THREADS -I<scratch>/codex/m2-rerun/build-fixed/include -I<scratch>/codex/m2-rerun/smhasher3/include/hashlib -I<scratch>/codex/m2-rerun/smhasher3/include/common -I<scratch>/codex/chainhash-v3-horner -c <scratch>/codex/chainhash-v3-horner/bench/chainhash_v3.cpp -o <scratch>/codex/chainhash-v3-horner/build-m2/v3.o
+/usr/bin/c++ -Xclang -target-feature -Xclang +aes -O3 -march=native -g -ggdb3 -Wall -Wextra -Wvla -Wpedantic -Wno-unused-function -Wno-unknown-pragmas -DNDEBUG -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/SMHasher3.dir/main.cpp.o -o <scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3 libSMHasher3Tests.a libSMHasher3Hashlib.a /opt/homebrew/opt/openssl@3/lib/libcrypto.dylib <scratch>/codex/chainhash-v3-horner/build-m2/v3.o
 ld: warning: building for macOS-26.2, but linking with dylib '/opt/homebrew/opt/openssl@3/lib/libcrypto.3.dylib' which was built for newer version 27.0
-otool -tvV /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/v3.o
-cc -O3 -march=native+crypto -std=c99 -pthread /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/tests/property.c -o /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/property
-cc -O2 -march=native+crypto -std=c99 /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/tests/guard.c -o /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/guard
-/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/property 20000
-/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/guard
+otool -tvV <scratch>/codex/chainhash-v3-horner/build-m2/v3.o
+cc -O3 -march=native+crypto -std=c99 -pthread <scratch>/codex/chainhash-v3-horner/tests/property.c -o <scratch>/codex/chainhash-v3-horner/build-m2/property
+cc -O2 -march=native+crypto -std=c99 <scratch>/codex/chainhash-v3-horner/tests/guard.c -o <scratch>/codex/chainhash-v3-horner/build-m2/guard
+<scratch>/codex/chainhash-v3-horner/build-m2/property 20000
+<scratch>/codex/chainhash-v3-horner/build-m2/guard
 2026-09-18T23:55:12.258164 WAIT prep (4.2939453125, 5.2509765625, 5.833984375)
 2026-09-18T23:56:12.280995 WAIT prep (4.82666015625, 5.32763671875, 5.82763671875)
 2026-09-18T23:57:12.307386 WAIT prep (4.7197265625, 5.1923828125, 5.740234375)
@@ -123,8 +123,8 @@ cc -O2 -march=native+crypto -std=c99 /private/tmp/claude-501/-Users-ahle-repos-f
 2026-09-19T00:09:12.657250 WAIT prep (4.21337890625, 4.50341796875, 5.1083984375)
 2026-09-19T00:10:12.688519 WAIT prep (5.72412109375, 4.7431640625, 5.1474609375)
 2026-09-19T00:11:12.712871 WAIT prep (5.94189453125, 5.103515625, 5.26025390625)
-/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3 chainhash-v3 --test=Sanity
-python3 /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/bench/run_speed.py /private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3 M2Pro --passes 3 --names chainhash-v3 chainhash-256 XXH3-64 rapidhash
+<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3 chainhash-v3 --test=Sanity
+python3 <scratch>/codex/chainhash-v3-horner/bench/run_speed.py <scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3 M2Pro --passes 3 --names chainhash-v3 chainhash-256 XXH3-64 rapidhash
 2026-09-18T22:12:13.923455+00:00 RUN chainhash-v3 1
 2026-09-18T22:12:48.563949+00:00 RUN chainhash-256 1
 2026-09-18T22:13:18.920352+00:00 WAIT (5.88720703125, 5.1533203125, 5.2412109375)

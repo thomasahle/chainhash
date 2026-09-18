@@ -32,7 +32,7 @@ weakened statements were necessary. `referenceHash_matches` is unchanged.
 On the Xeon, with Lean 4.24.0 on PATH and the existing `.lake` cache:
 
 ```sh
-cd ~/agents/chainhash-integrate
+cd <xeon-work>/chainhash-integrate
 lean/check_vectors.sh
 LEAN_NUM_THREADS=8 nice -n 10 taskset -c 0-7 make -B test
 ```

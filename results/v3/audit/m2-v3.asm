@@ -1,4 +1,4 @@
-/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/v3.o:
+<scratch>/codex/chainhash-v3-horner/build-m2/v3.o:
 (__TEXT,__text) section
 __ZN8HashInfoD1Ev:
 0000000000000000	stp	x20, x19, [sp, #-0x20]!

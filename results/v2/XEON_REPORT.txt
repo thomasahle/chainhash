@@ -286,11 +286,11 @@ run; the requested Sanity and Speed results are what is reported here.
 ## Reproduction and evidence
 
 All compilation, tests and benchmarks ran at
-`thomas-ahle@hardware.normalcomputing.net:~/agents/chainhash-x86`.
+`<xeon-host>:<xeon-work>/chainhash-x86`.
 The Mac performed file inspection, editing and SSH/SCP only. The original M2
 implementation was left unchanged, with no new M2 performance claim.
 
-The scratch tree is `smhasher`, copied from `~/agents/speedbench/source`.
+The scratch tree is `smhasher`, copied from `<xeon-work>/speedbench/source`.
 GCC is 11.5.0; sanitizer checks use Clang 21.1.8. SMHasher uses Release with
 `-O3 -march=native -g -ggdb3 -DNDEBUG -std=c++11` and its normal warning flags.
 All four control source hashes match the original speedbench tree; the staged

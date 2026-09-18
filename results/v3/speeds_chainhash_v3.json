@@ -403,7 +403,7 @@
           "test": "Speed",
           "run": 1,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "XXH3-64",
             "--test=Speed"
           ],
@@ -459,7 +459,7 @@
           "test": "Speed",
           "run": 2,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "XXH3-64",
             "--test=Speed"
           ],
@@ -515,7 +515,7 @@
           "test": "Speed",
           "run": 3,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "XXH3-64",
             "--test=Speed"
           ],
@@ -715,7 +715,7 @@
           "test": "Speed",
           "run": 1,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "chainhash-256",
             "--test=Speed"
           ],
@@ -771,7 +771,7 @@
           "test": "Speed",
           "run": 2,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "chainhash-256",
             "--test=Speed"
           ],
@@ -827,7 +827,7 @@
           "test": "Speed",
           "run": 3,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "chainhash-256",
             "--test=Speed"
           ],
@@ -1034,7 +1034,7 @@
           "test": "Speed",
           "run": 1,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "chainhash-v3",
             "--test=Speed"
           ],
@@ -1090,7 +1090,7 @@
           "test": "Speed",
           "run": 2,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "chainhash-v3",
             "--test=Speed"
           ],
@@ -1146,7 +1146,7 @@
           "test": "Speed",
           "run": 3,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "chainhash-v3",
             "--test=Speed"
           ],
@@ -1485,7 +1485,7 @@
           "test": "Speed",
           "run": 1,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "rapidhash",
             "--test=Speed"
           ],
@@ -1541,7 +1541,7 @@
           "test": "Speed",
           "run": 2,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "rapidhash",
             "--test=Speed"
           ],
@@ -1597,7 +1597,7 @@
           "test": "Speed",
           "run": 3,
           "command": [
-            "/private/tmp/claude-501/-Users-ahle-repos-fast-polynomials/624f2aa7-83b9-480b-aeba-96fbb5117dcd/scratchpad/codex/chainhash-v3-horner/build-m2/SMHasher3",
+            "<scratch>/codex/chainhash-v3-horner/build-m2/SMHasher3",
             "rapidhash",
             "--test=Speed"
           ],

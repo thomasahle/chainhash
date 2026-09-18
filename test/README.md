@@ -18,9 +18,9 @@ Compare the actual original SMHasher3 source without changing its checkout:
 
 ```
 python3 test/check_sources.py \
-  --smhasher /Users/ahle/repos/smhasher3 \
-  --platform /Users/ahle/repos/smhasher3/build-chainhash/include \
-  --bench /Users/ahle/repos/fast-polynomials/tools/bench/chainhash
+  --smhasher <repos>/smhasher3 \
+  --platform <repos>/smhasher3/build-chainhash/include \
+  --bench <repos>/fast-polynomials/tools/bench/chainhash
 ```
 
 `--platform` must identify a CMake-configured SMHasher3 build on this host.
@@ -35,11 +35,11 @@ only when checking the original ARM benchmark's compile-time tables.
 The Xeon check used:
 
 ```
-cd ~/agents/chainhash-repo
+cd <xeon-work>/chainhash-repo
 make test
 python3 test/check_sources.py \
-  --smhasher ~/agents/speedbench/source \
-  --platform ~/agents/speedbench/build-release-20260917/include
+  --smhasher <xeon-work>/speedbench/source \
+  --platform <xeon-work>/speedbench/build-release-20260917/include
 # Repeat with --portable.
 taskset -c 2 ./build/speed
 ```

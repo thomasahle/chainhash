@@ -1,6 +1,6 @@
 # ChainHash proof and key-model integration
 
-Repository: `/Users/ahle/repos/chainhash`. Work completed on 2026-09-18.
+Repository: `<repos>/chainhash`. Work completed on 2026-09-18.
 
 This is a historical integration record. The [current API and guarantees](../README.md#exact-bounds-and-alternative-keys)
 are maintained in the README.
@@ -36,7 +36,7 @@ No push was performed. The earlier assembly report is preserved at
 ## Build and axiom verification
 
 The repository was cloned from a Git bundle into the requested Xeon path,
-`~/agents/chainhash-repo-check`, then advanced to source commit `7baf172`.
+`<xeon-work>/chainhash-repo-check`, then advanced to source commit `7baf172`.
 All project build artifacts were removed (`rm -rf lean/.lake/build`).
 `lake exe cache get` and `lake build` ran with **nice 10**, **CPU affinity
 0–31**, and **LEAN_NUM_THREADS=32**. Only the pinned compiler and Mathlib
@@ -92,7 +92,7 @@ therefore compares machine-code bytes rather than label text.
   seeded constructor suite using Homebrew Clang.
 - Original source files in the proof lanes and reference repositories were
   not modified. The installed compiler and Mathlib download cache were reused;
-  builds ran in the new `~/agents/chainhash-repo-check` checkout.
+  builds ran in the new `<xeon-work>/chainhash-repo-check` checkout.
 
 Logs are in `results/integration-*`; `test/check_hash_path.py` reproduces
 source and compiled-code identity checks. `make test` includes the new
@@ -114,7 +114,7 @@ task's final response. Every commit uses the requested author, with no
 attribution trailer. Nothing was pushed.
 
 ```sh
-cd /Users/ahle/repos/chainhash
+cd <repos>/chainhash
 make test
 cd lean
 lake exe cache get

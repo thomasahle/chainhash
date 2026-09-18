@@ -184,8 +184,8 @@ The patch preserves the newer Model A/B/C/D constructors described by the canoni
 repository's REPORT.md. The base header SHA-256 is
 `90556e4f4ce55312b9440d9c0c427b8c5ffc9df2398b4b073e8cc5c555d19238`.
 
-The scratch Xeon tree is `~/agents/speedbench-chainhash`, copied from
-`~/agents/speedbench/source`. Final flags match the old Release build: GCC 11.5,
+The scratch Xeon tree is `<xeon-work>/speedbench-chainhash`, copied from
+`<xeon-work>/speedbench/source`. Final flags match the old Release build: GCC 11.5,
 `-O3 -march=native -g -ggdb3 -DNDEBUG -std=c++11`, with the same warnings. Target
 attributes allow a baseline-compiled translation unit to dispatch safely; an
 entire executable built with `-march=native` still requires that native target.
@@ -222,7 +222,7 @@ python3 experiments/collect_supplementary.py --skip-mac
 
 For Xeon verification/build reproduction, the scripts
 `experiments/final_verify_xeon.sh` and `experiments/final_build_xeon.sh` run from
-`~/agents/speedbench-chainhash/work`. `experiments/run_speeds.py` records the
+`<xeon-work>/speedbench-chainhash/work`. `experiments/run_speeds.py` records the
 idle-core gate, affinity, priority, raw outputs, and timing provenance.
 Candidate experiments use `evidence/chainhash_candidates.cpp`; they must not be
 built against the pruned production source. `WORK_STATE.md` records completion

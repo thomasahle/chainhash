@@ -1,11 +1,11 @@
 # Standalone ChainHash assembly report
 
-Assembled locally on 2026-09-18 in **`/Users/ahle/repos/chainhash`**.
+Assembled locally on 2026-09-18 in **`<repos>/chainhash`**.
 The repository is initialized on `main`, with commits authored by
 **Thomas Dybdahl Ahle <thomas@ahle.dk>**. No GitHub repository was created,
 no Git remote was configured, and nothing was pushed. A source/test copy
 was transferred only to the explicitly requested Xeon directory,
-`thomas-ahle@hardware.normalcomputing.net:~/agents/chainhash-repo`.
+`<xeon-host>:<xeon-work>/chainhash-repo`.
 
 ## Layout
 
@@ -147,14 +147,14 @@ ranking across architectures. The Mac was not isolated from other work.
 ## Reproduction
 
 ```
-cd /Users/ahle/repos/chainhash
+cd <repos>/chainhash
 make test
 make speed
 make sanitize CXX=/opt/homebrew/opt/llvm/bin/clang++ ARCH_FLAGS=-march=armv8-a+crypto
 python3 test/check_sources.py \
-  --smhasher /Users/ahle/repos/smhasher3 \
-  --platform /Users/ahle/repos/smhasher3/build-chainhash/include \
-  --bench /Users/ahle/repos/fast-polynomials/tools/bench/chainhash
+  --smhasher <repos>/smhasher3 \
+  --platform <repos>/smhasher3/build-chainhash/include \
+  --bench <repos>/fast-polynomials/tools/bench/chainhash
 # Repeat the source check with --portable.
 python3 docs/checks/verify5.py
 ```
