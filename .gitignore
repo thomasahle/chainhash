@@ -1,3 +1,6 @@
 /build/
 *.o
 .DS_Store
+
+/lean/.lake/
+/lean/__pycache__/
