@@ -1,0 +1,28 @@
+{
+  "host": "M2Pro",
+  "name": "rapidhash",
+  "test": "Speed",
+  "run": 3,
+  "command": [
+    "<scratch>/build-m2/SMHasher3",
+    "rapidhash",
+    "--test=Speed"
+  ],
+  "raw_file": "out/M2Pro/rapidhash.run3.txt",
+  "binary_sha256": "ff88c33b567df2c19c54c8dde32be8d3ffd9723d31731bde338cd73b22ae20d9",
+  "started": "2026-09-18T22:37:38.620121+00:00",
+  "load_before": [
+    4.4423828125,
+    4.5166015625,
+    4.541015625
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T22:38:13.023487+00:00",
+  "elapsed_seconds": 34.403543207999974,
+  "load_after": [
+    5.5947265625,
+    4.77783203125,
+    4.6337890625
+  ],
+  "raw_sha256": "7433e0c954879228d88e1bd268b216a38a0b2523e1529d0749aefa391d757f23"
+}

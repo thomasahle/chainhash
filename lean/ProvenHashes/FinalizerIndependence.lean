@@ -53,7 +53,7 @@ def quinticValuesEquiv {F : Type*} [Field F] [DecidableEq F]
   right_inv := quinticValues_decode v hv
 
 theorem chain5_values {F : Type*} [Field F] [DecidableEq F] (c v : Fin 5 → F) :
-    (fun i => chain5 c (v i)) = quinticValues v (coefficients c) := by
+    (fun i => chain5 c (v i)) = quinticValues v (quinticCoefficients c) := by
   funext i
   rw [chain5_expansion]
   unfold quinticValues
@@ -67,7 +67,7 @@ theorem chain5_fivewise_exact {F : Type*} [Field F] [Fintype F]
     uniformProb (fun c : Fin 5 → F => (fun i => chain5 c (v i)) = r) =
       1 / (Fintype.card F : ℚ≥0) ^ 5 := by
   classical
-  let e := (coefficientEquiv F).trans (quinticValuesEquiv v hv)
+  let e := (quinticCoefficientEquiv F).trans (quinticValuesEquiv v hv)
   have he : (fun c : Fin 5 → F => (fun i => chain5 c (v i)) = r) = (fun c => e c = r) := by
     funext c
     rw [chain5_values]

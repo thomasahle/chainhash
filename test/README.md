@@ -1,103 +1,63 @@
-# Reproducing the checks
+# ChainHash tests
 
-`make test` runs hardware-vs-portable-vs-paper-reference comparisons,
-frozen vectors, seed/byte-key checks, C99 API smoke tests, and Unix guard
-pages. It adds 12,000 deterministic random messages, raw keys, and lengths,
-including more than 10,000 bulk inputs. On capable x86 hosts it calls the
-PCLMUL fallback, pipelined XMM, YMM, and ZMM paths directly, independently
-of dispatch tuning; all are compared with the bit-serial reference. It also builds a separate forced-portable executable. This requires
-C99 and C++11 compilers; only the test oracle uses `unsigned __int128`.
-The public portable header does not require it.
+Run from the repository root:
 
-`make vectors` regenerates `vectors.h` solely from the unchanged
-`vendor/chainhash_ref.h`. Test messages have byte `i` equal to
-`(131*i+17) mod 256`; the vector table lists lengths and seeds explicitly.
-Do not regenerate vectors to resolve a mismatch without investigating it.
-
-Compare the actual original SMHasher3 source without changing its checkout:
-
-```
-python3 test/check_sources.py \
-  --smhasher <repos>/smhasher3 \
-  --platform <repos>/smhasher3/build-chainhash/include \
-  --bench <repos>/fast-polynomials/tools/bench/chainhash
+```sh
+make test                      # the 64-bit suite, native and forced-portable
+make test-128                  # the 128-bit suite, see 128/README.md
+make sanitize sanitize-128     # ASan/UBSan: guards, alignment, short kernel, properties
+make vectors                   # regenerate the frozen vectors with the independent evaluators and compare
+make RANDOM_CASES=100 test     # shorter random phase; the exhaustive and long cases remain
+make speed                     # throughput of the dispatched entry points on this host
 ```
 
-`--platform` must identify a CMake-configured SMHasher3 build on this host.
-The script copies the source, generated platform headers, and supporting
-includes to a temporary directory and compiles the actual `ChainHash<32,5,1,false>`
-and `chainhash_seed_init<32,5>` functions. A scratch `Hashlib.h` disables only
-registration macros; no hash implementation is rewritten. The ARM benchmark
-check uses its unchanged header in a separate translation unit. Use
-`--portable` for the fork's bit-serial implementation too. C++17 is needed
-only when checking the original ARM benchmark's compile-time tables.
+Every test is built twice, natively (`ARCH_FLAGS`, which defaults to
+`-march=native+crypto` on Apple, `-march=armv8-a+crypto` on other AArch64 and
+`-mpclmul` on x86) and with `CHAINHASH_PORTABLE`, which removes all hardware
+code. The x86 paths use target attributes, so the header also builds with no
+ISA flags. Assertions stay enabled; POSIX guard pages and pthreads are test
+dependencies only, the header needs neither.
 
-The Xeon check used:
+`property.c` is an independent evaluator of [docs/SPEC.md](../docs/SPEC.md):
+bit-serial field multiplication by repeated `X`, the per-word `(R,C,h,j,e)`
+decomposition and serial Horner with the byte length leading. It shares no
+arithmetic, key expansion, layout or finalizer code with the header. It
+checks keys of 39 independent words and keys expanded from 64 random bytes,
+`y=0/1` and all-zero keys, 64 message alignments, every available backend,
+strides 1/2/4/8, eager and lazy chains, one-shot calls, randomly chunked
+streams with empty updates, and two-thread region-aligned splits joined with
+`chainhash_join`; only region boundaries are valid raw-byte splits, empty
+partitions use `(value,blocks)=(0,0)`, and the whole empty message has one
+empty block. The default run is 20,000 random inputs with seed 123456789
+plus every length 0..4096, 18 boundaries around 2..12 KiB and five long
+messages from 64 KiB to 1088 KiB: **24,120 messages per build**, checksum
+`635920a0020c7922` for both the native and the portable build.
 
+`vectors.json` is the frozen seven-vector archive for the seed-123 key and
+message byte `i = i mod 256`. `vectors.c` regenerates the values from the
+independent evaluator alone; `check_vectors.py` compares that output with
+the archive without overwriting it. `frozen.c` checks every archived value
+through the reference evaluator, every available one-shot backend and all
+strides 1..8 with eager and lazy streams. A mismatch is a regression to
+investigate, never permission to replace a vector.
+
+`guard.c` places every length 0..4096 immediately before an inaccessible
+page and hashes `NULL` with length zero. `key_alignment.c` uses a key with
+only 8-byte alignment. `compile.c` runs the public self-test in C99 and,
+through `build/64-cpp`, in C++11, and includes both headers in one translation
+unit. `schedule.c` checks the exact-count coefficient-lane schedule with
+lookahead: `k=1..16`, `p=1..257`, `y=0/1/random`, exactly `p` field
+multiplications. `lean_vectors.c` is the C side of the C/Lean vector
+comparison driven by [lean/check_vectors.py](../lean/check_vectors.py).
+
+The sanitizer property phase runs the 4,120 exhaustive, boundary and long
+cases with no extra random cases. On macOS with Apple Clang, use the Homebrew
+sanitizer runtime:
+
+```sh
+make sanitize sanitize-128 CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++
 ```
-cd <xeon-work>/chainhash-repo
-make test
-python3 test/check_sources.py \
-  --smhasher <xeon-work>/speedbench/source \
-  --platform <xeon-work>/speedbench/build-release-20260917/include
-# Repeat with --portable.
-taskset -c 2 ./build/speed
-```
 
-`make sanitize` enables ASan and UBSan. Toolchain runtimes must support the
-host OS. See the report for runtime failures and the successful alternatives
-used during assembly. Override `CXX=/path/to/clang++` when needed.
-
-`make speed` runs a small throughput benchmark (five trials, 16 MiB each
-for each size). It prints both bytes/cycle and GB/s. ARM uses calibrated
-estimated cycles; x86 uses invariant TSC reference cycles. It does not
-silently label ARM timer ticks as CPU cycles. Inputs are reused and hot,
-with a compiler barrier per hash call and a checksum sink to prevent
-hoisting/dead-code removal. Key generation is outside the timed region.
-
-## Integrated key-model checks
-
-`make test` also checks the A/B/C/D schedules against archived key words and
-hash vectors, 10,000 independently computed field products, six edge seeds,
-and 744 native-vs-portable hashes per backend. The default 80-byte constructor
-is checked against all 41 expected expanded words using unaligned input, and
-compared with the explicit model A constructor. The 328-byte constructor also
-has an unaligned-input check. C99 builds check the first and last input words
-and agreement between the default and explicit model A constructors. All
-constructors are exercised, and `make sanitize` also runs the key-constructor suite.
-Deterministic fixture generation lives in `fixtures.h`, separate from the
-public API. It recreates the SMHasher3 keys for frozen-vector and source
-comparisons without changing the expected results.
-
-`ARCH_FLAGS=-mpclmul python3 test/check_hash_path.py` on x86, or
-`ARCH_FLAGS=-march=native+crypto python3 test/check_hash_path.py` on Apple ARM,
-checks the portable and baseline hardware source byte-for-byte against the
-pre-constructor-integration commit (ignoring only the backend label). It also
-compiles a wrapper calling the baseline path before/after: GNU objcopy
-compares the `.text` bytes when available; otherwise the assembly must match.
-GCC may renumber local assembly labels after extra inline constructors, so
-its assembly text alone is not a machine-code comparison.
-
-
-The optimized SMHasher3 registration is in `smhasher3/chainhash.cpp`; see
-`smhasher3/README.md` for installation and Sanity commands. Historical proof
-integration logs describe the old full-source identity check; the current
-check preserves baseline identity while allowing the new x86 dispatch paths.
-
-The Lean integration adds `lean_vectors.cpp` and `../lean/check_vectors.sh`.
-On the Xeon these compare the reference and every available shipped path
-with a Lean executable evaluator using the proof's byte/index encoding.
-See [the pairing audit](../lean/PAIRING_AUDIT.md) for exact coverage and scope.
-
-## ChainHash v3
-
-`make test` also runs the separately versioned [v3 suite](v3/README.md).
-`make sanitize` includes its guards, alignment and property checks.
-The v1 reference, frozen vectors and tests above retain their original scope.
-
-## ChainHash-128 v3
-
-`make test` also runs the [128-bit v3 suite](v3-128/README.md), built
-natively and with `CHAINHASH128_V3_PORTABLE`, and `make sanitize` includes
-its guard, short-kernel and property checks. Its oracle, vectors and
-checksum are separate from the 64-bit suites above.
+A host executes only the backends it has: NEON and portable on Apple
+silicon, XMM/YMM/ZMM and portable on the Xeon. The retained runs on both
+hosts are indexed in [results/64](../results/64/README.md).

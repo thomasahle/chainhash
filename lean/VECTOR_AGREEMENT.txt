@@ -1,2 +1,0 @@
-x86 runtime width: 2 (0=baseline, 1=YMM, 2=ZMM)
-PASS: 324 C++ reference/header vs Lean encoding/evaluator vectors

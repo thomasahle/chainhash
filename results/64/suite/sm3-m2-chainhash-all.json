@@ -1,0 +1,29 @@
+{
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "<scratch>/build-m2-pinned/SMHasher3",
+    "--test=All",
+    "--ncpu=8",
+    "--noexit-on-failure",
+    "--exit-code-on-failure",
+    "chainhash-v3"
+  ],
+  "gate": {
+    "time": "2026-09-19T08:06:06.842539+00:00",
+    "run": "sm3-m2-chainhash-v3-all",
+    "load1": 3.345703125,
+    "pids": [],
+    "accepted": true
+  },
+  "start": "2026-09-19T08:06:06.843044+00:00",
+  "binary_sha256": "e33d23679e8960bcb75048a5330ac0e9f0aa042af656948024a6eded74a6c489",
+  "exit_code": 0,
+  "end": "2026-09-19T08:26:32.823985+00:00",
+  "load_after": [
+    6.32568359375,
+    4.37451171875,
+    4.4990234375
+  ]
+}

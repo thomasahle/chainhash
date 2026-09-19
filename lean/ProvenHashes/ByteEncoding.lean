@@ -31,70 +31,11 @@ theorem byte_words_injective (m m' : Message) (hlen : m.length = m'.length)
   rw [wordAt_read_byte, wordAt_read_byte] at hw
   simpa [byteAt, List.getElem?_eq_getElem hj, List.getElem?_eq_getElem hj'] using hw
 
-/-- The reference's `pair_alpha(s)` and `pair_beta(s)`, in one 256-byte block. -/
-def pairPosition (j : Fin 16 × Bool) : Fin 32 :=
-  ⟨4 * (j.1.val / 2) + j.1.val % 2 + if j.2 then 2 else 0, by
-    rcases j with ⟨⟨s, hs⟩, b⟩
-    cases b <;> simp only [Bool.false_eq_true, ↓reduceIte] <;> omega⟩
-
-def unpairPosition (j : Fin 32) : Fin 16 × Bool :=
-  (⟨2 * (j.val / 4) + j.val % 2, by omega⟩, decide (2 ≤ j.val % 4))
-
-theorem unpair_pairPosition (j : Fin 16 × Bool) : unpairPosition (pairPosition j) = j := by
-  rcases j with ⟨⟨s, hs⟩, b⟩
-  apply Prod.ext
-  · apply Fin.ext
-    cases b <;> simp [unpairPosition, pairPosition] <;> omega
-  · cases b <;> simp [unpairPosition, pairPosition] <;> omega
-
-theorem pair_unpairPosition (j : Fin 32) : pairPosition (unpairPosition j) = j := by
-  apply Fin.ext
-  simp only [pairPosition, unpairPosition, decide_eq_true_eq]
-  split_ifs <;> omega
-
-def pairPositionEquiv : (Fin 16 × Bool) ≃ Fin 32 where
-  toFun := pairPosition
-  invFun := unpairPosition
-  left_inv := unpair_pairPosition
-  right_inv := pair_unpairPosition
-
-/-- Always at least one block, including the empty message. -/
-def blockCount (m : Message) : ℕ := max 1 ((m.length + 255) / 256)
-
-def blockBytes (m : Message) (t : ℕ) : ℕ := min 256 (m.length - 256 * t)
-
-def activePairs (m : Message) (t : ℕ) : Finset (Fin 16) :=
-  Finset.univ.filter fun s => s.val < 2 * ((blockBytes m t + 31) / 32)
-
-def blockData (m : Message) (t : ℕ) (j : Fin 16 × Bool) : Word 64 :=
-  wordAt m (32 * t + (pairPosition j).val)
-
-theorem activePairs_comparable (m m' : Message) (t t' : ℕ) :
-    activePairs m t ⊆ activePairs m' t' ∨ activePairs m' t' ⊆ activePairs m t := by
-  rcases le_total (2 * ((blockBytes m t + 31) / 32))
-    (2 * ((blockBytes m' t' + 31) / 32)) with h | h
-  · left; intro i hi
-    simp only [activePairs, Finset.mem_filter, Finset.mem_univ, true_and] at hi ⊢
-    omega
-  · right; intro i hi
-    simp only [activePairs, Finset.mem_filter, Finset.mem_univ, true_and] at hi ⊢
-    omega
-
-theorem block_encoding_injective (m m' : Message) (hlen : m.length = m'.length)
-    (hblocks : ∀ t, t < blockCount m → ∀ s ∈ activePairs m t, ∀ b,
-      blockData m t (s, b) = blockData m' t (s, b)) : m = m' := by
-  apply byte_words_injective m m' hlen
-  intro j hj
-  let p := unpairPosition ⟨j % 32, by omega⟩
-  have ht : j / 32 < blockCount m := by unfold blockCount; omega
-  have hp : p.1 ∈ activePairs m (j / 32) := by
-    simp only [activePairs, Finset.mem_filter, Finset.mem_univ, true_and]
-    dsimp [p, unpairPosition, blockBytes]
-    omega
-  have he := hblocks (j / 32) ht p.1 hp p.2
-  have hpos : pairPosition p = ⟨j % 32, by omega⟩ := pair_unpairPosition _
-  have hidx : 32 * (j / 32) + j % 32 = j := by omega
-  simpa only [blockData, hpos, hidx] using he
+/-- Words past the message are zero: out-of-range reads supply padding zeroes. -/
+theorem wordAt_zero (m : Message) (j : ℕ) (hj : m.length ≤ 8 * j) : wordAt m j = 0 := by
+  funext i
+  have h : m[8 * j + i.val / 8]? = none := List.getElem?_eq_none (by omega)
+  simp [wordAt, byteAt, h]
 
 /-- Concrete binary encoding of a bounded integer. -/
 def bitsOfBitVec {w : ℕ} (v : BitVec w) : Word w :=

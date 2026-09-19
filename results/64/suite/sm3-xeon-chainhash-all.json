@@ -1,0 +1,20 @@
+{
+  "command": [
+    "taskset",
+    "-c",
+    "8-15",
+    "nice",
+    "-n",
+    "10",
+    "build-sm3-clang/SMHasher3",
+    "--test=All",
+    "--ncpu=8",
+    "--noexit-on-failure",
+    "--exit-code-on-failure",
+    "chainhash-v3"
+  ],
+  "start": "2026-09-19T08:13:58.685947+00:00",
+  "binary_sha256": "2aacd5c4da2d8848d9906a6e7f630f52bd1b0ee5dbc58e4104cc6ff3413dbbff",
+  "exit_code": 0,
+  "end": "2026-09-19T08:36:53.795073+00:00"
+}

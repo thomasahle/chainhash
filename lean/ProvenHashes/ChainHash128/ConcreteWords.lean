@@ -1,10 +1,21 @@
 import ProvenHashes.ChainHash128.Modulus
-import ProvenHashes.ChainHash128.FieldStream
 
 noncomputable section
 namespace ProvenHashes.ChainHash128
 open ProvenHashes.ChainHash
 open Polynomial
+
+
+/-- The low 128 coefficients of a polynomial, as a word. -/
+def lowWord (p : BitsPolynomial) : Word 128 := fun i => p.coeff i.val
+/-- Coefficients 128 to 255 of a polynomial, as a word. -/
+def highWord (p : BitsPolynomial) : Word 128 := fun i => p.coeff (i.val + 128)
+
+/-- The 128-bit instance of the width-generic bound `clnh_natDegree_le_width`. -/
+theorem clnh_natDegree_le {I : Type*} [DecidableEq I]
+    (s : Finset I) (m k : I × Bool → Word 128) : (clnh s m k).natDegree ≤ 254 := by
+  have h := clnh_natDegree_le_width (by omega : 1 ≤ 128) s m k
+  omega
 
 abbrev BinaryQuotient := AdjoinRoot modulus
 
@@ -53,5 +64,11 @@ theorem fieldRepr_mul (v w : Word 128) :
   change lowWord (AdjoinRoot.modByMonicHom modulus_monic
     (AdjoinRoot.mk modulus (pack 128 v) * AdjoinRoot.mk modulus (pack 128 w))) = _
   rw [← map_mul, AdjoinRoot.modByMonicHom_mk]
+
+
+/-- Any type in additive bijection with `Word 128` has `2^128` elements. -/
+theorem field_card {F : Type*} [AddGroup F] [Fintype F] (repr : Word 128 ≃+ F) :
+    Fintype.card F = 2 ^ 128 :=
+  (Fintype.card_congr repr.toEquiv).symm.trans (word_card 128)
 
 end ProvenHashes.ChainHash128

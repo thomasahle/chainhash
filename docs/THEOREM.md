@@ -1,222 +1,165 @@
-# ChainHash key-model guarantees
+# ChainHash collision bound
 
-This is the 256-byte specialization (`W=32`, `S=1`) of Theorem
-`thm:ph:collision` in Thomas D. Ahle and Jakob B. T. Knudsen,
-*Fast Evaluation of Polynomials with Rational Preprocessing*, appendix
-“Collision probability of ChainHash.” The supplied appendix is preserved in
-[appendix_chainhash.tex](appendix_chainhash.tex). This document describes the
-mathematical family implemented here; equivalence tests are not a formal
-verification of the C implementation.
+**Lean-proved.** The bound, the independence of every evaluation
+schedule and the exact score minimum are checked in namespace
+`ProvenHashes.ChainHash` (89 theorems), using only the standard axioms
+`propext`, `Classical.choice` and `Quot.sound`; see
+[lean/README.md](../lean/README.md) and the audit in
+[lean/VERIFICATION.txt](../lean/VERIFICATION.txt).
 
-## Default: 80 random bytes (10 words)
+## Statement
 
-The default `chainhash_key_from_bytes` constructor uses **model A**, taking
-80 independent random bytes (10 words) and expanding them into a 328-byte
-key (41 words). It derives the PH words as powers `s¹…s³²`, with
-`u,y,z,c0…c4,tau` independent and uniform. The explicit
-`chainhash_key_from_80_bytes` constructor is identical.
+Let `q = 2^64` and let L be an integer with `1 <= L <= 2^61-1`, so
+`8L < q`. Fix two distinct byte strings m, m', each at most 8L bytes long,
+independently of the key. The key is 64 uniformly random bytes. Then
 
-The paper’s original key setup is available through `chainhash_key_from_328_bytes`
-and `chainhash_key_from_words`. It uses 41 independent random words and gives
-stronger bounds, while occupying the same key storage.
-The table distinguishes equal fixed lengths from arbitrary lengths up to a
-limit. All probabilities concern the full output and fixed messages chosen
-independently of the key.
-
-| Key model / constructor | Random input | Equal fixed length ε(L) | Any lengths ≤8L: ε(L) | Fixed / at-most score |
-| --- | ---: | --- | --- | --- |
-| **A (default)** `chainhash_key_from_bytes` or `chainhash_key_from_80_bytes` | **80 bytes (10 words)** | `min(1,(d+n+1)/q)` | `min(1,E_A/q)` | **62.4150374993 / 61** |
-| Paper: `chainhash_key_from_328_bytes` or `chainhash_key_from_words` | 328 bytes (41 words) | `min(1,(n+2)/q)` | `min(1,(n+2)/q)` | 62.4150374993 / 62.4150374993 |
-| B: `chainhash_key_from_seed2(s,t,c)` | 56 bytes (7 words) | `min(1,(d+3n)/q)` | `min(1,E_B/q)` | 62 / 60.8300749986 |
-| C: `chainhash_key_from_seed(s,c)` | 48 bytes (6 words) | `1` only established | `1` only established | 0 / 0 from trivial certificate |
-| D, reference: `chainhash_key_from_single_word_reference(s)` | 8 bytes | `1` only established | `1` only established | 0 / 0 from trivial certificate |
-
-Here `q=2^64`, `L≥1` is a limit in eight-byte words, `n=ceil(L/32)`,
-`R=L-32(n-1)`, and `G=ceil(R/4)`. Fixed length means **both** strings
-have exactly `8L` bytes; the at-most column includes unequal lengths and
-empty inputs. The precise numerator functions from the
-[seeded theorem write-up](SEEDED_THEOREMS.md) are:
-
-```
-d(1)=1, d(2)=2; for L≥3, M=min(L,32):
-d(L)=4*floor((M-1)/4) + (3 if M mod 4 = 1 else 4)
-E_A(L)=8G                         if n=1
-       n+62+indicator(R≥29)       if n≥2
-E_B(L)=8G+1                       if n=1
-       3n+59+3*indicator(R≥29)    if n≥2
+```text
+Pr[ chainhash(key, m) = chainhash(key, m') ] <= min(1, (p(L) + d(L)) / 2^64).
 ```
 
-The score is `inf_{L≥1} log2(L / max(2^-64,ε(L)))`; all listed minima
-occur at `L=1`. These are guarantees from upper bounds, not measured attack
-costs. C/D's true worst-pair scores remain undetermined.
+The probability is over the key alone; "fixed independently of the key"
+means the two messages are chosen without seeing the key or any hash
+value (the guarantee is not adaptive, and the function is not a MAC). The
+event is equality of all 64 output bits; empty messages, partial final
+words and unequal lengths are included, and messages of exactly 8L bytes
+are the special case with equal fixed length.
 
-The full derivations, schedules, pair-specific bounds, qualifications on
-five-wise independence, and the unresolved useful C/D bounds are in
-[SEEDED_THEOREMS.md](SEEDED_THEOREMS.md), from the seeded proof work. Its
-[LaTeX version](SEEDED_THEOREMS.tex) is also included.
-For the implementation-facing guarantee use `8L+255<2^64`. The discussion
-below gives the original **41-word paper model**, whose bound does not
-transfer unchanged to the default 80-byte model A.
+`p(L)` is the block count of an 8L-byte message ([SPEC.md](SPEC.md)):
 
-## Domain and key distribution
-
-Messages are byte strings of length less than `2^64`. The field is
-`F = GF(2)[X]/(X^64 + X^4 + X^3 + X + 1)`, of size `q=2^64`.
-Bits are polynomial coefficients, so field addition is XOR.
-The key consists of **41 mutually independent, uniformly random field words**:
-32 CLNH words, recurrence keys `u,y,z`, finalizer parameters `c0,...,c4`, and
-the integer-add twist `tau`. The same sampled key hashes both messages;
-the messages are fixed independently of that key. In particular, this is
-not a statement about adaptively selected inputs after observing keyed hashes.
-
-## Exact collision statement
-
-The appendix states, for its general parameters:
-
-> Fix W, S and n ≥ 1, and put p = Sn. For every two distinct messages m ≠ m′
-> with n(m), n(m′) ≤ n (equivalently: of at most nB bytes each),
-> Pr[H(m) = H(m′)] ≤ (p + 2)/2^64 = (Sn + 2)/2^64.
-
-Here `B=8W` and `n(m)=max(1,ceil(len(m)/B))`; probability is over all the key
-words. In this repository `B=256`, `S=1`, so the bound is `(n+2)/2^64`.
-For a byte-length limit `ell`, use
-
-```
-n = max(1, ceil(ell / 256))
-epsilon_bytes(ell) = (n + 2) / 2^64.
+```text
+Q = floor((L-1)/128)
+u = 1 + ((L-1) mod 128)              # words in the last nonempty region, 1..128
+p(L) = 4Q + min(4, ceil(u/2))
 ```
 
-For the blog's metric, let `L=ceil(max(len(m),len(m′))/8) ≥ 1`, measured in
-64-bit words. Then
+`d(L)` bounds the number of roots of the level-1 difference polynomial
+in the seed s. With `M = min(L,128)`, `C = floor((M-1)/16)` and
+`r = 1 + ((M-1) mod 16)`:
 
-```
-epsilon(L) = (ceil(L/32) + 2) / 2^64
-score = inf_{L>=1} log2(L / max(2^-64, min(1, epsilon(L))))
-      = 64 - log2(3) = 62.41503749927884... bits.
-```
-
-Indeed `ceil(L/32)+2 ≤ 3L`, with equality at `L=1`. This is a **lower
-guarantee** for the family's score, not a tight determination of its worst
-collision probability. It describes a length-normalized bound; it does not
-mean a constant `2^-62.415` collision probability or that many bits of attack
-work. The theorem concerns equality of **all 64 output bits**. Truncation,
-bucket indices and selected output bits are not the event bounded here.
-Examples: at most 256 bytes gives `3/2^64`; at most 1 MiB gives `4098/2^64`.
-
-## The function
-
-1. Partition the message into 256-byte blocks, retaining one empty block
-   for an empty message. In each block, process only its intersected
-   32-byte groups. Pad the final incomplete group with zero bytes and
-   decode little-endian words. Pair the four words of each group as
-   `(w0,w2)` and `(w1,w3)`, XORing each with the key word of its own position.
-   XOR their unreduced 64×64 carry-less products to obtain a 128-bit value
-   `(a,b)` (low, high). XOR the total byte length into **both** halves of
-   the last block digest. The empty CLNH sum is zero.
-2. Starting at `P0=z`, compute `Pi = ai XOR ((bi XOR y) * (P(i-1) XOR u))`,
-   using multiplication in F. The PH sums themselves remain unreduced;
-   only the recurrence and finalizer multiply in F.
-3. Set `v = (Pn + tau) mod 2^64` by ordinary integer addition. Then compute
-   `Y=v*v`, `Z=(Y XOR c0)*(v XOR Y XOR c1)`, and
-   `H=(v XOR c2)*(Z XOR c3) XOR c4` in F.
-
-## Proof sketch with explicit decoders
-
-**CLNH and length encoding.** For two different blocks with equal pair
-counts, expand their unreduced CLNH difference over the integral domain
-`GF(2)[X]`. Some differing input word supplies a nonzero coefficient
-`delta` of its partner's uniform key word. After conditioning on the other
-words, the collision equation is `delta*k=C`. Multiplication by nonzero
-`delta` is injective, so at most one of the `2^64` key values works.
-For unequal pair counts the analogous lemma requires a **nonzero target**.
-Append one extra product at a time. With probability `1-1/q` its first
-factor is nonzero and the second factor has at most one solution; with
-probability `1/q` the product vanishes and the previous bound applies.
-Thus the induction gives `(1-1/q)/q + (1/q)(1/q) = 1/q`.
-
-For distinct messages with the same block count, either an earlier
-block differs or the last block does. If their byte lengths differ, equality
-of their encoded last digests requires the nonzero unreduced target
-`(ell XOR ell′)*(1+X^64)`; the length restriction makes it nonzero. This is
-why the unequal-pair lemma applies. If lengths agree, the byte encoding is
-injective and the equal-pair lemma applies. Consequently stream equality
-has probability at most `1/q`. Different block counts give different stream
-lengths, so their streams never coincide. No independence between different
-blocks' CLNH outputs is assumed.
-
-**Injective recurrence.** Treat `U,Y,Z` as indeterminates and write
-`Pn=f1(Y)+Z*f2(Y)+U*f3(Y)`. With `gi=product_{j=i}^n(Y+bj)`,
-
-```
-f1 = sum_i ai*g(i+1),   f2 = g1,   f3 = sum_i gi.
+```text
+d(L) = 1              if M = 1
+       2              if 2 <= M <= 8
+       4              if 9 <= M <= 16
+       4C+2           if M >= 17 and r = 1
+       4C+4           if M >= 17 and r >= 2
 ```
 
-For `G=product_{j=1}^m(Y+beta_j)` and
-`S=sum_{i=1}^m product_{j=i}^m(Y+beta_j)`, decode
+so d saturates at 32. Both p and d are nondecreasing in L, so the bound
+for "at most 8L bytes" is the bound at the larger length limit.
 
-```
-beta_1 = [Y^(m-1)]G - [Y^(m-2)](S-G) + indicator(m>=3).
-```
+| Message limit | L | p | d | Numerator (divide by 2^64) |
+| --- | ---: | ---: | ---: | ---: |
+| 8 bytes | 1 | 1 | 1 | 2 |
+| 16 bytes | 2 | 1 | 2 | 3 |
+| 256 bytes | 32 | 4 | 8 | 12 |
+| 1 KiB | 128 | 4 | 32 | 36 |
+| 8 KiB | 1024 | 32 | 32 | 64 |
+| 1 MiB | 131072 | 4096 | 32 | 4128 |
 
-A coefficient with negative exponent is zero. Divide `G` exactly by the
-monic `Y+beta_1` and replace `S` by `S-G`; repeat to recover the remaining
-`b` values and suffix products. Recover `a1` as `[Y^(n-1)]f1`, subtract
-`a1*g2`, and peel the remaining coefficients in descending degree. This
-exhibits injectivity without search or division by a potentially zero pivot.
+For L = 1..20 the numerators are `2,3,4,4,5,5,6,6,8,8,8,8,8,8,8,8,10,12,12,12`.
+These are certificates (upper bounds), not claims that some pair attains
+them. The SplitMix64 seed constructor is a different key distribution and
+the bound is not asserted for it.
 
-Equal-length streams share top homogeneous part `(Z+U)Y^n`, so their
-nonzero difference has total degree at most `n`. Unequal-length streams
-have a nonzero difference of degree at most `max(n,n′)+1`. Schwartz–Zippel
-at independent uniform `u,y,z` bounds recurrence collisions by `n/q` or
-`(max(n,n′)+1)/q`, respectively, conditional on any fixed distinct streams.
+## Score
 
-**Finalizer and twist.** The circuit is a monic quintic. Put
-`q0=c2, q1=c0+c1, q2=c0, q3=c3, q4=c4`, and
-`delta=q2*(q1+q2)`, where additions in this paragraph are field additions.
-If `ei` is the coefficient of `v^i`, the explicit inverse is
+The strength score is the weakest length-adjusted guarantee,
 
-```
-q0 = e4 + 1
-q1 = e3 + q0
-q2 = e2 + q0*q1
-delta = q2*(q1+q2)
-q3 = e1 + delta + q0*q2
-q4 = e0 + q0*(delta+q3)
-(c0,c1,c2,c3,c4) = (q2,q1+q2,q0,q3,q4).
+```text
+min over 1 <= L <= 2^61-1 of  log2( L / epsilon(L) ),   epsilon(L) = (p(L)+d(L))/2^64,
 ```
 
-Every pivot is one. Thus uniform parameters give independent uniform lower
-coefficients of a monic quintic. At distinct fixed inputs its collision
-probability is exactly `1/q` (condition on all coefficients but the linear
-one). The integer-add twist is a bijection for every fixed `tau`, with
-inverse integer subtraction modulo `2^64`; it preserves distinctness and
-therefore this bound.
+in units of 8-byte words. It equals **63.0 bits**, attained at L = 1 where
+the numerator is 2; for every L > 1, `p(L) + d(L) < 2L`. A score is a
+guarantee about the collision probability of fixed messages under a
+random key, not an estimate of attack work and not 63 bits of
+cryptographic security.
 
-**Composition.** Partition collisions according to their first failing
-stage. Equal block counts contribute at most `(1+n+1)/q`. Unequal block
-counts contribute at most `(0+(n+1)+1)/q`. Both totals are `(n+2)/q`.
+## Proof outline
 
-## Qualified five-wise statement
+The function is defined on 39 field words `kappa[0..31], y, c0..c4, tau`
+([SPEC.md](SPEC.md)); the key expands 64 random bytes into them with
+`kappa[m] = s^(m+1)`. The proof first establishes the bound `(p+1)/2^64`
+for a key of 39 independent uniform words (the internal lemma
+`ideal_key_collision_bound`, also the starting point of the 128-bit
+proof) and then replaces the single-root argument of level 1 by a root
+count in s.
 
-The appendix's Theorem `thm:ph:kwise` is **five-wise independence up to
-level-1/2 collisions**, not unconditional five-wise independence of the
-whole byte-string family. For `t≤5` distinct messages of at most `n` blocks,
-let D mean all their pre-finalizer values are distinct. Then
-`Pr[not D] ≤ choose(t,2)*(n+1)/2^64`. Conditional on any fixed earlier
-keys for which D holds (and any twist), their final outputs are independent
-uniform 64-bit words. Their unconditional joint distribution has total
-variation distance at most that same bound from uniform.
+**1. Level 1, equal lengths.** Choose a block containing a changed word.
+Equal byte lengths give the same presence mask, so every key-only product
+cancels in the XOR of the two block polynomials. For pair slot pi the
+difference is
 
-## Machine-checked status
+```text
+(a*b XOR a'*b') XOR (a XOR a')*kappa[2pi+1] XOR (b XOR b')*kappa[2pi]
+```
 
-The concrete **41-independent-word** collision theorem is now Lean-checked,
-including all stage bounds, byte encoding, field irreducibility, finalizer and
-twist. See the [shipped Lake project](../lean/README.md), exact theorem
-signatures, and [build/axiom audit](../lean/VERIFICATION.txt). Model A/B
-seeded bounds have written proofs; their complete Lean corollaries remain
-open in the shipped snapshot. Twelve seeded-PH algebra and root-bound lemmas are included.
+with the product-only term constant in the key. With 39 independent
+words, condition on everything but the partner key of a changed word: the
+difference is affine in that word with nonzero slope, so it has at most
+one root. With `kappa[m] = s^(m+1)`, a changed first word contributes
+exponent `2pi+2` in s and a changed partner exponent `2pi+1`; these
+positions map bijectively to exponents 1..32 within a block, so their
+coefficients cannot cancel and the difference is a nonzero polynomial in
+s of degree at most 32. Its root count is at most `d(L)`: in the first
+eight words only first halves are present, the difference has the form
+`a*s^2 + b*s^4`, and because squaring is a bijection of a
+characteristic-two field this has at most one root for L = 1 and at most
+two for `2 <= L <= 8` (substitute `z = s^2`); later chunks raise the
+largest exponent as the piecewise formula states. The argument is in F and
+remains valid after reducing the CLNH sum.
 
-The Lean definitions transcribe the mathematical reference hash. They do
-not formally verify C compilation or SIMD/memory behavior. The copied
-[symbolic checks](checks/verify5.py) and [ANF experiment](checks/anf_check.py)
-remain supporting checks; finite tests are not substitutes for proofs.
+**2. Level 2, equal lengths.** Conditional on level-1 keys for which at
+least one block differs, the Horner difference is a nonzero polynomial in
+the still-independent uniform y of degree at most `p-1` (the common length
+term cancels), so the pre-final collision probability is at most
+`(d + p - 1)/q` by a union bound. One changed block suffices; no
+independence between block events is needed.
+
+**3. Unequal lengths.** Condition on any level-1 key. With equal block
+counts the coefficient of `y^p` in the difference is `ell XOR ell'`,
+nonzero because distinct byte lengths below q have distinct field
+representations. With different block counts the top coefficient is the
+byte length of the message with more blocks, which is nonzero because more
+than one block implies a nonempty message. The degree is at most
+`max(p, p')`, so the pre-final collision probability is at most
+`max(p,p')/q` with no exceptional level-1 key.
+
+**4. Twist and finalizer.** For fixed tau, integer addition modulo q is a
+bijection and preserves distinctness of pre-final values. The five circuit
+parameters `c0..c4` are in bijection with the five lower coefficients of a
+uniform monic quintic, so on two distinct inputs the finalizer collides
+with probability exactly `1/q`. With `alpha = Pr[V(m) = V(m')]`,
+`Pr[H(m) = H(m')] = alpha + (1 - alpha)/q <= alpha + 1/q`, which gives the
+numerator `d + p` for equal lengths and `max(p,p') + 1` for unequal
+lengths; both fit `p(L) + d(L)` because p and d are nondecreasing and
+`d >= 1`. For up to five messages with pairwise distinct pre-final values
+the five parameters give independent uniform outputs; this is conditional,
+not unconditional five-wise independence of message hashes.
+
+## Formalization
+
+The user-facing endpoints in `ProvenHashes.ChainHash` are:
+
+- `collision_bound`: for `0 < L`, `8L < 2^64` and distinct byte lists of
+  length at most 8L, the exact collision probability over the `2^512`
+  keys (the ratio of event size to key-space size in `ℚ≥0`) is at most
+  `(d(L) + p(L))/2^64`, with p and d defined exactly as above.
+- `evaluation_independence`: for every positive stride k, the round-robin
+  k-lane schedule and the lazy 128-bit-state evaluation both equal the
+  serial Horner definition, for every key including `y = 0` and for
+  strides above the block count.
+- `score_minimum`: `63` is the least value of `log2(L / epsilon(L))` over
+  all positive natural L.
+
+The proofs include the comb index maps and their injectivity on bytes,
+reduced CLNH difference universality, the general characteristic-two
+Frobenius root bound, Horner leading coefficients, the key encoding
+bijections and the envelope arithmetic; there are no assumed
+probabilistic stage bounds. The [464-vector comparison](../lean/vectors/ChainHash.lean)
+checks `include/chainhash.h` against a separately executable Lean
+reference across both key forms, every available backend, strides 1–8
+and eager/lazy evaluation; it is evidence that the C code computes the
+formalized function, not a formal refinement proof of C, the compiler or
+the SIMD paths. Truncated outputs, bucket indices and messages adapted to
+earlier hash values need separate analysis.

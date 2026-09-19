@@ -1,9 +1,14 @@
 import ProvenHashes.Modulus
-import ProvenHashes.FieldStream
 
 noncomputable section
 namespace ProvenHashes.ChainHash
 open Polynomial
+
+
+/-- The low 64 coefficients of a polynomial, as a word. -/
+def lowWord (p : BitsPolynomial) : Word 64 := fun i => p.coeff i.val
+/-- Coefficients 64 to 127 of a polynomial, as a word. -/
+def highWord (p : BitsPolynomial) : Word 64 := fun i => p.coeff (i.val + 64)
 
 abbrev BinaryQuotient := AdjoinRoot modulus
 
@@ -52,5 +57,11 @@ theorem fieldRepr_mul (v w : Word 64) :
   change lowWord (AdjoinRoot.modByMonicHom modulus_monic
     (AdjoinRoot.mk modulus (pack 64 v) * AdjoinRoot.mk modulus (pack 64 w))) = _
   rw [← map_mul, AdjoinRoot.modByMonicHom_mk]
+
+
+/-- Any type in additive bijection with `Word 64` has `2^64` elements. -/
+theorem field_card {F : Type*} [AddGroup F] [Fintype F] (repr : Word 64 ≃+ F) :
+    Fintype.card F = 2 ^ 64 :=
+  (Fintype.card_congr repr.toEquiv).symm.trans (word_card 64)
 
 end ProvenHashes.ChainHash

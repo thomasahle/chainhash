@@ -1,0 +1,28 @@
+{
+  "host": "M2Pro",
+  "name": "chainhash",
+  "test": "Speed",
+  "run": 2,
+  "command": [
+    "<scratch>/build-m2/SMHasher3",
+    "chainhash",
+    "--test=Speed"
+  ],
+  "raw_file": "out/M2Pro/chainhash.run2.txt",
+  "binary_sha256": "f871e853d39d2a56499503153460fb9926d5dce1344d2e1b071db2116b65b230",
+  "started": "2026-09-18T23:12:08.846567+00:00",
+  "load_before": [
+    3.95166015625,
+    4.62109375,
+    4.70361328125
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T23:12:36.682430+00:00",
+  "elapsed_seconds": 27.835740333000047,
+  "load_after": [
+    4.2314453125,
+    4.62353515625,
+    4.70068359375
+  ],
+  "raw_sha256": "5271218f454ffb8d646217b9ef6ef8e8e2d5bd9689d51051a0194cbb8b0fa50e"
+}

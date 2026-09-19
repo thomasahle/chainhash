@@ -1,3 +1,0 @@
-zmm_clmul best_tsc=1.721104 median_tsc=1.726474
-zmm_shuffle_i64x2 best_tsc=0.860668 median_tsc=0.862734
-zmm_clmul_shuffle_pair best_tsc=2.685466 median_tsc=2.800247

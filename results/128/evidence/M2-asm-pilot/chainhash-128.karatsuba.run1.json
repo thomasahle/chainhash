@@ -1,0 +1,27 @@
+{
+  "name": "chainhash-128.karatsuba",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:04:47.337848+00:00",
+    "load": [
+      4.01806640625,
+      4.77099609375,
+      5.15625
+    ],
+    "smhasher_pids": [],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:05:53.228395+00:00",
+    "load": [
+      3.7724609375,
+      4.5322265625,
+      5.03515625
+    ]
+  },
+  "elapsed_seconds": 65.87002975000001,
+  "returncode": 0,
+  "raw_file": "chainhash-128.karatsuba.run1.txt",
+  "raw_sha256": "8cd8179496c1f2094a240f1674a501fdc88964a346031f1c4aa7367abf339241",
+  "binary_sha256": "f132b3b7e6e8dd1451f72797b7af5829829f2dab69336947e8ebd48370dd9cf4"
+}

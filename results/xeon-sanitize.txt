@@ -1,4 +1,0 @@
-c++ -Iinclude -std=c++11 -O1 -g -mpclmul -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
-/usr/bin/ld: cannot find /usr/lib64/libasan.so.6.0.0
-collect2: error: ld returned 1 exit status
-make: *** [Makefile:37: sanitize] Error 1

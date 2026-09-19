@@ -1,0 +1,31 @@
+{
+  "host": "Xeon",
+  "name": "rapidhash",
+  "test": "Speed",
+  "run": 1,
+  "command": [
+    "taskset",
+    "-c",
+    "16-23",
+    "<xeon>/build/SMHasher3",
+    "rapidhash",
+    "--test=Speed"
+  ],
+  "raw_file": "out/Xeon/rapidhash.run1.txt",
+  "binary_sha256": "30cd33a25add387675c2de0d2cdc0ca4698012ef5be44614f6b7a38d6099170c",
+  "started": "2026-09-18T20:12:58.656280+00:00",
+  "load_before": [
+    6.88,
+    6.81,
+    5.7
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T20:13:59.720653+00:00",
+  "elapsed_seconds": 61.06429270305671,
+  "load_after": [
+    6.99,
+    6.86,
+    5.78
+  ],
+  "raw_sha256": "4e613748de5ddb00669434672b94dcb6fd012ea1cb4e69f7d54338a453618f2a"
+}

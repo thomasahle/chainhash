@@ -1,0 +1,16 @@
+# Portable evaluator (work/verify_adapter.cpp + work/common.inc) recompiled against
+# thomasahle/chainhash HEAD 146cfe70d0ccbd7390de8640fd623983f0cc6b61 include/ headers
+# on the M2 (Apple clang), 2026-09-19. Two builds: no arch flags (portable path) and
+# -march=armv8.2-a+crypto+aes (PMULL path). Same four constants as the 5c2d3a4f snapshot.
+# sha256 include/chainhash3.h e13fdf71adfbdf9105825c79b85badf44c721a8ce43d1a28f17d5a0255625e62
+# sha256 include/chainhash.h  1c7e67608702d96e0815d89a564349ecff86a7c93797836dc4c5dc7588937211
+## portable
+chainhash-v3 LE 66672BD6
+chainhash-v3 BE FA8A8D3B
+chainhash-256 LE AA4E2A3B
+chainhash-256 BE 87D5618B
+## pmull
+chainhash-v3 LE 66672BD6
+chainhash-v3 BE FA8A8D3B
+chainhash-256 LE AA4E2A3B
+chainhash-256 BE 87D5618B

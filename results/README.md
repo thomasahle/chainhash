@@ -1,16 +1,20 @@
-# Assembly records, 2026-09-18
+# Measurements and evidence
 
-- `mac-test.txt`, `xeon-test.txt`: PMULL/PCLMUL and forced-portable tests,
-  including unchanged paper reference, frozen vectors, guard pages, C99 API.
-- `*-original*.txt`: byte-for-byte comparisons against unmodified original
-  SMHasher3 source; the Mac hardware run also checks the original benchmark.
-- `*-speed.txt`: fresh measurements of this standalone header. Mac numbers
-  use estimated cycles; Xeon numbers use invariant TSC reference cycles.
-- `verify5.txt`: symbolic coefficient/decoder identities, random round trips,
-  and small-field sanity checks from the copied original script. These do
-  not complete the Lean proof.
-- Sanitizer logs and the Mac startup sample document both failed runtime
-  attempts and successful runs; see `../REPORT.md` for the final status.
+- [64/](64/README.md): ChainHash. SMHasher3 Speed runs on an Intel Xeon
+  Platinum 8375C and an Apple M2 Pro, a standalone RDTSC harness, the
+  object-code audit of the hot loops, and the correctness, sanitizer and
+  build logs from both hosts.
+- [128/](128/README.md): ChainHash-128. The same protocol on both hosts,
+  the schoolbook-versus-Karatsuba comparison behind the product-method
+  dispatch,
+  NEON disassembly, and the validation logs.
 
-The SMHasher3 historical 200/200 verdict is recorded separately in
-`../docs/smhasher-record.json`; it was not obtained by rerunning that suite.
+Each directory's `speeds.json` aggregates every retained SMHasher3 run
+(raw file, SHA-256, launch load, both bulk sections, per-length small-key
+costs, deviations) with the selection rule in `meta`. Raw logs keep their
+original content and whitespace so the recorded hashes stay verifiable.
+Units: Xeon "cycles" are invariant-TSC reference ticks and M2 "cycles" are
+SMHasher3's calibrated estimates from its monotonic timer; neither is a
+core-cycle measurement, cross-host ratios are not meaningful, and printed
+GiB/s assume 3.5 GHz. Key expansion is outside every timed region. Host
+placeholders: `<xeon>` is the Xeon host and `<scratch>` a scratch checkout.

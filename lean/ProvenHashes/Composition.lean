@@ -1,4 +1,4 @@
-import ProvenHashes.Recurrence
+import ProvenHashes.Probability
 
 namespace ProvenHashes
 open scoped BigOperators
@@ -90,65 +90,5 @@ theorem compose_collision_bound {K J M R : Type*}
       · exact Or.inr ⟨h, hk⟩)
     _ ≤ uniformProb E + uniformProb D := uniformProb_or_le _ _
     _ ≤ a + b := add_le_add he hd
-
-/-- Conditional ChainHash composition for equal-length streams. The hypotheses
-for the stream and finalizer must still be proved for the paper's concrete family. -/
-theorem chainhash_equal_length_from_stages {F K J : Type*}
-    [Field F] [Fintype F] [Fintype K] [Fintype J] [Nonempty K] [Nonempty J]
-    (p : ℕ) (s s' : K → List (F × F)) (g : J → F → F)
-    (hlen : ∀ k, (s k).length = (s' k).length)
-    (hmax : ∀ k, (s k).length ≤ p)
-    (hstream : uniformProb (fun k => s k = s' k) ≤ 1 / Fintype.card F)
-    (hfinal : ∀ v v', v ≠ v' → uniformProb (fun j => g j v = g j v') ≤ 1 / Fintype.card F) :
-    uniformProb (fun k : (K × (Fin 3 → F)) × J =>
-      g k.2 (Recurrence.hash (s k.1.1) k.1.2) =
-        g k.2 (Recurrence.hash (s' k.1.1) k.1.2)) ≤
-      ((p + 2 : ℕ) : ℚ≥0) / Fintype.card F := by
-  have hr : uniformProb (fun k : K × (Fin 3 → F) =>
-      Recurrence.hash (s k.1) k.2 = Recurrence.hash (s' k.1) k.2) ≤
-      ((p + 1 : ℕ) : ℚ≥0) / Fintype.card F := by
-    calc
-      _ ≤ 1 / Fintype.card F + (p : ℚ≥0) / Fintype.card F :=
-        compose_collision_bound s s' (fun k m => Recurrence.hash m k) _ _ hstream (by
-          intro k hk
-          exact (Recurrence.collision_bound _ _ (hlen k) hk).trans
-            (div_le_div_of_nonneg_right (by exact_mod_cast hmax k) (by positivity)))
-      _ = _ := by push_cast; ring
-  calc
-    _ ≤ ((p + 1 : ℕ) : ℚ≥0) / Fintype.card F + 1 / Fintype.card F :=
-      compose_collision_bound
-        (fun k : K × (Fin 3 → F) => Recurrence.hash (s k.1) k.2)
-        (fun k : K × (Fin 3 → F) => Recurrence.hash (s' k.1) k.2)
-        g _ _ hr (fun k hk => hfinal _ _ hk)
-    _ = _ := by push_cast; ring
-
-/-- Conditional composition for unequal stream lengths. Length separation makes
-the first-stage collision impossible; the recurrence supplies the extra degree. -/
-theorem chainhash_different_lengths_from_stages {F K J : Type*}
-    [Field F] [Fintype F] [Fintype K] [Fintype J] [Nonempty K] [Nonempty J]
-    (p : ℕ) (s s' : K → List (F × F)) (g : J → F → F)
-    (hlen : ∀ k, (s k).length ≠ (s' k).length)
-    (hmax : ∀ k, max (s k).length (s' k).length ≤ p)
-    (hfinal : ∀ v v', v ≠ v' → uniformProb (fun j => g j v = g j v') ≤ 1 / Fintype.card F) :
-    uniformProb (fun k : (K × (Fin 3 → F)) × J =>
-      g k.2 (Recurrence.hash (s k.1.1) k.1.2) =
-        g k.2 (Recurrence.hash (s' k.1.1) k.1.2)) ≤
-      ((p + 2 : ℕ) : ℚ≥0) / Fintype.card F := by
-  have hr : uniformProb (fun k : K × (Fin 3 → F) =>
-      Recurrence.hash (s k.1) k.2 = Recurrence.hash (s' k.1) k.2) ≤
-      ((p + 1 : ℕ) : ℚ≥0) / Fintype.card F := by
-    apply uniformProb_prod_le
-    intro k
-    have hk : s k ≠ s' k := fun h => hlen k (congrArg List.length h)
-    exact (Recurrence.collision_bound_any_length _ _ hk).trans
-      (div_le_div_of_nonneg_right (by exact_mod_cast Nat.add_le_add_right (hmax k) 1)
-        (by positivity))
-  calc
-    _ ≤ ((p + 1 : ℕ) : ℚ≥0) / Fintype.card F + 1 / Fintype.card F :=
-      compose_collision_bound
-        (fun k : K × (Fin 3 → F) => Recurrence.hash (s k.1) k.2)
-        (fun k : K × (Fin 3 → F) => Recurrence.hash (s' k.1) k.2)
-        g _ _ hr (fun k hk => hfinal _ _ hk)
-    _ = _ := by push_cast; ring
 
 end ProvenHashes

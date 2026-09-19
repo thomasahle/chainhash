@@ -1,0 +1,30 @@
+{
+  "name": "control-128",
+  "run": 2,
+  "before": {
+    "utc": "2026-09-19T08:19:52.976532+00:00",
+    "load": [
+      37.66,
+      28.55,
+      21.46
+    ],
+    "smhasher_pids": [
+      "3467803",
+      "3516176"
+    ],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:21:22.624181+00:00",
+    "load": [
+      45.01,
+      33.26,
+      23.79
+    ]
+  },
+  "elapsed_seconds": 89.59085784002673,
+  "returncode": 0,
+  "raw_file": "control-128.run2.txt",
+  "raw_sha256": "c742daaaad2d09c83ec50bd0ffc3fc018b11b615eaf16747118450c4a6a54986",
+  "binary_sha256": "d8df2fbcf18e4e56ec2c6a96242ef47b10935cd20d05f0b249e6fdecae92846a"
+}

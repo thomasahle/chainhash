@@ -1,0 +1,3 @@
+464 C/Lean vectors PASS; C backends x strides 1..8 x eager/lazy PASS
+SHA256 output 732b082f59e860e8171016c6919be1d863320cfbafe358ab3f52900de6017103
+SHA256 header a5730797bc9aafbf8ff11f6a2c4919d2f1622c55a3a40d439f50242d4b10ee6e

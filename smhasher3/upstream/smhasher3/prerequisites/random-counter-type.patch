@@ -1,0 +1,13 @@
+diff --git a/util/Random.cpp b/util/Random.cpp
+index 1821ee93..a2efe5b1 100644
+--- a/util/Random.cpp
++++ b/util/Random.cpp
+@@ -496,7 +496,7 @@ static void fill_rand( uint8_t * out, const size_t elem_sz, const uint64_t elem_
+     uint8_t      tmp[Rand::BUFLEN * sizeof(uint64_t)];
+ 
+     size_t nbytes        = (elem_hi - elem_lo) * elem_sz;
+-    size_t offset_rounds = (elem_lo * elem_sz) / (sizeof(uint64_t) * Rand::RANDS_PER_ROUND);
++    uint64_t offset_rounds = (elem_lo * elem_sz) / (sizeof(uint64_t) * Rand::RANDS_PER_ROUND);
+     size_t offset_bytes  = (elem_lo * elem_sz) % (sizeof(uint64_t) * Rand::RANDS_PER_ROUND);
+     size_t offset_size   = std::min(sizeof(tmp) - offset_bytes, nbytes) % bytes_per_fill;
+ 

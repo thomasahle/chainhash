@@ -1,3 +1,0 @@
-/opt/homebrew/opt/llvm/bin/clang++ -Iinclude -std=c++11 -O1 -g -march=armv8-a+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
-./build/sanitize
-PASS 9479 differential cases; 92 frozen vectors; backend=pmull; verification=0xAA4E2A3B

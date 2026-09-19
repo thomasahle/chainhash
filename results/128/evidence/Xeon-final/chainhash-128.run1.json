@@ -1,0 +1,27 @@
+{
+  "name": "chainhash-128",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:49:27.455778+00:00",
+    "load": [
+      48.81,
+      53.35,
+      52.67
+    ],
+    "smhasher_pids": [],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:50:36.419611+00:00",
+    "load": [
+      50.35,
+      53.01,
+      52.6
+    ]
+  },
+  "elapsed_seconds": 68.90713644796051,
+  "returncode": 0,
+  "raw_file": "chainhash-128.run1.txt",
+  "raw_sha256": "634831df74ef6ca0b57c312ec95c57a6df11f29fa3fe2fecb08aca881de61e81",
+  "binary_sha256": "46f9c41d928df259f8d4ec14ac3b31c4265333fb312d617925d1456ad0d7a276"
+}

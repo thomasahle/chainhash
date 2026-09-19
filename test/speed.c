@@ -1,91 +1,42 @@
-#define _POSIX_C_SOURCE 200809L
+/* Throughput of the dispatched one-shot entry points on hot inputs.
+ * Reports bytes per nanosecond (GB/s) from the monotonic clock and, on
+ * x86-64, bytes per TSC reference tick. ARM has no unprivileged cycle
+ * counter, so no cycle figure is printed there. Key setup is not timed. */
+#define _POSIX_C_SOURCE 199309L
 #include "chainhash.h"
-#include "fixtures.h"
+#include "chainhash128.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #if defined(__x86_64__)
 #include <x86intrin.h>
-#endif
-static volatile uint64_t sink;
-static uint64_t ns(void) {
-    struct timespec t;
-    clock_gettime(CLOCK_MONOTONIC,&t);
-    return (uint64_t)t.tv_sec*UINT64_C(1000000000)+(uint64_t)t.tv_nsec;
-}
-#if defined(__aarch64__)
-/* 64 dependent adds per iteration; best of five short calibrations.
- * This estimates cycles/ns, it does NOT read a hardware cycle counter. */
-static double calibrate(void) {
-    uint64_t best=UINT64_MAX;
-    unsigned trial;
-    for(trial=0;trial<5;++trial) {
-        uint64_t x=0,start=ns(),elapsed;
-        unsigned i;
-        for(i=0;i<100000;++i)
-            __asm__ volatile(".rept 64\n\tadd %0, %0, #1\n\t.endr" : "+r"(x));
-        elapsed=ns()-start;
-        sink=x;
-        if(elapsed<best) best=elapsed;
-    }
-    return 6400000.0/(double)best;
-}
-#endif
-static uint64_t ticks(void) {
-#if defined(__x86_64__)
-    unsigned aux;
-    uint64_t t;
-    _mm_lfence(); t=__rdtscp(&aux); _mm_lfence(); return t;
+static uint64_t ticks(void) { return __rdtsc(); }
 #else
-    return ns();
+static uint64_t ticks(void) { return 0; }
 #endif
-}
-#if defined(__GNUC__) || defined(__clang__)
-__attribute__((noinline))
-#endif
-static uint64_t run_hash(const chainhash_key *k,const uint8_t *p,size_t n) {
-    return chainhash(k,p,n);
-}
+static double now(void) { struct timespec t; clock_gettime(CLOCK_MONOTONIC,&t); return (double)t.tv_sec*1e9+(double)t.tv_nsec; }
+static chainhash_key key64; static chainhash128_key key128;
+static uint64_t run64(const uint8_t *p,size_t n) { return chainhash(&key64,p,n); }
+static uint64_t run128(const uint8_t *p,size_t n) { ch128_word h=chainhash128(&key128,p,n); return h.lo^h.hi; }
 int main(void) {
-    const size_t lengths[]={256,4096,262144};
-    uint8_t *data=(uint8_t *)malloc(262144);
-    chainhash_key key=test_fixture_key(42);
-    double scale=1.0;
-    unsigned si;
-    size_t i;
-    if(!data) return 1;
-    for(i=0;i<262144;++i) data[i]=(uint8_t)(i*131+17);
-    printf("backend=%s; 5 trials, 16 MiB/trial/size; hot reused buffer; key setup excluded\n",CHAINHASH_BACKEND);
-#if defined(__aarch64__)
-    scale=calibrate();
-    printf("cycle basis: estimated ARM cycles, dependent-add calibration %.6f GHz\n",scale);
-#elif defined(__x86_64__)
-    puts("cycle basis: invariant TSC reference cycles (not variable-frequency core cycles)");
-#else
-    puts("cycle basis: nanoseconds; no cycle estimate on this architecture");
-#endif
-    puts("bytes,bytes_per_cycle,GB_per_second,median_ns_per_hash");
-    for(si=0;si<3;++si) {
-        size_t n=lengths[si],reps=(16*1024*1024)/n;
-        double cp[5],nt[5];
-        unsigned trial,j;
-        for(i=0;i<32;++i) sink=run_hash(&key,data,n);
-        for(trial=0;trial<5;++trial) {
-            uint64_t sum=0,start_ns=ns(),start=ticks(),end,elapsed;
-            for(i=0;i<reps;++i) {
-                /* Force each call to observe memory; prevents hoisting. */
-                __asm__ volatile("" ::: "memory");
-                sum ^= run_hash(&key,data,n);
-            }
-            end=ticks(); elapsed=ns()-start_ns; sink=sum;
-            cp[trial]=(double)(end-start)*scale/(double)reps;
-            nt[trial]=(double)elapsed/(double)reps;
+    static const size_t sizes[]={64,256,1024,4096,65536,1048576};
+    static const char *names[]={"ChainHash","ChainHash-128"};
+    uint64_t (*fn[])(const uint8_t *,size_t)={run64,run128};
+    size_t total=1<<26,i,s; unsigned f,trial; uint64_t sink=0;
+    uint8_t *buf=(uint8_t *)malloc(sizes[5]); if(!buf) return 1;
+    for(i=0;i<sizes[5];i++) buf[i]=(uint8_t)(i*131+17);
+    key64=chainhash_key_from_seed(123); key128=chainhash128_key_from_seed(123);
+    printf("backends: chainhash=%d chainhash128=%d (0 portable, 1 XMM, 2 YMM, 3 ZMM, 4 NEON)\n",chainhash_backend(),chainhash128_backend());
+    printf("%-14s %10s %10s %10s\n","function","bytes","GB/s","B/tick");
+    for(f=0;f<2;f++) for(s=0;s<6;s++) {
+        size_t n=sizes[s],calls=total/n; double best=0; uint64_t bestticks=UINT64_MAX;
+        for(trial=0;trial<5;trial++) {
+            double t0=now(); uint64_t c0=ticks(); size_t c;
+            for(c=0;c<calls;c++) { sink+=fn[f](buf,n); __asm__ __volatile__("":::"memory"); }
+            { uint64_t c1=ticks(); double t1=now(); double gbs=(double)(calls*n)/(t1-t0); if(gbs>best) best=gbs; if(c1-c0<bestticks) bestticks=c1-c0; }
         }
-        for(trial=0;trial<5;++trial) for(j=trial+1;j<5;++j) {
-            if(cp[j]<cp[trial]) {double t=cp[j];cp[j]=cp[trial];cp[trial]=t;}
-            if(nt[j]<nt[trial]) {double t=nt[j];nt[j]=nt[trial];nt[trial]=t;}
-        }
-        printf("%zu,%.4f,%.4f,%.4f\n",n,n/cp[2],n/nt[2],nt[2]);
+        printf("%-14s %10zu %10.2f ",names[f],n,best);
+        if(ticks()) printf("%10.2f\n",(double)(calls*n)/(double)bestticks); else printf("%10s\n","-");
     }
-    free(data); return 0;
+    free(buf); return (int)(sink==0);
 }

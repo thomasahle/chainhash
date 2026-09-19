@@ -1,0 +1,28 @@
+{
+  "host": "M2Pro",
+  "name": "control-256",
+  "test": "Speed",
+  "run": 2,
+  "command": [
+    "<scratch>/build-m2/SMHasher3",
+    "control-256",
+    "--test=Speed"
+  ],
+  "raw_file": "out/M2Pro/control-256.run2.txt",
+  "binary_sha256": "ff88c33b567df2c19c54c8dde32be8d3ffd9723d31731bde338cd73b22ae20d9",
+  "started": "2026-09-18T22:30:07.332594+00:00",
+  "load_before": [
+    3.86279296875,
+    4.3486328125,
+    4.51025390625
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T22:30:37.631614+00:00",
+  "elapsed_seconds": 30.29888383399998,
+  "load_after": [
+    3.72119140625,
+    4.2666015625,
+    4.47412109375
+  ],
+  "raw_sha256": "0814387c96899826af9c45accfb96684e354d89812ce6e1154cf42fd97e57e9e"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "hash": "chainhash-v3",
+    "rows_xeon": 1863,
+    "rows_m2": 1863,
+    "common_rows": 1863,
+    "matching_rows": 1863,
+    "mismatches": []
+  },
+  {
+    "hash": "chainhash-256",
+    "rows_xeon": 1863,
+    "rows_m2": 1863,
+    "common_rows": 1863,
+    "matching_rows": 1863,
+    "mismatches": []
+  }
+]

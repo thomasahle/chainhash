@@ -1,297 +1,233 @@
 # ChainHash
 
-ChainHash is a keyed 64-bit hash for large byte strings, with collision
-bounds for messages chosen independently of a random key.
-**ChainHash v3, “ChainHash-Horner,” is one function for every machine:**
-portable C, x86 XMM/YMM/ZMM and ARM NEON compute identical digests.
-It is a C99/C++11 header with no allocation or library dependency.
-**[ChainHash-128 v3](#chainhash-128-v3)** ([`include/chainhash128_v3.h`](include/chainhash128_v3.h))
-is the same design over `GF(2^128)` with a 128-bit result and a 128-byte key;
-its paper, model-A and evaluation-independence theorems are Lean-proved too,
-with exact 127-bit score minima ([statements](docs/THEOREM_v3_128.md)).
+ChainHash is a keyed 64-bit hash for long inputs with a proven collision
+bound: for any two distinct messages fixed independently of a random
+64-byte key, the probability that they collide is at most
+`(p + d)/2^64`, where p is the block count and d ≤ 32. ChainHash-128 is
+the same construction over `GF(2^128)` with a 128-bit result, a 128-byte
+key and the bound `(p + d)/2^128`. Both are single C99/C++11 headers with
+portable C, x86 (PCLMUL, VPCLMULQDQ, AVX-512) and ARM NEON backends that
+all compute the same digest; the bounds and the equivalence of every
+evaluation order are proved in Lean.
 
-Use [`include/chainhash3.h`](include/chainhash3.h) for v3. Its default key
-constructor takes **64 random bytes** and prepares a 448-byte key object.
-The Lean-proved model-A collision guarantee has a **63 / 63 fixed / at-most
-length-adjusted score**. **Lean ✓: paper + model A + evaluation independence**
-for v3, including exact score minima; the checked v1 proofs remain available.
-See [the precise statements](docs/THEOREM_v3.md).
-This is not a cryptographic digest or message authenticator.
+## The guarantee
 
-## What changed, and why
+Pick the key once from an operating-system random source. Then for two
+distinct messages m, m' of at most 8L bytes each, chosen without knowledge
+of the key,
 
-Earlier versions tied their recurrence steps to an internal block size.
-The paper's 256-byte strided function favored ARM; the adjacent-pair 1 KiB
-function improved x86 throughput but changed the digest. v3 uses a fixed
-256-byte level-1 CLNH block with comb pairing `(w_i,w_(i+8))`, followed by
-Horner evaluation in an independent key word y. The **byte length is the
-leading coefficient**. The integer-add twist and quintic circuit are unchanged.
+| Function | Key | Collision bound | Strength score |
+| --- | --- | --- | --- |
+| ChainHash | 64 random bytes | `Pr[H(m) = H(m')] ≤ (p(L) + d(L)) / 2^64` | 63.0 bits |
+| ChainHash-128 | 128 random bytes | `Pr[H(m) = H(m')] ≤ (p(L) + d(L)) / 2^128` | 127 bits |
 
-Each 1 KiB region contains four interleaved logical blocks. Pair factors
-occupy corresponding lanes of two loads 64 bytes apart, avoiding pairing
-shuffles on both ARM and x86. A 256-byte PH key table remains small enough
-for the ARM kernel's registers. Constant-multiplier Horner permits multiple
-independent chains and lazy reduction, removing the old serial recurrence
-bottleneck. The [complete specification](docs/SPEC_v3.md) gives every index,
-presence rule and the exact-count k-lane schedule with lookahead.
+`p(L)` is the block count defined in the specification: the message words
+are combed into blocks of 32 words (64 for ChainHash-128), up to four
+(eight) filled from each 1 KiB (4 KiB) region, so `p` is about `L/32`
+(`L/64`) and at least one. `d(L)` is a short-length term that is 1 for
+one word and never exceeds 32. Examples for ChainHash: 8-byte messages collide with
+probability at most `2/2^64`, 256-byte messages `12/2^64`, 1 MiB messages
+`4128/2^64`; for ChainHash-128 the numerators are 2, 10 and 2080 against
+`2^128`. The strength score is the worst case over all lengths of
+`log2(L / bound)` with L in 8-byte words; it is attained at one word and
+means the bound never exceeds `2L/2^64` (`2L/2^128`).
 
-**Evaluation-choice guarantee:** SIMD width, stride, accumulator count,
-eager versus lazy reduction, streaming chunk sizes and valid parallel splits
-are evaluation choices of the same polynomial, for every key including y=0.
-The comb, pair presence and block order are fixed by the definition.
-Changing these is not an optimization of the same function.
+"Fixed messages, random key" is the universal-hashing guarantee: it holds
+for every pair of messages, but only when the key is random and the
+messages do not depend on it. It is not a cryptographic digest or a MAC,
+and messages chosen after seeing hash values are outside it. The exact
+statements, the definitions of p and d and the proofs are in
+[docs/THEOREM.md](docs/THEOREM.md) and [docs/THEOREM-128.md](docs/THEOREM-128.md).
 
-**Digests changed:** v3 is incompatible with both v1 and v2, including their
-seeded verification values. Persist the algorithm version with stored hashes
-and regenerate them when migrating. Neither the old key bytes nor a reused
-numerical seed promises matching output. [`include/chainhash.h`](include/chainhash.h)
-is unchanged and remains **v1, the paper's function**; its API, vectors,
-[documentation](docs/V1.md) and [theorems](docs/THEOREM.md) remain available.
-Both headers can be included together. v2 is the historical adjacent-pair
-1 KiB comparison, not a new alias for either public header.
+## How to use it
 
-## Versions, measurements and scores
-
-Bulk throughput for 262,144-byte inputs; larger is faster. Scores summarize
-published collision bounds in eight-byte word units, not measured attack work.
-
-| Function | Xeon 8375C, B/TSC | M2 Pro, B/calibrated cycle | Random key bytes | Model-A score, fixed / at-most | Ideal-key score, fixed / at-most | Lean proof |
-| --- | ---: | ---: | ---: | --- | --- | --- |
-| v1: paper, strided 256 B | 15.40 | 22.8 | 80 A / 328 ideal | 62.415 / 61 | 62.415 / 62.415 | ✓ paper + model A |
-| v2: adjacent 1 KiB | 24.86 | 17.45 | 1096 ideal | Not established here | 62.415 / 62.415 | Not established here |
-| **v3: ChainHash-Horner** | **28.31** | **26.26** | **64 A / 312 ideal** | **63 / 63** | **63 / 63** | **✓ paper + model A + evaluation independence** |
-| 128-bit, strided 512 B (previous; archived control, not a public header) | 8.14 | 10.07 | 160 A / 656 ideal | 126.415 / 125 | 126.415 / 126.415 | ✓ ideal + model A, shipped here as `ProvenHashes.ChainHash128.Strided`, the base of the v3 port |
-| **128-bit v3: ChainHash-128 v3** | **14.43** | **10.26** | **128 A / 624 ideal** | **127 / 127 refined; 122.96 coarse envelope** | **127 / 127** | **✓ paper + model A + evaluation independence** |
-
-These are retained measurements from different runs, not a fresh paired
-benchmark. v1 uses the [previous integration's results](docs/V1.md#measured-performance).
-v2 uses best-of-two Xeon SMHasher3 and median-of-three M2 EXT K1 results
-for the same adjacent 1 KiB definition; [comparison provenance](results/v2/README.md)
-keeps those distinct from the strided 1 KiB control. v3 uses best-of-two
-Xeon and median-of-three M2 SMHasher3 runs. The contemporary v1 controls
-in the v3 run were 14.80 and 22.44, respectively.
-
-The two 128-bit rows are contemporaneous controls from one SMHasher3 run
-per host (Xeon best of two passes, M2 median of three gated passes); their
-scores are against `2^128`. The ChainHash-128 v3 row is the forced schoolbook
-registration, which is the shipped dispatch; the public entry point measured
-14.45 on Xeon (one of two passes) and 10.13 on M2. The previous strided
-ChainHash-128 was never a public header here; its measured source is archived
-as a [timing control](results/v3-128/README.md#directory-map). Its model-A
-score of 125 is the Lean-proved at-most-length certificate of that design.
-For ChainHash-128 v3, the paper certificate `(p+1)/2^128` scores 127 bits;
-the coarse model-A envelope `(p+W)/2^128` alone would score
-`128-log2(W+1) = 122.955606` bits for the 512-byte block, and the
-short-length refinement `E_A(L) = p_B(L)+d_B(L)` scores 127. Do not
-silently score the coarse envelope as 127; see
-[SPEC_v3_128.md](docs/SPEC_v3_128.md#collision-certificates-and-chart-scores).
-
-The separate v3 gate harness measured **27.717 B/TSC** on Xeon, exceeding
-24.86; the M2 result **26.26** exceeds 22.8. Xeon TSC ticks are fixed-rate
-reference ticks, while M2 cycles are calibrated clock estimates. Neither is
-a direct measure of current core cycles, and cross-host ratios are not
-meaningful. Key generation is excluded. Read the [measurement report](results/v3/REPORT.md),
-[machine-readable data](results/v3/speeds_chainhash_v3.json) and
-[raw-evidence index](results/v3/README.md) for selection rules and provenance.
-
-**Short inputs regress.** SMHasher3's 1–31-byte averages were 155.14 TSC/hash
-for v3 versus 103.00 for v1 on Xeon, and 87.49 versus 72.57 calibrated
-cycles/hash on M2. Safe tails, vector setup and polynomial combination are
-not amortized on short messages. The design memo's short-input parity
-prediction did not hold; bulk speed is not a short-key speed claim.
-
-## Use v3
-
-Obtain 64 independent random bytes from the operating system and initialize
-a key once. The constructor does not generate randomness. Here is a complete
-macOS example; the [v1 guide](docs/V1.md#use) also gives a Linux `getrandom`
-helper, which can fill the same 64-byte buffer.
+Copy `include/chainhash.h` (and `include/chainhash128.h` for the 128-bit
+function); there is nothing to link and no allocation. Build a key from 64
+random bytes once, then hash:
 
 ```c
-#include "chainhash3.h"
+#include "chainhash.h"
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(void) {
-    uint8_t random_bytes[CHAINHASH_V3_RANDOM_BYTES];
-    arc4random_buf(random_bytes, sizeof random_bytes);
-    chainhash_v3_key key = chainhash_v3_key_from_bytes(random_bytes);
-    uint64_t hash = chainhash_v3(&key, "hello", 5);
-    printf("%016" PRIx64 "\n", hash);
+    uint8_t random_bytes[CHAINHASH_KEY_BYTES];    /* 64 */
+    arc4random_buf(random_bytes, sizeof random_bytes); /* or getrandom(2), BCryptGenRandom, ... */
+    chainhash_key key = chainhash_key_from_bytes(random_bytes);
+    uint64_t h = chainhash(&key, "hello", 5);
+    printf("%016" PRIx64 "\n", h);
     return 0;
 }
 ```
 
 ```sh
-cc -O3 -std=c99 -Iinclude example.c -o example
-# Apple ARM acceleration: add -march=native+crypto
-# Other AArch64 acceleration: add -march=armv8-a+crypto
+cc -O3 -std=c99 -Iinclude example.c -o example       # x86: run-time dispatch, no ISA flags needed
+cc -O3 -std=c99 -march=native+crypto ...             # Apple silicon
+cc -O3 -std=c99 -march=armv8-a+crypto ...            # other AArch64
 ```
 
-GCC/Clang x86 builds need no global ISA flags: runtime dispatch checks both
-CPU instructions and OS register-state support. ARM crypto support is a
-build requirement for NEON. Without it, use portable C. Define
-`CHAINHASH_V3_PORTABLE` to omit all SIMD code; `chainhash_v3_portable` is
-always callable. Native compile flags constrain where the executable runs.
+The 128-bit function is the same with `chainhash128_key_from_bytes` (128
+bytes, `CHAINHASH128_KEY_BYTES`), `chainhash128(&key, data, len)`, which
+returns a `ch128_word` with `lo` and `hi` limbs, and
+`chainhash128_store(out16, h)` for the 16 canonical little-endian bytes.
+Its streaming and explicit-backend calls take one extra trailing argument,
+the product method (1 schoolbook, 0 Karatsuba; both give the same digest):
+`chainhash128_init(&s, &key, stride, lazy, backend, school)` and
+`chainhash128_with_backend(&key, data, len, backend, school)`. The
+per-ISA entry points `chainhash_xmm/ymm/zmm/neon` exist only for the
+64-bit function.
 
-Data can be unaligned; NULL is valid for an empty message. Inputs and keys
-are canonical little endian; serialize the result little endian for portable
-digest bytes. `chainhash_v3_key_from_ideal_bytes` accepts 312 random bytes
-for the stronger ideal bound. `chainhash_v3_key_from_seed` is a benchmark
-convenience and **does not supply the model-A randomness guarantee**.
+- **Keys.** `chainhash_key_from_bytes` takes the 64 random bytes; the
+  key object (448 bytes; 896 for ChainHash-128) caches the expanded block
+  keys and can be shared read-only between threads. `chainhash_key_from_seed`
+  expands a 64-bit seed for benchmarks and tests; it does not supply the
+  randomness the bound assumes. `chainhash_key_from_words` takes the 39
+  field words the function is defined on.
+- **Streaming.** `chainhash_init(&s, &key, stride, lazy, backend)`,
+  `chainhash_update(&s, data, n)` any number of times (empty updates and
+  any chunking allowed), `chainhash_final(&s)`. The result equals the
+  one-shot hash of the concatenation. Typical arguments are stride 4,
+  lazy 1 and `chainhash_backend()`.
+- **Parallel evaluation.** `chainhash_partial` returns a stream's
+  polynomial value without the length term; two region-aligned partitions
+  (multiples of 1 KiB, 4 KiB for ChainHash-128) are combined with
+  `chainhash_join`, see [docs/SPEC.md](docs/SPEC.md#streaming-partial-values-and-parallel-joins).
+- **Backends.** `chainhash(&key, ...)` dispatches at run time on x86
+  (CPUID and XGETBV checks for AVX+PCLMUL, AVX2+VPCLMULQDQ and AVX-512)
+  and at compile time on ARM. `chainhash_backend()` reports the choice
+  (0 portable, 1 XMM, 2 YMM, 3 ZMM, 4 NEON), `chainhash_has_backend(b)`
+  says whether an explicit `chainhash_with_backend(&key, data, len, b)`
+  or `chainhash_xmm/ymm/zmm/neon` call is allowed, and `chainhash_portable`
+  is always available. Define `CHAINHASH_PORTABLE` (`CHAINHASH128_PORTABLE`)
+  to compile without any hardware code. Every backend, stride, lazy or
+  eager chain, chunking and split gives the same digest.
+- **Inputs.** Data may be unaligned; `NULL` is valid for an empty message;
+  lengths up to `2^64 - 1` bytes. Words, keys and digests are little
+  endian; big-endian targets use the portable path. C99 and C++11, GCC,
+  Clang and Apple Clang; `chainhash_selftest()` returns nonzero when the
+  header computes its frozen vectors on the host.
 
-Streaming produces the same digest as concatenating the updates:
+## How it works
 
-```c
-chainhash_v3_stream stream;
-chainhash_v3_init(&stream, &key, 4, 1, chainhash_v3_backend());
-chainhash_v3_update(&stream, "he", 2);
-chainhash_v3_update(&stream, NULL, 0);
-chainhash_v3_update(&stream, "llo", 3);
-uint64_t hash = chainhash_v3_final(&stream);
+1. **Blocks: carry-less NH.** The message is read as 64-bit words. Each
+   pair of words `(w_i, w_(i+8))` is XORed with two key words and
+   multiplied carry-less; the 128-bit products of a block's sixteen pairs
+   are XORed together and reduced once in `GF(2^64)`. One multiply per
+   two words is the whole per-byte cost, and a changed word makes the
+   block value a nonzero polynomial in the key seed with few roots.
+2. **The comb.** A 1 KiB region holds four interleaved 256-byte blocks:
+   partners sit in the same lane of two loads 64 bytes apart, so no
+   backend ever shuffles data to form a pair, and on AVX-512 each lane of
+   a register is one block. The layout is part of the definition.
+3. **Horner in an independent key.** The block values are combined as a
+   polynomial in a key word y with the byte length as leading coefficient,
+   `V = ell·y^p + b_1·y^(p-1) + … + b_p`. Because the multiplier is a
+   constant, any number of chains, lazy unreduced state, streaming chunks
+   and parallel splits are just evaluation orders of the same polynomial,
+   and the length term separates messages of different lengths without
+   any key.
+4. **Twist and finalizer.** V is added to a key word as an integer, then a
+   quintic circuit with five key words is evaluated in the field. The
+   integer addition breaks the linear structure between the stages, and
+   the five parameters make the finalizer collide with probability exactly
+   `2^-64` and behave five-wise independently on distinct inputs.
+
+[docs/DESIGN.md](docs/DESIGN.md) explains why each choice was made,
+[docs/SPEC.md](docs/SPEC.md) and [docs/SPEC-128.md](docs/SPEC-128.md)
+give every index map and the API contract.
+
+## Why it is fast
+
+The bulk loop issues one 64×64 carry-less multiply per 16 bytes for the
+blocks plus two per 256-byte block for the chain, XORs everything else,
+and never reduces, shuffles or crosses lanes; the four blocks of a region
+run as four independent chains, so the multiplier latency is hidden and
+the loop is throughput-bound. On AVX-512 that is 18 wide multiplies per
+KiB with zero spills; on NEON the state, keys and accumulators stay in
+registers with no round trips through general registers.
+
+| Bulk throughput, 256 KiB inputs | Xeon 8375C (B/TSC tick) | Apple M2 Pro (B/calibrated cycle) |
+| --- | ---: | ---: |
+| **ChainHash** | **28.31** | **26.26** |
+| XXH3-64 | 19.90 | 13.04 |
+| UMASH-64 | 11.33 | not run |
+| **ChainHash-128** | **14.43** | **10.26** |
+| XXH3-128 | 19.82 | 12.53 |
+| UMASH-128 | 6.02 | 7.52 |
+
+SMHasher3 Speed runs, comparison hashes from the same binaries; the Xeon
+figure is the better of two passes and the M2 figure the median of three
+gated passes ([results/](results/README.md)). Xeon ticks are invariant-TSC
+reference ticks and M2 cycles are SMHasher3's calibrated estimates, so
+the two columns are not comparable with each other. Short inputs are not
+where ChainHash shines: below a few hundred bytes the fixed cost of the
+tail, the lane fold and the finalizer dominates (about 155 Xeon ticks per
+hash for 1–31-byte inputs, against 29 for XXH3-64).
+
+## Verification
+
+- **Frozen vectors.** Seven (ChainHash) and nine (ChainHash-128) archived
+  digests, regenerated by independent evaluators that share no code with
+  the headers, and checked through every backend, stride and streaming
+  mode (`make test`, `make test-128`).
+- **Property tests.** 24,120 messages (all lengths 0..4096, boundaries,
+  messages up to 1 MiB, 64 alignments) compared with a bit-serial
+  evaluator across every backend × stride × eager/lazy × chunking ×
+  two-thread split, checksum `635920a0020c7922`; 20,000 inputs × up to 64
+  configurations for ChainHash-128, checksum `11b7726e88284e6d`. Guard
+  pages catch tail over-reads; ASan/UBSan runs (`make sanitize`,
+  `make sanitize-128`) on both hosts.
+- **SMHasher3.** Registered as `chainhash` (verification `0x66672BD6`) and
+  `chainhash-128` (`0x1FCA728C`) ([smhasher3/](smhasher3/README.md)).
+  ChainHash passes the complete suite (`--test=All`, 200 tests) on both
+  x86 and ARM with identical diagnostics
+  ([results/64/suite/](results/64/suite/README.md)); Sanity, zeroes and
+  thread safety pass for both functions on both hosts.
+- **Lean.** 89 theorems for ChainHash and 116 for ChainHash-128 in
+  [lean/](lean/README.md): the collision bounds (`collision_bound`), the
+  equality of every stride and of the lazy state with the definition
+  (`evaluation_independence`) and the exact scores (`score_minimum`, 63
+  and 127), under the standard axioms only. 464 and 625 vectors compare
+  the C headers with executable Lean references across key forms,
+  backends, strides and schedules.
+
+## Repository layout
+
+```text
+include/chainhash.h       ChainHash, single header
+include/chainhash128.h    ChainHash-128, single header
+docs/                     SPEC.md, SPEC-128.md (definitions), THEOREM.md, THEOREM-128.md (bounds), DESIGN.md (why)
+test/, test/128/          independent evaluators, frozen vectors, guards, property and schedule tests
+lean/                     Lean 4 proofs, verification records and C/Lean vectors
+smhasher3/                SMHasher3 registration
+results/                  measurements, object-code audits and validation logs from both hosts
 ```
 
-The key must outlive the stream. Finalization consumes it; reinitialize
-before reuse. Total length must stay below `2^64`. Parallel partial values
-can be joined at 1 KiB region boundaries; empty partitions count zero
-blocks. See [the API and partition convention](docs/SPEC_v3.md#streaming-partial-values-and-parallel-joins).
-
-## ChainHash-128 v3
-
-[`include/chainhash128_v3.h`](include/chainhash128_v3.h) is ChainHash-Horner
-v3 over the GCM field `GF(2)[X]/(X^128+X^7+X^2+X+1)`: 512-byte logical CLNH
-blocks of 128-bit words with the comb pairing `(w_i, w_(i+8))`, schoolbook
-128×128 products (Karatsuba on YMM and in the portable path), Horner in an
-independent key word y with the byte length as leading coefficient, k lazy
-chains, and the 128-bit integer twist plus quintic. Every backend, stride,
-reduction schedule, product method, chunking and region-aligned split
-computes the same digest; the block size is part of the definition. The
-default key constructor takes **128 random bytes** (model A); the ideal
-constructor takes 624. The result is a `ch128v3_word` (two `uint64_t`
-limbs); `chainhash128_v3_store` writes the canonical 16 little-endian bytes.
-
-```c
-#include "chainhash128_v3.h"
-uint8_t random_bytes[CHAINHASH128_V3_RANDOM_BYTES];
-arc4random_buf(random_bytes, sizeof random_bytes);
-chainhash128_v3_key key = chainhash128_v3_key_from_bytes(random_bytes);
-ch128v3_word h = chainhash128_v3(&key, "hello", 5);
-uint8_t digest[16];
-chainhash128_v3_store(digest, h);
-```
-
-Build flags are the same as for the 64-bit header: no global ISA flags on
-x86 (runtime dispatch to XMM/YMM/ZMM), `-march=native+crypto` or
-`-march=armv8-a+crypto` for NEON, `CHAINHASH128_V3_PORTABLE` for a
-hardware-free build. Streaming (`chainhash128_v3_init/update/final`, stride
-1..8, lazy flag, backend, schoolbook flag), partial values and
-`chainhash128_v3_join` at 4 KiB region boundaries follow
-[the specification](docs/SPEC_v3_128.md#streaming-and-two-thread-concatenation).
-
-For distinct messages chosen independently of the same uniform random key,
-the collision probability is at most `(p+1)/2^128` in the paper model and,
-in model A, at most `(p+32)/2^128` for any pair and `E_A(L)/2^128` for
-messages of at most 8L bytes, where p is the larger block count
-(`p = 8` through 4 KiB, 2048 at 1 MiB). [THEOREM_v3_128.md](docs/THEOREM_v3_128.md)
-states the certificates and their scores. **Lean ✓: paper + model A +
-evaluation independence** for ChainHash-128 v3: 116 theorems in
-`ProvenHashes.ChainHash.V3_128` prove both byte collision envelopes over the
-GCM field (with its irreducibility certificate), the equality of serial
-Horner, every positive-stride schedule and the lazy 256-bit state, and the
-exact score minima 127 (paper), 127 (refined model A) and `128 - log2 33`
-(coarse envelope alone). See the [integration record](lean/V3_128_INTEGRATION.md).
-
-**Digests differ** from the earlier strided ChainHash-128 (SMHasher3
-verification `0x742DE5A5`); ChainHash-128 v3 verifies as `0x1FCA728C`.
-Measured bulk throughput is 14.43 B/TSC on the Xeon and 10.26 B/calibrated
-cycle on the M2 Pro, 1.77× and 1.02× the strided function and 73% and 82%
-of XXH3-128; short inputs cost 168–176 cycles per hash. The
-[measurement report](results/v3-128/REPORT.md), [aggregation](results/v3-128/speeds_chainhash128_v3.json)
-and [evidence index](results/v3-128/README.md) give provenance and selection rules.
-
-## Guarantee
-
-For distinct messages chosen independently of the same uniform random key,
-the full-output collision probability is at most `(p(L)+1)/2^64` in the
-ideal model and `(d(L)+p(L))/2^64` in model A, clipped at one, for messages
-of at most 8L bytes. The [theorem](docs/THEOREM_v3.md) defines p and d and
-gives the same certificates for equal fixed lengths. At 256 bytes the
-model-A bound is `12/2^64`; at 1 MiB it is `4128/2^64`.
-
-The score 63 summarizes the weakest length-adjusted bound, attained by
-the certificate at L=1. It is not a constant collision probability or
-63 bits of cryptographic security. Truncated results, bucket mappings and
-messages adapted to earlier hash outputs need separate analysis. Conditional
-five-wise finalizer independence requires distinct pre-final values.
-
-## Build and test
+## Reproduction
 
 ```sh
-make all       # Build v1 tools and v3 C99/C++11 smoke tests.
-make test      # Both versions; v3 native and forced-portable property matrices.
-make sanitize  # ASan/UBSan, including v3 guards, alignment and property checks.
-make test-v3   # v3 only; 20,000 random cases plus exhaustive/boundary/long cases.
-make test-v3-128  # ChainHash-128 v3 only; 20,000-input oracle matrix, vectors, guards.
-make speed     # Existing v1 benchmark; v3 timings are archived under results/v3.
+make test test-128                 # correctness, native and forced-portable builds
+make sanitize sanitize-128         # ASan/UBSan (on macOS: CC=/opt/homebrew/opt/llvm/bin/clang)
+make vectors                       # regenerate the vectors with the independent evaluators and compare
+make speed                         # bulk throughput of the dispatched entry points on this host
+cd lean && lake exe cache get && lake build && ./verify.sh
 ```
 
-On macOS 27 with Apple Clang 17, the passing sanitizer command is
-`make sanitize CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++`.
-The [integration record](results/v3/INTEGRATION.md#toolchain-failures-retained)
-documents the Apple sanitizer startup failure and the successful Clang 22 run.
+Timing follows [results/64/README.md](results/64/README.md) and
+[results/128/README.md](results/128/README.md); the SMHasher3
+registration is described in [smhasher3/README.md](smhasher3/README.md).
 
-The v3 tests compare each available backend with a separately implemented
-bit-serial index evaluator; check frozen vectors, all lengths 0..4096,
-64 input alignments, zero/one/ideal/model-A keys, eager/lazy schedules,
-streaming and two-thread joins. Seven archived digests are checked both by
-the independent generator and the public APIs. Guard pages detect tail
-overreads. The original recorded corpus has checksum `635920a0020c7922`
-on both hosts. See [test instructions](test/v3/README.md) and the
-[integration record](results/v3/INTEGRATION.md) for fresh versus retained checks.
+## License and citation
 
-The ChainHash-128 v3 tests ([test/v3-128](test/v3-128/README.md)) compare
-every available backend, stride 1/2/4/8, eager/lazy state, schoolbook and
-Karatsuba products, chunked streams and two-thread joins with a separate
-bit-serial oracle over 20,000 inputs, including every length 0..8192; check
-the nine archived vectors, 10,000 raw products, the exact-count schedule,
-edge keys, the short kernel and guarded tails; and build the header in C99,
-C++11, portable and 256-byte-family modes. The integration run reproduced
-the lane's corpus checksum `11b7726e88284e6d` on this Mac (NEON, 32
-configurations) and on the Xeon (XMM/YMM/ZMM, 64 configurations); see
-[results/v3-128/INTEGRATION.md](results/v3-128/INTEGRATION.md).
+MIT license, Copyright 2026 Thomas Dybdahl Ahle. The long-input loop
+structure follows Orson Peters's [PolymurHash](https://github.com/orlp/polymur-hash).
 
-The historical v1 200/200 SMHasher3 result is **not** a v3 full-suite result.
-The retained v3 evidence covers Xeon Sanity/Zeroes and M2 Sanity, with
-verification LE `66672BD6`, BE `FA8A8D3B` (the BE adapter swaps output
-serialization, not input-word interpretation). The
-[Lean audit](lean/VERIFICATION.txt) checks the 89 V3 and 116 V3_128
-theorems within 1096 exported theorems/lemmas. Separate
-[464-vector](lean/V3_VECTORS.txt) and [625-vector](lean/V3_128_VECTORS.txt)
-C/Lean comparisons check implementation agreement for the two v3 headers;
-they are not formal C refinement proofs.
-
-## Design record, attribution and license
-
-We build in public: the [design memo](docs/DESIGN_MEMO_v3.md) preserves
-rejected alternatives, predictions, corrections and proof obligations;
-the [measurement report](results/v3/REPORT.md) records what was actually
-measured, including the short-input regression. The normative definition is
-[SPEC_v3.md](docs/SPEC_v3.md); for the 128-bit function it is
-[SPEC_v3_128.md](docs/SPEC_v3_128.md) with its own
-[report](results/v3-128/REPORT.md), including the schoolbook-versus-Karatsuba
-selection and the superseded NEON pilots. See [CHANGELOG.md](CHANGELOG.md)
-for compatibility.
-
-The long-input loop structure is inspired by **Orson Peters's
-[PolymurHash](https://github.com/orlp/polymur-hash#how-it-works-and-why-its-fast)**:
-keyed pair products combined with a running polynomial state. v3's field,
-comb and length-leading Horner construction are specified in this repository.
-
-The original ChainHash function is from Thomas D. Ahle and Jakob B. T.
-Knudsen, *Fast Evaluation of Polynomials with Rational Preprocessing*,
-2026 manuscript, appendix “Collision probability of ChainHash.”
-[Paper source](https://github.com/thomasahle/fast-polynomials),
-[local appendix](docs/appendix_chainhash.tex), [v1 citation](docs/V1.md#citation-and-license).
-
-[MIT license](LICENSE), Copyright 2026 Thomas Dybdahl Ahle.
+```bibtex
+@misc{chainhash,
+  author       = {Thomas Dybdahl Ahle},
+  title        = {ChainHash: a keyed hash for long inputs with a proven collision bound},
+  year         = {2026},
+  howpublished = {\url{https://github.com/thomasahle/chainhash}}
+}
+```

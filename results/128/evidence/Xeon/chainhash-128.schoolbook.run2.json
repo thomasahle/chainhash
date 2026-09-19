@@ -1,0 +1,31 @@
+{
+  "name": "chainhash-128.schoolbook",
+  "run": 2,
+  "before": {
+    "utc": "2026-09-19T08:12:03.567222+00:00",
+    "load": [
+      26.58,
+      23.72,
+      16.68
+    ],
+    "smhasher_pids": [
+      "3199590",
+      "3422025",
+      "3429327"
+    ],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:13:14.824660+00:00",
+    "load": [
+      29.03,
+      24.94,
+      17.62
+    ]
+  },
+  "elapsed_seconds": 71.1999339920003,
+  "returncode": 0,
+  "raw_file": "chainhash-128.schoolbook.run2.txt",
+  "raw_sha256": "2b1b70da941d30367a53ab0e0b2a9fb8c7dc86b4d8d737c8febb84b1b2c1a2c6",
+  "binary_sha256": "d8df2fbcf18e4e56ec2c6a96242ef47b10935cd20d05f0b249e6fdecae92846a"
+}

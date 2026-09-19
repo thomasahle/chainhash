@@ -1,1 +1,0 @@
-PASS: 10000 field products; six edge seeds; 744 hash comparisons; backend=pmull

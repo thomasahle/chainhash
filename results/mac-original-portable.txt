@@ -1,2 +1,0 @@
-SMHasher3 source SHA256: 0bb191c1f4d36534e7ed87cda4374d3c1638e07caf0724b63af9d77ce2242f7d
-PASS 6278 byte-for-byte cases against unmodified SMHasher3 chainhash_256; all 92 reference vectors; SMHasher3 backend=portable

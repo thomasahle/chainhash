@@ -1,0 +1,13 @@
+{
+  "provenance/chainhash.h": "ca1b0314866eb7c7d6b0b24b09ef436150f80d888487521fb3e7ee9b9a7f57b6",
+  "provenance/chainhash-tested.h": "49cbd7c7acdec48d7fe6f82027c0f315a3bc8258ca86d976d694b69090b018e9",
+  "work/smhasher3/hashes/chainhash.cpp": "673e3da0ddc4236279d57b5f4486425a9e20bea7569fd3f370251d03bf5b23ce",
+  "work/smhasher3/main.cpp": "d16d16df4ddf314607f51c536c0847e4100c9a5b10b4e7834b593ff90cc3f672",
+  "work/smhasher3/util/Random.cpp": "6e1147618c09ea7bc53dd407ad6f8c9db3632d035a797b2452fc77d79c3328c6",
+  "work/rurban/ChainHash.cpp": "b003e325a701537c6cf76790f810df298966effa1714323dfd78298d434b6d06",
+  "work/rurban/ChainHash.h": "afe7e0224430cf3e113fe5ad7f7e4ff23ebf924a1a9a041ed3f9e73d6a67f060",
+  "work/rurban/main.cpp": "aea7ee9355f052f77120c4c1ee13083342660d8e50b80b5a22375e2869fd86ad",
+  "work/smhasher3/tests/SeedDifferentialTest.cpp": "9dfa43392357148000714e44e15a233e4fdeea3c4a753e3d26c6ec0de1aac340",
+  "work/smhasher3/tests/SeedDifferentialTest.h": "c4eebcad22301608578fcd801ec2447152e2e4c651de67cdc1fd36743381f09d",
+  "provenance/scratch-suite.patch": "7de0c9b550273e0c97f9dcea00369023ff17967b55246e2178123a03de0d2e93"
+}

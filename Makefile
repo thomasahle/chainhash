@@ -3,7 +3,7 @@ CXX = c++
 CPPFLAGS += -Iinclude
 CFLAGS ?= -O3 -std=c99 -Wall -Wextra -Wpedantic
 CXXFLAGS ?= -O3 -std=c++11 -Wall -Wextra
-# Explicit overrides: make ARCH_FLAGS=-mpclmul, or ARCH_FLAGS= for portable.
+# Explicit overrides: make ARCH_FLAGS=-mpclmul, or ARCH_FLAGS= for a build with no ISA flags.
 ARCH := $(shell uname -m)
 ifeq ($(ARCH),arm64)
 ARCH_FLAGS ?= -march=native+crypto
@@ -12,134 +12,99 @@ ARCH_FLAGS ?= -march=armv8-a+crypto
 else ifeq ($(ARCH),x86_64)
 ARCH_FLAGS ?= -mpclmul
 endif
-.PHONY: all test speed sanitize clean vectors
-all: build/selftest build/c99 build/speed build/v3-compile build/v3-cpp build/v3-128-compile build/v3-128-cpp
+# The pinned NEON kernels in chainhash128.h are single inline-assembly strings
+# longer than the ISO C99 minimum limit.
+CFLAGS_128 = $(CFLAGS) -Wno-overlength-strings
+SANITIZE = -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer
+RANDOM_CASES ?= 20000
+RANDOM_CASES_128 ?= 20000
+
+TESTS = compile frozen schedule vectors guard key_alignment property
+TESTS_128 = compile frozen schedule arithmetic vectors edges guard short property
+BINS = $(addprefix build/64-,$(TESTS))
+BINS_128 = $(addprefix build/128-,$(TESTS_128))
+
+.PHONY: all test test-128 sanitize sanitize-128 vectors speed clean
+all: build/64-compile build/64-cpp build/128-compile build/128-cpp build/speed
 build:
 	mkdir -p build
-build/selftest: test/selftest.cpp test/vectors.h test/vendor/chainhash_ref.h test/fixtures.h include/chainhash.h | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) $< -o $@
-build/c99: test/c99.c include/chainhash.h | build
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
-build/portable: test/selftest.cpp test/vectors.h test/vendor/chainhash_ref.h test/fixtures.h include/chainhash.h | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
-build/c99-portable: test/c99.c include/chainhash.h | build
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
-build/speed: test/speed.c test/fixtures.h include/chainhash.h | build
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
-test: build/selftest build/portable build/c99 build/c99-portable build/key-schedule build/key-schedule-portable build/key-schedule-c99 build/key-schedule-c99-portable
-	./build/selftest
-	./build/portable
-	./build/c99
-	./build/c99-portable
-	./build/key-schedule vectors > build/key-schedule-vectors.txt
-	python3 test/check_key_vectors.py
-	./build/key-schedule-portable
-	./build/key-schedule-c99
-	./build/key-schedule-c99-portable
+
+# ChainHash (64-bit): each test is built natively and with CHAINHASH_PORTABLE.
+build/64-%: test/%.c include/chainhash.h test/property.c | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) -pthread $< -o $@
+build/64-%-portable: test/%.c include/chainhash.h test/property.c | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_PORTABLE -pthread $< -o $@
+build/64-cpp: test/compile.c include/chainhash.h include/chainhash128.h | build
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
+build/64-compile build/64-compile-portable: include/chainhash128.h
+test: $(BINS) $(addsuffix -portable,$(BINS)) build/64-cpp
+	./build/64-compile
+	./build/64-compile-portable
+	./build/64-cpp
+	./build/64-frozen
+	./build/64-frozen-portable
+	./build/64-schedule
+	./build/64-schedule-portable
+	python3 test/check_vectors.py
+	./build/64-guard
+	./build/64-guard-portable
+	./build/64-key_alignment
+	./build/64-key_alignment-portable
+	./build/64-property $(RANDOM_CASES) 123456789
+	./build/64-property-portable $(RANDOM_CASES) 123456789
+sanitize: | build
+	$(CC) $(CPPFLAGS) -std=c99 $(SANITIZE) $(ARCH_FLAGS) test/guard.c -o build/64-guard-sanitize
+	./build/64-guard-sanitize
+	$(CC) $(CPPFLAGS) -std=c99 $(SANITIZE) $(ARCH_FLAGS) test/key_alignment.c -o build/64-key_alignment-sanitize
+	./build/64-key_alignment-sanitize
+	$(CC) $(CPPFLAGS) -std=c99 $(SANITIZE) $(ARCH_FLAGS) -pthread test/property.c -o build/64-property-sanitize
+	./build/64-property-sanitize 0 123456789
+
+# ChainHash-128: each test is built natively and with CHAINHASH128_PORTABLE.
+build/128-%: test/128/%.c include/chainhash128.h test/128/oracle.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_128) $(ARCH_FLAGS) -pthread $< -o $@
+build/128-%-portable: test/128/%.c include/chainhash128.h test/128/oracle.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_128) -DCHAINHASH128_PORTABLE -pthread $< -o $@
+build/128-cpp: test/128/compile.c include/chainhash128.h include/chainhash.h | build
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
+build/128-compile build/128-compile-portable: include/chainhash.h
+test-128: $(BINS_128) $(addsuffix -portable,$(BINS_128)) build/128-cpp
+	./build/128-compile
+	./build/128-compile-portable
+	./build/128-cpp
+	./build/128-frozen
+	./build/128-frozen-portable
+	./build/128-schedule
+	./build/128-schedule-portable
+	./build/128-arithmetic
+	./build/128-arithmetic-portable
+	python3 test/128/check_vectors.py
+	python3 test/128/bounds.py
+	./build/128-edges
+	./build/128-edges-portable
+	./build/128-guard
+	./build/128-guard-portable
+	./build/128-short
+	./build/128-short-portable
+	./build/128-property $(RANDOM_CASES_128)
+	./build/128-property-portable $(RANDOM_CASES_128)
+sanitize-128: | build
+	$(CC) $(CPPFLAGS) -std=c99 $(SANITIZE) $(ARCH_FLAGS) test/128/guard.c -o build/128-guard-sanitize
+	./build/128-guard-sanitize
+	$(CC) $(CPPFLAGS) -std=c99 $(SANITIZE) $(ARCH_FLAGS) test/128/short.c -o build/128-short-sanitize
+	./build/128-short-sanitize
+	$(CC) $(CPPFLAGS) -std=c99 $(SANITIZE) $(ARCH_FLAGS) -pthread test/128/property.c -o build/128-property-sanitize
+	./build/128-property-sanitize 1000
+
+# Regenerate the frozen vectors with the independent evaluators and compare them
+# with the archives. The archives are never overwritten.
+vectors: build/64-vectors build/64-vectors-portable build/128-vectors build/128-vectors-portable
+	python3 test/check_vectors.py
+	python3 test/128/check_vectors.py
+
+build/speed: test/speed.c include/chainhash.h include/chainhash128.h | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_128) $(ARCH_FLAGS) $< -o $@
 speed: build/speed
 	./build/speed
-sanitize: | build
-	$(CXX) $(CPPFLAGS) -std=c++11 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
-	./build/sanitize
-	$(CXX) $(CPPFLAGS) -std=c++11 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/key_schedule.cpp -o build/key-schedule-sanitize
-	./build/key-schedule-sanitize
-vectors: | build
-	$(CXX) -O2 -std=c++11 test/generate_vectors.cpp -o build/generate_vectors
-	./build/generate_vectors > test/vectors.h
 clean:
 	rm -rf build
-
-build/key-schedule: test/key_schedule.cpp test/fixtures.h include/chainhash.h | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) $< -o $@
-build/key-schedule-portable: test/key_schedule.cpp test/fixtures.h include/chainhash.h | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
-build/key-schedule-c99: test/key_schedule_c99.c include/chainhash.h | build
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) $< -o $@
-build/key-schedule-c99-portable: test/key_schedule_c99.c include/chainhash.h | build
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_FORCE_PORTABLE $< -o $@
-
-# v3 is a separate digest family; retain all v1 targets above.
-V3_TESTS = property guard key_alignment compile vectors frozen schedule
-V3_BINS = $(addprefix build/v3-,$(V3_TESTS))
-V3_PORTABLE_BINS = $(addsuffix -portable,$(V3_BINS))
-V3_RANDOM_CASES ?= 20000
-.PHONY: test-v3 sanitize-v3
-test: test-v3
-build/v3-%: test/v3/%.c include/chainhash3.h test/v3/property.c | build
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(ARCH_FLAGS) -pthread $< -o $@
-build/v3-%-portable: test/v3/%.c include/chainhash3.h test/v3/property.c | build
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DCHAINHASH_V3_PORTABLE -pthread $< -o $@
-build/v3-cpp: test/v3/compile.c include/chainhash3.h include/chainhash.h | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
-build/v3-compile build/v3-compile-portable: include/chainhash.h
-test-v3: $(V3_BINS) $(V3_PORTABLE_BINS) build/v3-cpp
-	./build/v3-compile
-	./build/v3-compile-portable
-	./build/v3-cpp
-	./build/v3-frozen
-	./build/v3-frozen-portable
-	./build/v3-schedule
-	./build/v3-schedule-portable
-	python3 test/v3/check_vectors.py
-	./build/v3-guard
-	./build/v3-guard-portable
-	./build/v3-key_alignment
-	./build/v3-key_alignment-portable
-	./build/v3-property $(V3_RANDOM_CASES) 123456789
-	./build/v3-property-portable $(V3_RANDOM_CASES) 123456789
-sanitize: sanitize-v3
-sanitize-v3: | build
-	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/v3/guard.c -o build/v3-guard-sanitize
-	./build/v3-guard-sanitize
-	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/v3/key_alignment.c -o build/v3-key-alignment-sanitize
-	./build/v3-key-alignment-sanitize
-	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer -pthread test/v3/property.c -o build/v3-property-sanitize
-	./build/v3-property-sanitize 0 123456789
-
-# ChainHash-128 v3 is a separate 128-bit digest family; retain all targets above.
-V3_128_TESTS = property schedule guard arithmetic edges short vectors frozen compile
-V3_128_BINS = $(addprefix build/v3-128-,$(V3_128_TESTS))
-V3_128_PORTABLE_BINS = $(addsuffix -portable,$(V3_128_BINS))
-V3_128_RANDOM_CASES ?= 20000
-# The pinned NEON kernels are single inline-assembly strings longer than the ISO C99 minimum limit.
-V3_128_CFLAGS = $(CFLAGS) -Wno-overlength-strings
-.PHONY: test-v3-128 sanitize-v3-128
-test: test-v3-128
-build/v3-128-%: test/v3-128/%.c include/chainhash128_v3.h test/v3-128/oracle.h | build
-	$(CC) $(CPPFLAGS) $(V3_128_CFLAGS) $(ARCH_FLAGS) -pthread $< -o $@
-build/v3-128-%-portable: test/v3-128/%.c include/chainhash128_v3.h test/v3-128/oracle.h | build
-	$(CC) $(CPPFLAGS) $(V3_128_CFLAGS) -DCHAINHASH128_V3_PORTABLE -pthread $< -o $@
-build/v3-128-cpp: test/v3-128/compile.c include/chainhash128_v3.h include/chainhash3.h include/chainhash.h | build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
-build/v3-128-compile-256: test/v3-128/compile.c include/chainhash128_v3.h include/chainhash3.h include/chainhash.h | build
-	$(CC) $(CPPFLAGS) $(V3_128_CFLAGS) $(ARCH_FLAGS) -DCHAINHASH128_V3_BLOCK_BYTES=256 $< -o $@
-build/v3-128-compile build/v3-128-compile-portable: include/chainhash3.h include/chainhash.h
-test-v3-128: $(V3_128_BINS) $(V3_128_PORTABLE_BINS) build/v3-128-cpp build/v3-128-compile-256
-	./build/v3-128-compile
-	./build/v3-128-compile-portable
-	./build/v3-128-cpp
-	./build/v3-128-compile-256
-	./build/v3-128-frozen
-	./build/v3-128-frozen-portable
-	./build/v3-128-schedule
-	./build/v3-128-schedule-portable
-	./build/v3-128-arithmetic
-	./build/v3-128-arithmetic-portable
-	python3 test/v3-128/check_vectors.py
-	python3 test/v3-128/bounds.py
-	./build/v3-128-edges
-	./build/v3-128-edges-portable
-	./build/v3-128-guard
-	./build/v3-128-guard-portable
-	./build/v3-128-short
-	./build/v3-128-short-portable
-	./build/v3-128-property $(V3_128_RANDOM_CASES)
-	./build/v3-128-property-portable $(V3_128_RANDOM_CASES)
-sanitize: sanitize-v3-128
-sanitize-v3-128: | build
-	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/v3-128/guard.c -o build/v3-128-guard-sanitize
-	./build/v3-128-guard-sanitize
-	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer test/v3-128/short.c -o build/v3-128-short-sanitize
-	./build/v3-128-short-sanitize
-	$(CC) $(CPPFLAGS) -std=c99 -O1 -g $(ARCH_FLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer -pthread test/v3-128/property.c -o build/v3-128-property-sanitize
-	./build/v3-128-property-sanitize 1000

@@ -1,0 +1,31 @@
+{
+  "host": "Xeon",
+  "name": "XXH3-64",
+  "test": "Speed",
+  "run": 2,
+  "command": [
+    "taskset",
+    "-c",
+    "16-23",
+    "<xeon>/build/SMHasher3",
+    "XXH3-64",
+    "--test=Speed"
+  ],
+  "raw_file": "out/Xeon/XXH3-64.run2.txt",
+  "binary_sha256": "ae7dd7f352102c79e5616e51695c39814f35f47a80ee6a9d95bf132d32f76e5a",
+  "started": "2026-09-18T20:18:15.684579+00:00",
+  "load_before": [
+    6.91,
+    7.05,
+    6.13
+  ],
+  "returncode": 0,
+  "finished": "2026-09-18T20:18:54.710559+00:00",
+  "elapsed_seconds": 39.02590866398532,
+  "load_after": [
+    7.49,
+    7.32,
+    6.27
+  ],
+  "raw_sha256": "96f3ccc932325d381e9ecf564ff7cd03f099b8b238ce42948c68cbed6e1ac892"
+}

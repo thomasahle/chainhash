@@ -81,4 +81,14 @@ theorem uniformProb_of_bijective_update {I V : Type*}
       (uniformProb_equiv split.symm (fun k => f k = t)).symm
     _ = 1 / Fintype.card V := uniformProb_of_bijective_slices _ hs t
 
+
+theorem probability_le_one {K : Type*} [Fintype K] [Nonempty K] (E : K → Prop) :
+    uniformProb E ≤ 1 := by
+  classical
+  unfold uniformProb
+  have hc : (0 : ℚ≥0) < Fintype.card K := by exact_mod_cast Fintype.card_pos
+  apply (div_le_iff₀ hc).mpr
+  simp only [one_mul]
+  exact_mod_cast Finset.card_filter_le (Finset.univ : Finset K) E
+
 end ProvenHashes

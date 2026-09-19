@@ -1,554 +1,639 @@
-/* ChainHash, 256-byte blocks. Copyright 2026 Thomas Dybdahl Ahle. MIT.
- * C99 / C++11, header only. Default: 80 random bytes (10 words), model A.
- * See docs/THEOREM.md for all key models.
- * Words and input bytes have canonical little-endian interpretation.
- * Baseline compile-time selection; x86 wide PH uses runtime CPUID/XGETBV:
- *   x86-64: -mpclmul; AArch64 GCC/Clang: -march=armv8-a+crypto
- *   Apple Clang: -march=native+crypto
- * Define CHAINHASH_FORCE_PORTABLE to disable hardware paths.
- * The executable must support its baseline instructions. The AVX2 and
- * AVX-512F VPCLMUL paths are isolated with GCC/Clang target attributes.
- * Do not compile the rest of a portable executable with -march=native.
+/* ChainHash: a keyed 64-bit hash for long inputs with a proven collision bound.
+ * Thomas Dybdahl Ahle, 2026. MIT license. C99/C++11, one header, no allocation.
+ *
+ * Key: 64 uniformly random bytes (CHAINHASH_KEY_BYTES), chainhash_key_from_bytes.
+ * chainhash_key_from_seed expands a 64-bit seed; it is for benchmarks and tests.
+ * Hash: chainhash(&key, data, len) returns uint64_t. Streaming: chainhash_init,
+ * chainhash_update, chainhash_final. Region-aligned parallel evaluation:
+ * chainhash_partial and chainhash_join. Portable C, x86 XMM/YMM/ZMM and ARM NEON
+ * backends, every stride, reduction schedule and chunking compute the same digest.
+ * Bound: for two distinct messages fixed independently of the key, each of at
+ * most 8L bytes, Pr[collision] <= (p(L)+d(L))/2^64, where p is the block count
+ * and d <= 32; see docs/THEOREM.md. The definition and index map: docs/SPEC.md.
+ * Canonical little endian. Explicit ISA entry points require chainhash_has_backend().
+ * AArch64: compile with -march=armv8-a+crypto (Apple: -march=native+crypto).
+ * Define CHAINHASH_PORTABLE to omit all hardware code.
+ * Long-input loop structure inspired by Orson Peters's PolymurHash:
+ * https://github.com/orlp/polymur-hash
  */
-#ifndef CHAINHASH_H_INCLUDED
-#define CHAINHASH_H_INCLUDED
-#include <stddef.h>
+#ifndef CHAINHASH_H
+#define CHAINHASH_H
 #include <stdint.h>
+#include <stddef.h>
 #include <string.h>
-
-#define CHAINHASH_KEY_BYTES 328 /* expanded resident key size */
-#define CHAINHASH_RANDOM_BYTES 80 /* default: 10 independent random words */
-#define CHAINHASH_KEY_WORDS 41
-#define CHAINHASH_BLOCK_BYTES 256
-
-typedef struct chainhash_key { uint64_t words[CHAINHASH_KEY_WORDS]; } chainhash_key;
-/* words: k[0..31], u=32, y=33, z=34, c[0..4]=35..39, twist=40.
- * Exactly 41 words, no alignment requirement beyond uint64_t, no setup cache.
- */
-static inline uint64_t ch_load64(const uint8_t *p) {
-    uint64_t v = 0;
-    unsigned i;
-    for (i = 0; i < 8; ++i) v |= (uint64_t)p[i] << (8 * i);
-    return v;
+#include <assert.h>
+#define CHAINHASH_KEY_BYTES 64
+/* ph[4C..4C+3] = kappa[4C], kappa[4C+2], kappa[4C+1], kappa[4C+3]. */
+typedef struct { uint64_t ph[32], yp[9], yh[9], c[5], tau; } chainhash_key;
+typedef struct { uint64_t lo, hi; } ch_raw;
+enum { CH_PORTABLE=0, CH_XMM=1, CH_YMM=2, CH_ZMM=3, CH_NEON=4 };
+static inline uint64_t ch_word(const uint8_t *p,size_t n,size_t off) {
+    uint64_t a=0; unsigned i;
+    if(off>=n) return 0;
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    if(n-off>=8) { memcpy(&a,p+off,8); return a; }
+#endif
+    for(i=0;i<8 && i<n-off;i++) a|=(uint64_t)p[off+i]<<(8*i);
+    return a;
 }
-/* Decode 328 bytes into 41 little-endian words. All byte strings are valid.
- * Paper model: fill bytes with the OS CSPRNG. The proof assumes all words
- * independently uniform; using a CSPRNG is the practical approximation.
- */
-static inline chainhash_key chainhash_key_from_328_bytes(const uint8_t bytes[328]) {
-    chainhash_key key;
-    unsigned i;
-    for (i = 0; i < 41; ++i) key.words[i] = ch_load64(bytes + 8 * i);
-    return key;
-}
-/* FIELD multiplication, NOT integer multiplication. X^64 = 0x1b.
- * Portable, fixed 64 iterations; used only during key construction.
- */
-static inline uint64_t chainhash_schedule_mul(uint64_t a, uint64_t b) {
-    uint64_t r = 0;
-    unsigned i;
-    for (i = 0; i < 64; ++i) {
-        r ^= a & (UINT64_C(0) - (b & 1));
-        a = (a << 1) ^ (UINT64_C(0x1b) & (UINT64_C(0) - (a >> 63)));
-        b >>= 1;
-    }
+static inline ch_raw ch_clmul(uint64_t a,uint64_t b) {
+    ch_raw r={0,0}; unsigned i;
+    for(i=0;i<64;i++) { uint64_t m=0-((b>>i)&1); r.lo^=(a<<i)&m; if(i) r.hi^=(a>>(64-i))&m; }
     return r;
 }
-
-/* Ideal-key entry point: numerical words, not an endian-dependent byte copy.
- * Order: k[0..31], u, y, z, c[0..4], tau. All 41 words must be independent
- * uniform for the original paper's ideal-key bound.
- */
-static inline chainhash_key chainhash_key_from_words(const uint64_t words[41]) {
-    chainhash_key key;
-    unsigned i;
-    for (i = 0; i < 41; ++i) key.words[i] = words[i];
-    return key;
+static inline uint64_t ch_reduce(ch_raw a) {
+    uint64_t h=a.hi, q=(h>>63)^(h>>61)^(h>>60);
+    return a.lo^h^(h<<1)^(h<<3)^(h<<4)^q^(q<<1)^(q<<3)^(q<<4);
 }
-
-static inline void chainhash_schedule_ph(chainhash_key *key, uint64_t s) {
-    uint64_t power = s;
-    unsigned i;
-    for (i = 0; i < 32; ++i) {
-        key->words[i] = power;
-        if (i != 31) power = chainhash_schedule_mul(power, s);
-    }
+static inline uint64_t ch_mul(uint64_t a,uint64_t b) { return ch_reduce(ch_clmul(a,b)); }
+static inline void ch_schedule(chainhash_key *k,uint64_t y) {
+    unsigned i; k->yp[0]=1; k->yh[0]=27;
+    for(i=1;i<=8;i++) { k->yp[i]=ch_mul(k->yp[i-1],y); k->yh[i]=ch_mul(27,k->yp[i]); }
 }
-
-/* A: 10 independent uniform words, encoded little endian:
- * s, u, y, z, c0, c1, c2, c3, c4, tau. 80 random input bytes.
- */
-static inline chainhash_key chainhash_key_from_80_bytes(const uint8_t bytes[80]) {
-    chainhash_key key;
-    unsigned i;
-    chainhash_schedule_ph(&key, ch_load64(bytes));
-    for (i = 0; i < 9; ++i) key.words[32+i] = ch_load64(bytes + 8*(i+1));
-    return key;
+static inline chainhash_key chainhash_key_from_words(const uint64_t w[39]) {
+    chainhash_key k; unsigned c;
+    for(c=0;c<8;c++) { k.ph[4*c]=w[4*c]; k.ph[4*c+1]=w[4*c+2]; k.ph[4*c+2]=w[4*c+1]; k.ph[4*c+3]=w[4*c+3]; }
+    ch_schedule(&k,w[32]); for(c=0;c<5;c++) k.c[c]=w[33+c]; k.tau=w[38]; return k;
 }
-
-/* B: s, t, and all five c words independent uniform: 56 random bytes.
- * (u,y,z)=(t^2,t^3,t); tau=s^4 is independent of c, as required.
- * The five c words are the circuit parameters, NOT the expanded monic
- * polynomial coefficients; their bijection is proved in the paper.
- */
-static inline chainhash_key chainhash_key_from_seed2(uint64_t s, uint64_t t,
-                                                    const uint64_t c[5]) {
-    chainhash_key key;
-    unsigned i;
-    chainhash_schedule_ph(&key, s);
-    key.words[32] = chainhash_schedule_mul(t, t);
-    key.words[33] = chainhash_schedule_mul(key.words[32], t);
-    key.words[34] = t;
-    for (i = 0; i < 5; ++i) key.words[35+i] = c[i];
-    key.words[40] = key.words[3];
-    return key;
+static inline chainhash_key chainhash_key_from_bytes(const uint8_t b[64]) {
+    uint64_t w[39],s=ch_word(b,64,0),v=s; unsigned i;
+    for(i=0;i<32;i++) { w[i]=v; v=ch_mul(v,s); }
+    for(i=0;i<7;i++) w[32+i]=ch_word(b,64,8*(i+1));
+    return chainhash_key_from_words(w);
 }
-
-/* C: six independent uniform words, s and c[0..4]: 48 random bytes.
- * (u,y,z)=(s^2,s^3,s); tau=s^4. The conditional finalizer theorem holds,
- * but the reduced-PH degree argument DOES NOT prove a useful collision
- * bound for the raw-split hash. Experimental; see docs/THEOREM.md.
- */
-static inline chainhash_key chainhash_key_from_seed(uint64_t s, const uint64_t c[5]) {
-    return chainhash_key_from_seed2(s, s, c);
+/* Convenience benchmark seed expansion, not 64 bytes of independent entropy. */
+static inline chainhash_key chainhash_key_from_seed(uint64_t seed) {
+    uint8_t b[64]; unsigned i,j;
+    for(i=0;i<8;i++) { uint64_t z=(seed+=UINT64_C(0x9e3779b97f4a7c15)); z=(z^(z>>30))*UINT64_C(0xbf58476d1ce4e5b9); z=(z^(z>>27))*UINT64_C(0x94d049bb133111eb); z^=z>>31; for(j=0;j<8;j++) b[8*i+j]=(uint8_t)(z>>(8*j)); }
+    return chainhash_key_from_bytes(b);
 }
-
-/* D: reference ONLY. One uniform word. k_i=s^(i+1), chain as in C,
- * c_i=s^(33+i), tau=s^38. No five-wise or useful collision claim.
- */
-static inline chainhash_key chainhash_key_from_single_word_reference(uint64_t s) {
-    chainhash_key key;
-    uint64_t power;
-    unsigned i;
-    chainhash_schedule_ph(&key, s);
-    key.words[32] = key.words[1];
-    key.words[33] = key.words[2];
-    key.words[34] = key.words[0];
-    power = chainhash_schedule_mul(key.words[31], s);
-    for (i = 0; i < 5; ++i) {
-        key.words[35+i] = power;
-        power = chainhash_schedule_mul(power, s);
-    }
-    key.words[40] = power;
-    return key;
-}
-
-/* Default, model A: 80 independent uniform input bytes (10 words).
- * Input order: s,u,y,z,c0..c4,tau. The 32 PH words are derived from s;
- * the expanded resident key occupies 328 bytes (41 words).
- */
-static inline chainhash_key chainhash_key_from_bytes(const uint8_t bytes[CHAINHASH_RANDOM_BYTES]) {
-    return chainhash_key_from_80_bytes(bytes);
-}
-
-/* Portable definition: no intrinsics or nonstandard 128-bit integer type. */
-typedef struct ch_pair { uint64_t lo, hi; } ch_pair;
-static inline ch_pair ch_clmul(uint64_t a, uint64_t b) {
-    ch_pair r = {0, 0};
-    unsigned i;
-    for (i = 0; i < 64; ++i) {
-        uint64_t mask = UINT64_C(0) - ((b >> i) & 1);
-        r.lo ^= (a << i) & mask;
-        if (i) r.hi ^= (a >> (64 - i)) & mask;
-    }
-    return r;
-}
-static inline uint64_t ch_reduce(ch_pair r) {
-    int i;
-    for (i = 63; i >= 0; --i) {
-        if ((r.hi >> i) & 1) {
-            r.hi ^= UINT64_C(1) << i;
-            r.lo ^= UINT64_C(27) << i;
-            if (i) r.hi ^= UINT64_C(27) >> (64 - i);
-        }
-    }
-    return r.lo;
-}
-static inline uint64_t ch_mul(uint64_t a, uint64_t b) { return ch_reduce(ch_clmul(a, b)); }
-static inline uint64_t ch_word(const uint8_t *p, size_t n, size_t off) {
-    uint64_t v = 0;
-    unsigned i;
-    for (i = 0; i < 8 && off + i < n; ++i) v |= (uint64_t)p[off + i] << (8 * i);
-    return v;
-}
-/* Explicit portable entry point, also available in hardware builds. */
-static inline uint64_t chainhash_portable(const chainhash_key *key, const void *data, size_t len) {
-    const uint8_t *p = (const uint8_t *)data;
-    const uint64_t *k = key->words;
-    size_t remaining = len;
-    uint64_t state = k[34], v, y, z;
-    do {
-        size_t n = remaining > 256 ? 256 : remaining;
-        size_t g;
-        ch_pair acc = {0, 0};
-        for (g = 0; g < n; g += 32) {
-            unsigned lane;
-            for (lane = 0; lane < 2; ++lane) {
-                size_t a = g / 8 + lane;
-                ch_pair prod = ch_clmul(ch_word(p, n, 8*a) ^ k[a],
-                                        ch_word(p, n, 8*(a+2)) ^ k[a+2]);
-                acc.lo ^= prod.lo; acc.hi ^= prod.hi;
-            }
-        }
-        remaining -= n;
-        if (!remaining) { acc.lo ^= (uint64_t)len; acc.hi ^= (uint64_t)len; }
-        state = acc.lo ^ ch_mul(acc.hi ^ k[33], state ^ k[32]);
-        if (!remaining) break;
-        p += n;
-    } while (1);
-    v = state + k[40]; /* Integer addition mod 2^64, NOT field addition. */
-    y = ch_mul(v, v);
-    z = ch_mul(y ^ k[35], v ^ y ^ k[36]);
-    return ch_mul(v ^ k[37], z ^ k[38]) ^ k[39];
-}
-
-#if !defined(CHAINHASH_FORCE_PORTABLE) && defined(__x86_64__) && defined(__PCLMUL__)
-#define CHAINHASH_BACKEND "pclmul+vpclmul-dispatch"
-#define CHAINHASH_HARDWARE 1
-#include <wmmintrin.h>
-typedef __m128i ch_vec;
-static inline ch_vec ch_vload(const void *p) { return _mm_loadu_si128((const __m128i_u *)p); }
-static inline ch_vec ch_vzero(void) { return _mm_setzero_si128(); }
-static inline ch_vec ch_v64(uint64_t v) { return _mm_cvtsi64_si128((long long)v); }
-static inline ch_vec ch_vdup(uint64_t v) { return _mm_set1_epi64x((long long)v); }
-static inline ch_vec ch_vxor(ch_vec a, ch_vec b) { return _mm_xor_si128(a,b); }
-static inline ch_vec ch_vadd(ch_vec a, ch_vec b) { return _mm_add_epi64(a,b); }
-static inline ch_vec ch_ll(ch_vec a, ch_vec b) { return _mm_clmulepi64_si128(a,b,0x00); }
-static inline ch_vec ch_hh(ch_vec a, ch_vec b) { return _mm_clmulepi64_si128(a,b,0x11); }
-static inline ch_vec ch_hl(ch_vec a, ch_vec b) { return _mm_clmulepi64_si128(a,b,0x01); }
-static inline uint64_t ch_low(ch_vec a) { return (uint64_t)_mm_cvtsi128_si64(a); }
-#elif !defined(CHAINHASH_FORCE_PORTABLE) && defined(__aarch64__) && \
-      !defined(__AARCH64EB__) && (defined(__GNUC__) || defined(__clang__)) && \
-      (defined(__ARM_FEATURE_AES) || defined(__ARM_FEATURE_CRYPTO))
-#define CHAINHASH_BACKEND "pmull"
-#define CHAINHASH_HARDWARE 1
-#include <arm_neon.h>
-typedef uint64x2_t ch_vec;
-static inline ch_vec ch_vload(const void *p) { return vreinterpretq_u64_u8(vld1q_u8((const uint8_t *)p)); }
-static inline ch_vec ch_vzero(void) { return vdupq_n_u64(0); }
-static inline ch_vec ch_v64(uint64_t v) { return vcombine_u64(vcreate_u64(v),vcreate_u64(0)); }
-static inline ch_vec ch_vdup(uint64_t v) { return vdupq_n_u64(v); }
-static inline ch_vec ch_vxor(ch_vec a, ch_vec b) { return veorq_u64(a,b); }
-static inline ch_vec ch_vadd(ch_vec a, ch_vec b) { return vaddq_u64(a,b); }
-/* Pin PMULL/PMULL2: intrinsics can introduce DUP + PMULL2 and move the
- * recurrence state through general registers. State stays in lane 0. */
-static inline ch_vec ch_ll(ch_vec a, ch_vec b) {
-    ch_vec r; __asm__("pmull %0.1q, %1.1d, %2.1d" : "=w"(r) : "w"(a), "w"(b)); return r;
-}
-static inline ch_vec ch_hh(ch_vec a, ch_vec b) {
-    ch_vec r; __asm__("pmull2 %0.1q, %1.2d, %2.2d" : "=w"(r) : "w"(a), "w"(b)); return r;
-}
-static inline ch_vec ch_hl(ch_vec a, ch_vec b) { return ch_ll(vextq_u64(a,a,1),b); }
-static inline uint64_t ch_low(ch_vec a) { return vgetq_lane_u64(a,0); }
-#else
-#define CHAINHASH_BACKEND "portable"
-#define CHAINHASH_HARDWARE 0
-#endif
-
-#if CHAINHASH_HARDWARE
-static inline ch_vec ch_xor3(ch_vec a, ch_vec b, ch_vec c) {
-#if defined(__aarch64__) && defined(__ARM_FEATURE_SHA3)
-    return veor3q_u64(a,b,c);
-#else
-    return ch_vxor(ch_vxor(a,b),c);
-#endif
-}
-/* Field elements occupy lane 0; lane 1 after reduction is unspecified.
- * x^64 = 27; fold twice. XOR addend overlaps the dependent folds. */
-static inline ch_vec ch_reduce_add(ch_vec ab, ch_vec add) {
-    ch_vec rr = ch_vdup(27);
-    ch_vec xr = ch_hh(ab,rr), zr = ch_hh(xr,rr);
-    return ch_xor3(ch_vxor(ab,add),xr,zr);
-}
-static inline ch_vec ch_group(const uint64_t *k, const uint8_t *p, ch_vec acc) {
-    ch_vec a = ch_vxor(ch_vload(p),ch_vload(k));
-    ch_vec b = ch_vxor(ch_vload(p+16),ch_vload(k+2));
-    return ch_xor3(acc,ch_ll(a,b),ch_hh(a,b));
-}
-static inline ch_vec ch_block(const uint64_t *k, const uint8_t *p, size_t n) {
-    ch_vec a = ch_vzero(), b = ch_vzero();
-    size_t off = 0;
-    /* Two independent PH accumulators, same load and pairing layout as
-     * the benchmark. Only a final incomplete 32-byte group is copied. */
-    for (; off + 64 <= n; off += 64) {
-        a = ch_group(k+off/8,p+off,a);
-        b = ch_group(k+off/8+4,p+off+32,b);
-    }
-    if (off + 32 <= n) { a = ch_group(k+off/8,p+off,a); off += 32; }
-    if (off < n) {
-        uint8_t tail[32] = {0};
-        memcpy(tail,p+off,n-off);
-        b = ch_group(k+off/8,tail,b);
-    }
-    return ch_vxor(a,b);
-}
-static inline uint64_t chainhash_hardware(const chainhash_key *key, const void *data, size_t len) {
-    const uint64_t *k = key->words;
-    const uint8_t *p = (const uint8_t *)data;
-    const ch_vec uy = ch_vload(k+32); /* [u,y] */
-    ch_vec q = ch_v64(k[34] ^ k[32]); /* Q=P+u, in lane 0 throughout. */
-    size_t remaining = len;
-    ch_vec v, y, z;
-    /* Peel the final block so length logic stays outside the bulk loop. */
-    while (remaining > 256) {
-        ch_vec t = ch_vxor(ch_block(k,p,256),uy); /* [a+u,b+y] */
-        q = ch_reduce_add(ch_hl(t,q),t);
-        p += 256; remaining -= 256;
-    }
-    {
-        ch_vec t = ch_vxor(ch_block(k,p,remaining),ch_vdup((uint64_t)len));
-        t = ch_vxor(t,ch_vxor(uy,ch_v64(k[32]))); /* [a+len,b+len+y] */
-        q = ch_reduce_add(ch_hl(t,q),t); /* P_n */
-    }
-    v = ch_vadd(q,ch_v64(k[40]));
-    y = ch_reduce_add(ch_ll(v,v),ch_v64(k[35])); /* v^2+c0 */
-    z = ch_xor3(v,y,ch_v64(k[35]^k[36]));       /* v+v^2+c1 */
-    z = ch_reduce_add(ch_ll(y,z),ch_v64(k[38]));
-    return ch_low(ch_reduce_add(ch_ll(ch_vxor(v,ch_v64(k[37])),z),ch_v64(k[39])));
-}
-#endif
-
-#if CHAINHASH_HARDWARE && defined(__x86_64__) && (defined(__GNUC__) || defined(__clang__))
-#define CHAINHASH_RUNTIME_WIDE 1
+#if !defined(CHAINHASH_PORTABLE) && (defined(__x86_64__) || defined(__i386__)) && (defined(__GNUC__) || defined(__clang__))
+#define CH_X86 1
 #include <immintrin.h>
 #include <cpuid.h>
-#define CH_HEADER_WIDE256 __attribute__((target("avx2,vpclmulqdq")))
-#define CH_HEADER_WIDE512 __attribute__((target("avx2,avx512f,vpclmulqdq")))
-
-// Check both CPU capabilities and OS register save support. 0=baseline,
-// 1=YMM, 2=ZMM. No AVX512BW/DQ/VL requirement in the ZMM path.
-static int ch_x86_detect(void) {
-    unsigned a,b,c,d;
-    if (!__get_cpuid(1,&a,&b,&c,&d) || (c & ((1u<<27)|(1u<<28))) != ((1u<<27)|(1u<<28))) return 0;
-    unsigned lo,hi;
-    __asm__("xgetbv" : "=a"(lo), "=d"(hi) : "c"(0));
-    if ((lo & 6) != 6 || !__get_cpuid_count(7,0,&a,&b,&c,&d) || !(c & (1u<<10)) || !(b & (1u<<5))) return 0;
-    return ((lo & 0xe6) == 0xe6 && (b & (1u<<16))) ? 2 : 1;
+#define CH_T128 __attribute__((target("avx,pclmul")))
+#define CH_T256 __attribute__((target("avx2,pclmul,vpclmulqdq")))
+#define CH_T512 __attribute__((target("avx2,pclmul,avx512f,vpclmulqdq")))
+static inline int ch_detect(void) {
+    unsigned a,b,c,d,l,h;
+    if(!__get_cpuid(1,&a,&b,&c,&d) || (c&((1u<<1)|(1u<<27)|(1u<<28)))!=((1u<<1)|(1u<<27)|(1u<<28))) return 0;
+    __asm__("xgetbv":"=a"(l),"=d"(h):"c"(0)); if((l&6)!=6) return 0;
+    if(!__get_cpuid_count(7,0,&a,&b,&c,&d) || !(b&(1u<<5)) || !(c&(1u<<10))) return 1;
+    return (l&0xe6)==0xe6 && (b&(1u<<16)) ? 3:2;
 }
-static int ch_x86_width(void) {
-    /* C99 and C++: relaxed atomics avoid a racy static cache. */
-    static int cached = 0;
-    int v = __atomic_load_n(&cached,__ATOMIC_RELAXED);
-    if (!v) { v=ch_x86_detect()+1; __atomic_store_n(&cached,v,__ATOMIC_RELAXED); }
-    return v-1;
+CH_T128 static inline ch_raw ch_hwprod(uint64_t a,uint64_t b) {
+    ch_raw r; __m128i v=_mm_clmulepi64_si128(_mm_set_epi64x(0,(long long)a),_mm_set_epi64x(0,(long long)b),0); _mm_storeu_si128((__m128i_u *)&r,v); return r;
 }
-
-// Ice Lake-SP (family 6, model 0x6a): YMM VPCLMUL has no product-throughput
-// advantage over XMM, and the wide PH shuffles lose on 256-byte blocks.
-// Use the measured pipelined XMM driver for this 256-byte configuration.
-static int ch_x86_detect_tuning(void) {
-    unsigned a,b,c,d;
-    if (!__get_cpuid(0,&a,&b,&c,&d) || b != 0x756e6547u || d != 0x49656e69u || c != 0x6c65746eu) return 0;
-    if (!__get_cpuid(1,&a,&b,&c,&d)) return 0;
-    const unsigned family = (a >> 8) & 15;
-    const unsigned model = ((a >> 4) & 15) | ((a >> 12) & 0xf0);
-    return family == 6 && model == 0x6a;
-}
-static int ch_x86_prefer128(void) {
-    static int cached=0;
-    int v=__atomic_load_n(&cached,__ATOMIC_RELAXED);
-    if (!v) { v=ch_x86_detect_tuning()+1; __atomic_store_n(&cached,v,__ATOMIC_RELAXED); }
-    return v-1;
-}
-
-// The second CLMUL fold only multiplies a nibble by 27. A 16-entry byte
-// table gives the identical polynomial product with a shuffle.
-__attribute__((target("ssse3,pclmul"),always_inline)) static inline __m128i ch_wide_reduce(__m128i ab, __m128i add) {
-    __m128i xr = _mm_clmulepi64_si128(ab,_mm_set_epi64x(0,27),0x01);
-    const __m128i lut = _mm_setr_epi8(0,27,54,45,108,119,90,65,(char)216,(char)195,(char)238,(char)245,(char)180,(char)175,(char)130,(char)153);
-    __m128i corr = _mm_shuffle_epi8(lut,_mm_srli_si128(xr,8));
-    return _mm_xor_si128(_mm_xor_si128(ab,add),_mm_xor_si128(xr,corr));
-}
-
-CH_HEADER_WIDE256 static inline __m256i ch_wload256(const uint8_t *p, int swap) {
-    __m256i v = _mm256_loadu_si256((const __m256i_u *)p);
-    if (swap) v = _mm256_shuffle_epi8(v,_mm256_setr_epi8(7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8));
-    return v;
-}
-CH_HEADER_WIDE512 static inline __m512i ch_wload512(const uint8_t *p, int swap) {
-    __m512i v = _mm512_loadu_si512(p);
-    if (swap) { // AVX512F only: byte/word exchange with shifts and masks.
-        const __m512i m8 = _mm512_set1_epi64(0x00ff00ff00ff00ffLL);
-        const __m512i m16 = _mm512_set1_epi64(0x0000ffff0000ffffLL);
-        v = _mm512_or_si512(_mm512_slli_epi64(_mm512_and_si512(v,m8),8),_mm512_and_si512(_mm512_srli_epi64(v,8),m8));
-        v = _mm512_or_si512(_mm512_slli_epi64(_mm512_and_si512(v,m16),16),_mm512_and_si512(_mm512_srli_epi64(v,16),m16));
-        v = _mm512_shuffle_epi32(v,(_MM_PERM_ENUM)0xb1);
-    }
-    return v;
-}
-
-CH_HEADER_WIDE256 static inline __m128i ch_ph256(const uint64_t *k,const uint8_t *p) {
-    __m256i acc = _mm256_setzero_si256();
-    for (int i=0;i<32;i+=8) {
-        __m256i x = _mm256_xor_si256(ch_wload256(p+8*i,0),_mm256_loadu_si256((const __m256i_u *)(k+i)));
-        __m256i y = _mm256_xor_si256(ch_wload256(p+8*i+32,0),_mm256_loadu_si256((const __m256i_u *)(k+i+4)));
-        __m256i a = _mm256_permute2x128_si256(x,y,0x20), b = _mm256_permute2x128_si256(x,y,0x31);
-        acc = _mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(a,b,0x00),_mm256_clmulepi64_epi128(a,b,0x11)));
-    }
-    return _mm_xor_si128(_mm256_castsi256_si128(acc),_mm256_extracti128_si256(acc,1));
-}
-CH_HEADER_WIDE512 static inline __m128i ch_ph512(const uint64_t *k,const uint8_t *p) {
-
-    __m512i acc = _mm512_setzero_si512();
-    for (int i=0;i<32;i+=16) {
-        __m512i x = _mm512_xor_si512(ch_wload512(p+8*i,0),_mm512_loadu_si512(k+i));
-        __m512i y = _mm512_xor_si512(ch_wload512(p+8*i+64,0),_mm512_loadu_si512(k+i+8));
-        __m512i a = _mm512_shuffle_i64x2(x,y,0x88), b = _mm512_shuffle_i64x2(x,y,0xdd);
-        acc = _mm512_xor_si512(acc,_mm512_xor_si512(_mm512_clmulepi64_epi128(a,b,0x00),_mm512_clmulepi64_epi128(a,b,0x11)));
-    }
-    __m256i h = _mm256_xor_si256(_mm512_castsi512_si256(acc),_mm512_extracti64x4_epi64(acc,1));
-    return _mm_xor_si128(_mm256_castsi256_si128(h),_mm256_extracti128_si256(h,1));
-}
-
-
-CH_HEADER_WIDE256 static inline __m128i ch_narrow_ph(const uint64_t *k,const uint8_t *p) {
-    return ch_block(k,p,256);
-}
-
-CH_HEADER_WIDE256 static uint64_t chainhash_narrow(const chainhash_key *key,const void *data,size_t len) {
-    const size_t SW=32,S=1;
-    const uint64_t *k=key->words;
-    const uint8_t *p=(const uint8_t *)data;
-    const size_t SB=256,BB=256;
-    const size_t full = (len-1)/BB*S; // leave the complete final block peeled
-    const __m128i uy = ch_vload(k+32);
-    __m128i q = ch_v64(k[34]^k[32]);
-    size_t j = 0;
-    if (full) {
-        __m128i t = _mm_xor_si128(ch_narrow_ph(k,p),uy);
-        for (;j+1<full;++j) {
-            __m128i prod = _mm_clmulepi64_si128(t,q,0x01);
-            __m128i next = _mm_xor_si128(ch_narrow_ph(k+((j+1)%S)*SW,p+(j+1)*SB),uy);
-            q = ch_wide_reduce(prod,t);
-            t = next;
-        }
-        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
-        ++j;
-    }
-    const size_t rem = len-full*SB;
-    for (size_t i=0;i<S;++i) {
-        const size_t off = i*SB;
-        const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
-        __m128i acc;
-        if (n==SB) acc = ch_narrow_ph(k+i*SW,p+(full+i)*SB);
-        else if (n) acc = ch_block(k+i*SW,p+(full+i)*SB,n);
-        else acc = _mm_setzero_si128();
-        __m128i t = _mm_xor_si128(acc,i+1<S ? uy : _mm_xor_si128(ch_vxor(uy,ch_v64(k[32])),ch_vdup((uint64_t)len)));
-        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
-    }
-    {
-        __m128i v=ch_vadd(q,ch_v64(k[40]));
-        __m128i y=ch_reduce_add(ch_ll(v,v),ch_v64(k[35]));
-        __m128i z=ch_xor3(v,y,ch_v64(k[35]^k[36]));
-        z=ch_reduce_add(ch_ll(y,z),ch_v64(k[38]));
-        return ch_low(ch_reduce_add(ch_ll(ch_vxor(v,ch_v64(k[37])),z),ch_v64(k[39])));
-    }
-}
-
-CH_HEADER_WIDE256 static uint64_t chainhash_wide256(const chainhash_key *key,const void *data,size_t len) {
-    const size_t SW=32,S=1;
-    const uint64_t *k=key->words;
-    const uint8_t *p=(const uint8_t *)data;
-    const size_t SB=256,BB=256;
-    const size_t full = (len-1)/BB*S; // leave the complete final block peeled
-    const __m128i uy = ch_vload(k+32);
-    __m128i q = ch_v64(k[34]^k[32]);
-    size_t j = 0;
-    if (full) {
-        __m128i t = _mm_xor_si128(ch_ph256(k,p),uy);
-        for (;j+1<full;++j) {
-            __m128i prod = _mm_clmulepi64_si128(t,q,0x01);
-            __m128i next = _mm_xor_si128(ch_ph256(k+((j+1)%S)*SW,p+(j+1)*SB),uy);
-            q = ch_wide_reduce(prod,t);
-            t = next;
-        }
-        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
-        ++j;
-    }
-    const size_t rem = len-full*SB;
-    for (size_t i=0;i<S;++i) {
-        const size_t off = i*SB;
-        const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
-        __m128i acc;
-        if (n==SB) acc = ch_ph256(k+i*SW,p+(full+i)*SB);
-        else if (n) acc = ch_block(k+i*SW,p+(full+i)*SB,n);
-        else acc = _mm_setzero_si128();
-        __m128i t = _mm_xor_si128(acc,i+1<S ? uy : _mm_xor_si128(ch_vxor(uy,ch_v64(k[32])),ch_vdup((uint64_t)len)));
-        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
-    }
-    {
-        __m128i v=ch_vadd(q,ch_v64(k[40]));
-        __m128i y=ch_reduce_add(ch_ll(v,v),ch_v64(k[35]));
-        __m128i z=ch_xor3(v,y,ch_v64(k[35]^k[36]));
-        z=ch_reduce_add(ch_ll(y,z),ch_v64(k[38]));
-        return ch_low(ch_reduce_add(ch_ll(ch_vxor(v,ch_v64(k[37])),z),ch_v64(k[39])));
-    }
-}
-
-CH_HEADER_WIDE512 static uint64_t chainhash_wide512(const chainhash_key *key,const void *data,size_t len) {
-    const size_t SW=32,S=1;
-    const uint64_t *k=key->words;
-    const uint8_t *p=(const uint8_t *)data;
-    const size_t SB=256,BB=256;
-    const size_t full = (len-1)/BB*S; // leave the complete final block peeled
-    const __m128i uy = ch_vload(k+32);
-    __m128i q = ch_v64(k[34]^k[32]);
-    size_t j = 0;
-    if (full) {
-        __m128i t = _mm_xor_si128(ch_ph512(k,p),uy);
-        for (;j+1<full;++j) {
-            __m128i prod = _mm_clmulepi64_si128(t,q,0x01);
-            __m128i next = _mm_xor_si128(ch_ph512(k+((j+1)%S)*SW,p+(j+1)*SB),uy);
-            q = ch_wide_reduce(prod,t);
-            t = next;
-        }
-        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
-        ++j;
-    }
-    const size_t rem = len-full*SB;
-    for (size_t i=0;i<S;++i) {
-        const size_t off = i*SB;
-        const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
-        __m128i acc;
-        if (n==SB) acc = ch_ph512(k+i*SW,p+(full+i)*SB);
-        else if (n) acc = ch_block(k+i*SW,p+(full+i)*SB,n);
-        else acc = _mm_setzero_si128();
-        __m128i t = _mm_xor_si128(acc,i+1<S ? uy : _mm_xor_si128(ch_vxor(uy,ch_v64(k[32])),ch_vdup((uint64_t)len)));
-        q = ch_wide_reduce(_mm_clmulepi64_si128(t,q,0x01),t);
-    }
-    {
-        __m128i v=ch_vadd(q,ch_v64(k[40]));
-        __m128i y=ch_reduce_add(ch_ll(v,v),ch_v64(k[35]));
-        __m128i z=ch_xor3(v,y,ch_v64(k[35]^k[36]));
-        z=ch_reduce_add(ch_ll(y,z),ch_v64(k[38]));
-        return ch_low(ch_reduce_add(ch_ll(ch_vxor(v,ch_v64(k[37])),z),ch_v64(k[39])));
-    }
-}
-
-#undef CH_HEADER_WIDE256
-#undef CH_HEADER_WIDE512
-#endif
-
-/* Hash len bytes. data may be NULL iff len==0; key must be non-NULL.
- * No input alignment requirement; no reads outside [data,data+len).
- * len must be <2^64 bytes (automatic on usual 32/64-bit size_t targets).
- * Returns the complete 64-bit hash as an integer. Serialize little-endian
- * for the exact bytes of SMHasher3's native little-endian registration.
- * Stateless and thread-safe when the caller does not mutate key/data.
- */
-static inline uint64_t chainhash(const chainhash_key *key, const void *data, size_t len) {
-#if CHAINHASH_HARDWARE
-#if defined(CHAINHASH_RUNTIME_WIDE)
-    if (len>256) {
-        int width=ch_x86_width();
-        if (width && ch_x86_prefer128()) return chainhash_narrow(key,data,len);
-        if (width==2) return chainhash_wide512(key,data,len);
-        if (width==1) return chainhash_wide256(key,data,len);
-    }
-#endif
-    return chainhash_hardware(key,data,len);
+#elif !defined(CHAINHASH_PORTABLE) && defined(__aarch64__) && !defined(__AARCH64EB__) && (defined(__ARM_FEATURE_AES) || defined(__ARM_FEATURE_CRYPTO))
+#define CH_ARM 1
+#include <arm_neon.h>
+static inline uint64x2_t ch_ll(uint64x2_t a,uint64x2_t b) { uint64x2_t r; __asm__("pmull %0.1q, %1.1d, %2.1d":"=w"(r):"w"(a),"w"(b)); return r; }
+static inline uint64x2_t ch_hh(uint64x2_t a,uint64x2_t b) { uint64x2_t r; __asm__("pmull2 %0.1q, %1.2d, %2.2d":"=w"(r):"w"(a),"w"(b)); return r; }
+static inline uint64x2_t ch_xor3(uint64x2_t a,uint64x2_t b,uint64x2_t c) {
+#if defined(__ARM_FEATURE_SHA3)
+    return veor3q_u64(a,b,c);
 #else
-    return chainhash_portable(key,data,len);
+    return veorq_u64(a,veorq_u64(b,c));
 #endif
+}
+static inline ch_raw ch_hwprod(uint64_t a,uint64_t b) { ch_raw r; vst1q_u64(&r.lo,ch_ll(vcombine_u64(vcreate_u64(a),vcreate_u64(0)),vcombine_u64(vcreate_u64(b),vcreate_u64(0)))); return r; }
+#endif
+static inline int chainhash_backend(void) {
+#ifdef CH_X86
+    static int cache=-1; int v=__atomic_load_n(&cache,__ATOMIC_RELAXED); if(v<0) { v=ch_detect(); __atomic_store_n(&cache,v,__ATOMIC_RELAXED); } return v;
+#elif defined(CH_ARM)
+    return CH_NEON;
+#else
+    return 0;
+#endif
+}
+static inline int chainhash_has_backend(int b) { int h=chainhash_backend(); return b==0 || (h==4 ? b==4 : b>0 && b<=h); }
+static inline ch_raw ch_prod(uint64_t a,uint64_t b,int backend) {
+#if defined(CH_X86) || defined(CH_ARM)
+    if(backend) return ch_hwprod(a,b);
+#else
+    (void)backend;
+#endif
+    return ch_clmul(a,b);
+}
+static inline uint64_t ch_fmul(uint64_t a,uint64_t b,int backend) { return ch_reduce(ch_prod(a,b,backend)); }
+static inline uint64_t ch_pow(uint64_t a,uint64_t n,int backend) { uint64_t r=1; while(n) { if(n&1) r=ch_fmul(r,a,backend); n>>=1; if(n) a=ch_fmul(a,a,backend); } return r; }
+#ifdef CH_X86
+/* Low lane as an integer: _mm_cvtsi128_si64 is x86-64 only in GCC. */
+CH_T128 static inline uint64_t ch_lane0(__m128i v) {
+#if defined(__x86_64__)
+    return (uint64_t)_mm_cvtsi128_si64(v);
+#else
+    ch_raw r; _mm_storeu_si128((__m128i_u *)&r,v); return r.lo;
+#endif
+}
+CH_T128 static inline __m128i ch_vreduce(__m128i a) {
+    const __m128i r=_mm_set1_epi64x(27);
+    __m128i t=_mm_clmulepi64_si128(a,r,0x11),u=_mm_clmulepi64_si128(t,r,0x11);
+    return _mm_xor_si128(a,_mm_xor_si128(t,u));
+}
+CH_T128 static uint64_t ch_fastfinish(const chainhash_key *k,uint64_t v) {
+    __m128i x=_mm_set_epi64x(0,(long long)(v+k->tau)),q=ch_vreduce(_mm_clmulepi64_si128(x,x,0));
+    __m128i a=_mm_xor_si128(q,_mm_set_epi64x(0,(long long)k->c[0])),b=_mm_xor_si128(_mm_xor_si128(x,q),_mm_set_epi64x(0,(long long)k->c[1]));
+    __m128i r=ch_vreduce(_mm_clmulepi64_si128(a,b,0));
+    r=ch_vreduce(_mm_clmulepi64_si128(_mm_xor_si128(x,_mm_set_epi64x(0,(long long)k->c[2])),_mm_xor_si128(r,_mm_set_epi64x(0,(long long)k->c[3])),0));
+    return ch_lane0(r)^k->c[4];
+}
+#elif defined(CH_ARM)
+static inline uint64x2_t ch_vreduce(uint64x2_t a) { const uint64x2_t r=vdupq_n_u64(27); uint64x2_t t=ch_hh(a,r); return ch_xor3(a,t,ch_hh(t,r)); }
+static inline uint64x2_t ch_v64(uint64_t v) { return vcombine_u64(vcreate_u64(v),vcreate_u64(0)); }
+static inline uint64x2_t ch_ld(const uint8_t *p) { return vreinterpretq_u64_u8(vld1q_u8(p)); }
+static inline uint64_t ch_finish_neon_vec(const chainhash_key *k,uint64x2_t v) {
+    uint64x2_t x=vaddq_u64(v,ch_v64(k->tau)),q=ch_vreduce(ch_ll(x,x));
+    uint64x2_t a=veorq_u64(q,ch_v64(k->c[0])),b=ch_xor3(x,q,ch_v64(k->c[1]));
+    uint64x2_t r=ch_vreduce(ch_ll(a,b));
+    r=ch_vreduce(ch_ll(veorq_u64(x,ch_v64(k->c[2])),veorq_u64(r,ch_v64(k->c[3]))));
+    return vgetq_lane_u64(r,0)^k->c[4];
+}
+static inline uint64_t ch_fastfinish(const chainhash_key *k,uint64_t v) {
+    return ch_finish_neon_vec(k,ch_v64(v));
+}
+/* Short and final partial regions retain raw products and the Horner fold
+ * in SIMD registers. Only the final digest leaves lane 0. */
+static uint64_t ch_tail_neon(const chainhash_key *k,const uint8_t *p,size_t n,uint64_t leading) {
+    uint64x2_t u[4]={vdupq_n_u64(0),vdupq_n_u64(0),vdupq_n_u64(0),vdupq_n_u64(0)};
+    unsigned c=0,j,lanes=n>48?4:n?(unsigned)((n-1)/16+1):1;
+    size_t rem=n;
+    while(rem) {
+        uint8_t tmp[128]={0}; const uint8_t *q=p; size_t take=rem<128?rem:128;
+        if(take<128) { memcpy(tmp,p,take); q=tmp; }
+        uint64x2_t ka=vld1q_u64(k->ph+4*c),kb=vld1q_u64(k->ph+4*c+2);
+        for(j=0;j<4;j++) if(16*j<take) {
+            uint64x2_t a=veorq_u64(ch_ld(q+16*j),ka);
+            uint64x2_t b=veorq_u64(ch_ld(q+64+16*j),kb);
+            if(take<=16*j+8) { a=vsetq_lane_u64(0,a,1); b=vsetq_lane_u64(0,b,1); }
+            u[j]=ch_xor3(u[j],ch_ll(a,b),ch_hh(a,b));
+        }
+        rem-=take; p+=take; ++c;
+    }
+    uint64x2_t acc=ch_ll(ch_v64(leading),ch_v64(k->yp[lanes]));
+    for(j=0;j<lanes;j++) {
+        unsigned e=lanes-1-j;
+        if(!e) acc=veorq_u64(acc,u[j]);
+        else { uint64x2_t pw=vcombine_u64(vcreate_u64(k->yp[e]),vcreate_u64(k->yh[e])); acc=ch_xor3(acc,ch_ll(u[j],pw),ch_hh(u[j],pw)); }
+    }
+    return ch_finish_neon_vec(k,ch_vreduce(acc));
+}
+#endif
+static inline uint64_t ch_finish(const chainhash_key *k,uint64_t v,int b) {
+#if defined(CH_X86) || defined(CH_ARM)
+    if(b) return ch_fastfinish(k,v);
+#endif
+    uint64_t q,r; v+=k->tau; q=ch_fmul(v,v,b); r=ch_fmul(q^k->c[0],v^q^k->c[1],b); return ch_fmul(v^k->c[2],r^k->c[3],b)^k->c[4]; }
+static inline unsigned ch_lanes(size_t n) { return n>48 ? 4 : n ? (unsigned)((n-1)/16+1) : 1; }
+/* Partial region: a pair is active iff its FIRST word has a byte. */
+static inline void ch_region_scalar(const chainhash_key *k,const uint8_t *p,size_t n,ch_raw out[4],int b) {
+    unsigned c,j,e; memset(out,0,4*sizeof(*out));
+    for(c=0;c<8;c++) for(j=0;j<4;j++) for(e=0;e<2;e++) {
+        size_t off=128*c+16*j+8*e;
+        if(off<n) { ch_raw v=ch_prod(ch_word(p,n,off)^k->ph[4*c+e],ch_word(p,n,off+64)^k->ph[4*c+2+e],b); out[j].lo^=v.lo; out[j].hi^=v.hi; }
+    }
+}
+
+#ifdef CH_X86
+CH_T128 static inline void ch_region128(const chainhash_key *k,const uint8_t *p,ch_raw out[4]) {
+    unsigned j; for(j=0;j<4;j+=1) {
+    __m128i a=_mm_setzero_si128();
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+0+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+0))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+64+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+2))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+128+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+4))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+192+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+6))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+256+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+8))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+320+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+10))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+384+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+12))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+448+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+14))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+512+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+16))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+576+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+18))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+640+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+20))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+704+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+22))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+768+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+24))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+832+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+26))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+896+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+28))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+960+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+30))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    _mm_storeu_si128((__m128i_u *)(out+j),a); }
+}
+CH_T256 static inline void ch_region256(const chainhash_key *k,const uint8_t *p,ch_raw out[4]) {
+    unsigned j; for(j=0;j<4;j+=2) {
+    __m256i a=_mm256_setzero_si256();
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+0+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+0)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+64+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+2)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+128+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+4)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+192+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+6)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+256+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+8)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+320+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+10)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+384+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+12)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+448+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+14)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+512+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+16)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+576+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+18)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+640+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+20)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+704+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+22)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+768+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+24)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+832+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+26)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+896+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+28)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+960+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+30)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    _mm256_storeu_si256((__m256i_u *)(out+j),a); }
+}
+CH_T512 static inline void ch_region512(const chainhash_key *k,const uint8_t *p,ch_raw out[4]) {
+    unsigned j; for(j=0;j<4;j+=4) {
+    __m512i a=_mm512_setzero_si512();
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+0+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+0)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+64+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+2)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+128+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+192+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+6)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+256+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+8)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+320+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+10)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+384+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+12)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+448+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+14)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+512+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+16)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+576+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+18)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+640+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+20)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+704+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+22)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+768+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+24)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+832+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+26)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+896+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+28)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+960+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+30)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    _mm512_storeu_si512((out+j),a); }
+}
+/* Keep narrow live ranges bounded: the 16-register ISA cannot retain
+ * sixteen PH keys, four raw states and four PH sums simultaneously. These
+ * loads deliberately stay in the loop; each pattern serves all four lanes. */
+CH_T128 static inline __m128i ch_key128(const uint64_t *p) {
+    __m128i r; __asm__ volatile("vmovdqu {%1, %0|%0, %1}" : "=x"(r) : "m"(*(const __m128i_u *)p)); return r;
+}
+CH_T256 static inline __m256i ch_key256(const uint64_t *p) {
+    __m256i r; __asm__ volatile("vbroadcasti128 {%1, %0|%0, %1}" : "=x"(r) : "m"(*(const __m128i_u *)p)); return r;
+}
+CH_T128 static inline __m128i ch_xor128(__m128i a,__m128i b,__m128i c) {
+    __m128i r=_mm_xor_si128(a,_mm_xor_si128(b,c)); __asm__("" : "+x"(r)); return r;
+}
+CH_T256 static inline __m256i ch_xor256(__m256i a,__m256i b,__m256i c) {
+    __m256i r=_mm256_xor_si256(a,_mm256_xor_si256(b,c)); __asm__("" : "+x"(r)); return r;
+}
+CH_T128 static uint64_t ch_bulk128(const chainhash_key *k,const uint8_t *p,size_t regions,size_t len) {
+    __m128i s0=_mm_setzero_si128();
+    __m128i s1=_mm_setzero_si128();
+    __m128i s2=_mm_setzero_si128();
+    __m128i s3=_mm_set_epi64x(0,(long long)len);
+    const __m128i y=_mm_set_epi64x((long long)k->yh[4],(long long)k->yp[4]);
+    do {
+        __m128i u0=_mm_setzero_si128();
+        __m128i u1=_mm_setzero_si128();
+        __m128i u2=_mm_setzero_si128();
+        __m128i u3=_mm_setzero_si128();
+        { const __m128i ka=ch_key128(k->ph+0), kb=ch_key128(k->ph+2);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+0)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+64)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+16)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+80)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+32)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+96)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+48)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+112)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        { const __m128i ka=ch_key128(k->ph+4), kb=ch_key128(k->ph+6);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+128)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+192)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+144)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+208)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+160)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+224)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+176)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+240)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        { const __m128i ka=ch_key128(k->ph+8), kb=ch_key128(k->ph+10);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+256)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+320)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+272)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+336)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+288)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+352)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+304)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+368)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        { const __m128i ka=ch_key128(k->ph+12), kb=ch_key128(k->ph+14);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+384)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+448)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+400)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+464)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+416)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+480)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+432)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+496)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        { const __m128i ka=ch_key128(k->ph+16), kb=ch_key128(k->ph+18);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+512)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+576)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+528)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+592)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+544)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+608)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+560)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+624)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        { const __m128i ka=ch_key128(k->ph+20), kb=ch_key128(k->ph+22);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+640)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+704)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+656)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+720)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+672)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+736)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+688)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+752)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        { const __m128i ka=ch_key128(k->ph+24), kb=ch_key128(k->ph+26);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+768)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+832)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+784)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+848)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+800)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+864)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+816)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+880)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        { const __m128i ka=ch_key128(k->ph+28), kb=ch_key128(k->ph+30);
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+896)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+960)),kb); u0=ch_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+912)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+976)),kb); u1=ch_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+928)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+992)),kb); u2=ch_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+944)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+1008)),kb); u3=ch_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+        }
+        s0=ch_xor128(u0,_mm_clmulepi64_si128(s0,y,0),_mm_clmulepi64_si128(s0,y,0x11));
+        s1=ch_xor128(u1,_mm_clmulepi64_si128(s1,y,0),_mm_clmulepi64_si128(s1,y,0x11));
+        s2=ch_xor128(u2,_mm_clmulepi64_si128(s2,y,0),_mm_clmulepi64_si128(s2,y,0x11));
+        s3=ch_xor128(u3,_mm_clmulepi64_si128(s3,y,0),_mm_clmulepi64_si128(s3,y,0x11));
+        p+=1024;
+    } while(--regions);
+    __m128i acc=_mm_setzero_si128(),pw;
+    pw=_mm_set_epi64x((long long)k->yh[3],(long long)k->yp[3]);
+    acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s0,pw,0),_mm_clmulepi64_si128(s0,pw,0x11)));
+    pw=_mm_set_epi64x((long long)k->yh[2],(long long)k->yp[2]);
+    acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s1,pw,0),_mm_clmulepi64_si128(s1,pw,0x11)));
+    pw=_mm_set_epi64x((long long)k->yh[1],(long long)k->yp[1]);
+    acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s2,pw,0),_mm_clmulepi64_si128(s2,pw,0x11)));
+    pw=_mm_set_epi64x((long long)k->yh[0],(long long)k->yp[0]);
+    acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s3,pw,0),_mm_clmulepi64_si128(s3,pw,0x11)));
+    __m128i a=acc;
+    return ch_lane0(ch_vreduce(a));
+}
+CH_T256 static uint64_t ch_bulk256(const chainhash_key *k,const uint8_t *p,size_t regions,size_t len) {
+    __m256i s0=_mm256_setzero_si256();
+    __m256i s1=_mm256_set_epi64x(0,(long long)len,0,0);
+    const __m256i y=_mm256_set_epi64x((long long)k->yh[4],(long long)k->yp[4],(long long)k->yh[4],(long long)k->yp[4]);
+    do {
+        __m256i u0=_mm256_setzero_si256();
+        __m256i u1=_mm256_setzero_si256();
+        { const __m256i ka=ch_key256(k->ph+0), kb=ch_key256(k->ph+2);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+0)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+64)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+32)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+96)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        { const __m256i ka=ch_key256(k->ph+4), kb=ch_key256(k->ph+6);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+128)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+192)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+160)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+224)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        { const __m256i ka=ch_key256(k->ph+8), kb=ch_key256(k->ph+10);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+256)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+320)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+288)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+352)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        { const __m256i ka=ch_key256(k->ph+12), kb=ch_key256(k->ph+14);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+384)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+448)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+416)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+480)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        { const __m256i ka=ch_key256(k->ph+16), kb=ch_key256(k->ph+18);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+512)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+576)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+544)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+608)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        { const __m256i ka=ch_key256(k->ph+20), kb=ch_key256(k->ph+22);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+640)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+704)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+672)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+736)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        { const __m256i ka=ch_key256(k->ph+24), kb=ch_key256(k->ph+26);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+768)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+832)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+800)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+864)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        { const __m256i ka=ch_key256(k->ph+28), kb=ch_key256(k->ph+30);
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+896)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+960)),kb); u0=ch_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+928)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+992)),kb); u1=ch_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+        }
+        s0=ch_xor256(u0,_mm256_clmulepi64_epi128(s0,y,0),_mm256_clmulepi64_epi128(s0,y,0x11));
+        s1=ch_xor256(u1,_mm256_clmulepi64_epi128(s1,y,0),_mm256_clmulepi64_epi128(s1,y,0x11));
+        p+=1024;
+    } while(--regions);
+    __m256i acc=_mm256_setzero_si256(),pw;
+    pw=_mm256_set_epi64x((long long)k->yh[2],(long long)k->yp[2],(long long)k->yh[3],(long long)k->yp[3]);
+    acc=_mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(s0,pw,0),_mm256_clmulepi64_epi128(s0,pw,0x11)));
+    pw=_mm256_set_epi64x((long long)k->yh[0],(long long)k->yp[0],(long long)k->yh[1],(long long)k->yp[1]);
+    acc=_mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(s1,pw,0),_mm256_clmulepi64_epi128(s1,pw,0x11)));
+    __m128i a=_mm_xor_si128(_mm256_castsi256_si128(acc),_mm256_extracti128_si256(acc,1));
+    return ch_lane0(ch_vreduce(a));
+}
+/* The only cross-lane fold is AFTER all complete regions. */
+CH_T512 static inline uint64_t ch_fold512(__m512i s,const chainhash_key *k) {
+    __m512i powers=_mm512_set_epi64((long long)k->yh[0],(long long)k->yp[0],(long long)k->yh[1],(long long)k->yp[1],(long long)k->yh[2],(long long)k->yp[2],(long long)k->yh[3],(long long)k->yp[3]);
+    s=_mm512_xor_si512(_mm512_clmulepi64_epi128(s,powers,0),_mm512_clmulepi64_epi128(s,powers,0x11));
+    __m256i h=_mm256_xor_si256(_mm512_castsi512_si256(s),_mm512_extracti64x4_epi64(s,1));
+    __m128i q=_mm_xor_si128(_mm256_castsi256_si128(h),_mm256_extracti128_si256(h,1));
+    ch_raw r; _mm_storeu_si128((__m128i_u *)&r,q); return ch_reduce(r);
+}
+/* Tail loads never cross the input object. A padded 128-byte chunk handles
+ * the last partial word; both keyed multiplicands are masked by first-word
+ * presence. Horner weights act on all four lanes in two vector products. */
+CH_T512 static uint64_t ch_tail512(const chainhash_key *k,const uint8_t *p,size_t n,uint64_t leading) {
+    __m512i acc=_mm512_setzero_si512(); unsigned c=0,j,lanes=ch_lanes(n); size_t rem=n;
+    uint64_t weights[8];
+    while(rem) {
+        __m512i a,b; size_t take=rem<128?rem:128;
+        if(take==128) { a=_mm512_loadu_si512(p); b=_mm512_loadu_si512(p+64); }
+        else { uint8_t tmp[128]={0}; memcpy(tmp,p,take); a=_mm512_loadu_si512(tmp); b=_mm512_loadu_si512(tmp+64); }
+        a=_mm512_xor_si512(a,_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4*c))));
+        b=_mm512_xor_si512(b,_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4*c+2))));
+        if(take<64) { __mmask8 mask=(__mmask8)((1u<<((take+7)/8))-1); a=_mm512_maskz_mov_epi64(mask,a); b=_mm512_maskz_mov_epi64(mask,b); }
+        acc=_mm512_ternarylogic_epi64(acc,_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11),0x96);
+        rem-=take; p+=take; ++c;
+    }
+    for(j=0;j<4;j++) { unsigned e=j<lanes?lanes-1-j:0; weights[2*j]=k->yp[e]; weights[2*j+1]=k->yh[e]; }
+    __m512i pw=_mm512_loadu_si512(weights);
+    acc=_mm512_xor_si512(_mm512_clmulepi64_epi128(acc,pw,0),_mm512_clmulepi64_epi128(acc,pw,0x11));
+    __m256i h=_mm256_xor_si256(_mm512_castsi512_si256(acc),_mm512_extracti64x4_epi64(acc,1));
+    __m128i v=_mm_xor_si128(_mm256_castsi256_si128(h),_mm256_extracti128_si256(h,1));
+    v=_mm_xor_si128(v,_mm_clmulepi64_si128(_mm_set_epi64x(0,(long long)leading),_mm_set_epi64x(0,(long long)k->yp[lanes]),0));
+    return ch_lane0(ch_vreduce(v));
+}
+CH_T512 static uint64_t ch_bulk512(const chainhash_key *k,const uint8_t *p,size_t regions,size_t len) {
+    __m512i s=_mm512_set_epi64(0,(long long)len,0,0,0,0,0,0);
+    const __m512i y=_mm512_broadcast_i32x4(_mm_set_epi64x((long long)k->yh[4],(long long)k->yp[4]));
+    const __m512i a0=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+0))), b0=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+2)));
+    const __m512i a1=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4))), b1=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+6)));
+    const __m512i a2=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+8))), b2=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+10)));
+    const __m512i a3=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+12))), b3=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+14)));
+    const __m512i a4=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+16))), b4=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+18)));
+    const __m512i a5=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+20))), b5=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+22)));
+    const __m512i a6=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+24))), b6=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+26)));
+    const __m512i a7=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+28))), b7=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+30)));
+    do {
+        __m512i u0,u1,u2,u3;
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+0),a0), b=_mm512_xor_si512(_mm512_loadu_si512(p+64),b0);
+          u0=_mm512_xor_si512(_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11)); }
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+128),a1), b=_mm512_xor_si512(_mm512_loadu_si512(p+192),b1);
+          u1=_mm512_xor_si512(_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11)); }
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+256),a2), b=_mm512_xor_si512(_mm512_loadu_si512(p+320),b2);
+          u2=_mm512_xor_si512(_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11)); }
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+384),a3), b=_mm512_xor_si512(_mm512_loadu_si512(p+448),b3);
+          u3=_mm512_xor_si512(_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11)); }
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+512),a4), b=_mm512_xor_si512(_mm512_loadu_si512(p+576),b4);
+          u0=_mm512_ternarylogic_epi64(u0,_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11),0x96); }
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+640),a5), b=_mm512_xor_si512(_mm512_loadu_si512(p+704),b5);
+          u1=_mm512_ternarylogic_epi64(u1,_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11),0x96); }
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+768),a6), b=_mm512_xor_si512(_mm512_loadu_si512(p+832),b6);
+          u2=_mm512_ternarylogic_epi64(u2,_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11),0x96); }
+        { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+896),a7), b=_mm512_xor_si512(_mm512_loadu_si512(p+960),b7);
+          u3=_mm512_ternarylogic_epi64(u3,_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11),0x96); }
+        s=_mm512_ternarylogic_epi64(_mm512_clmulepi64_epi128(s,y,0),_mm512_clmulepi64_epi128(s,y,0x11),_mm512_xor_si512(_mm512_ternarylogic_epi64(u0,u1,u2,0x96),u3),0x96);
+        p+=1024;
+    } while(--regions);
+    return ch_fold512(s,k);
+}
+#endif
+
+#ifdef CH_ARM
+static inline void ch_region_neon(const chainhash_key *k,const uint8_t *p,ch_raw out[4]) {
+    unsigned j; for(j=0;j<4;j++) { uint64x2_t s=vdupq_n_u64(0);
+    { uint64x2_t a=veorq_u64(ch_ld(p+0+16*j),vld1q_u64(k->ph+0)), b=veorq_u64(ch_ld(p+64+16*j),vld1q_u64(k->ph+2)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(ch_ld(p+128+16*j),vld1q_u64(k->ph+4)), b=veorq_u64(ch_ld(p+192+16*j),vld1q_u64(k->ph+6)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(ch_ld(p+256+16*j),vld1q_u64(k->ph+8)), b=veorq_u64(ch_ld(p+320+16*j),vld1q_u64(k->ph+10)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(ch_ld(p+384+16*j),vld1q_u64(k->ph+12)), b=veorq_u64(ch_ld(p+448+16*j),vld1q_u64(k->ph+14)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(ch_ld(p+512+16*j),vld1q_u64(k->ph+16)), b=veorq_u64(ch_ld(p+576+16*j),vld1q_u64(k->ph+18)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(ch_ld(p+640+16*j),vld1q_u64(k->ph+20)), b=veorq_u64(ch_ld(p+704+16*j),vld1q_u64(k->ph+22)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(ch_ld(p+768+16*j),vld1q_u64(k->ph+24)), b=veorq_u64(ch_ld(p+832+16*j),vld1q_u64(k->ph+26)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(ch_ld(p+896+16*j),vld1q_u64(k->ph+28)), b=veorq_u64(ch_ld(p+960+16*j),vld1q_u64(k->ph+30)); s=ch_xor3(s,ch_ll(a,b),ch_hh(a,b)); }
+    vst1q_u64(&out[j].lo,s); }
+}
+static uint64_t ch_bulk_neon(const chainhash_key *k,const uint8_t *p,size_t regions,size_t len) {
+    uint64x2_t s0=vdupq_n_u64(0),s1=s0,s2=s0,s3=vcombine_u64(vcreate_u64(len),vcreate_u64(0));
+    const uint64x2_t y=vcombine_u64(vcreate_u64(k->yp[4]),vcreate_u64(k->yh[4]));
+    const uint64x2_t a0=vld1q_u64(k->ph+0),b0=vld1q_u64(k->ph+2);
+    const uint64x2_t a1=vld1q_u64(k->ph+4),b1=vld1q_u64(k->ph+6);
+    const uint64x2_t a2=vld1q_u64(k->ph+8),b2=vld1q_u64(k->ph+10);
+    const uint64x2_t a3=vld1q_u64(k->ph+12),b3=vld1q_u64(k->ph+14);
+    const uint64x2_t a4=vld1q_u64(k->ph+16),b4=vld1q_u64(k->ph+18);
+    const uint64x2_t a5=vld1q_u64(k->ph+20),b5=vld1q_u64(k->ph+22);
+    const uint64x2_t a6=vld1q_u64(k->ph+24),b6=vld1q_u64(k->ph+26);
+    const uint64x2_t a7=vld1q_u64(k->ph+28),b7=vld1q_u64(k->ph+30);
+    do {
+        uint64x2_t u0=vdupq_n_u64(0),u1=u0,u2=u0,u3=u0;
+        { uint64x2_t a=veorq_u64(ch_ld(p+0),a0), b=veorq_u64(ch_ld(p+64),b0); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+16),a0), b=veorq_u64(ch_ld(p+80),b0); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+32),a0), b=veorq_u64(ch_ld(p+96),b0); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+48),a0), b=veorq_u64(ch_ld(p+112),b0); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+128),a1), b=veorq_u64(ch_ld(p+192),b1); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+144),a1), b=veorq_u64(ch_ld(p+208),b1); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+160),a1), b=veorq_u64(ch_ld(p+224),b1); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+176),a1), b=veorq_u64(ch_ld(p+240),b1); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+256),a2), b=veorq_u64(ch_ld(p+320),b2); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+272),a2), b=veorq_u64(ch_ld(p+336),b2); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+288),a2), b=veorq_u64(ch_ld(p+352),b2); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+304),a2), b=veorq_u64(ch_ld(p+368),b2); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+384),a3), b=veorq_u64(ch_ld(p+448),b3); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+400),a3), b=veorq_u64(ch_ld(p+464),b3); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+416),a3), b=veorq_u64(ch_ld(p+480),b3); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+432),a3), b=veorq_u64(ch_ld(p+496),b3); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+512),a4), b=veorq_u64(ch_ld(p+576),b4); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+528),a4), b=veorq_u64(ch_ld(p+592),b4); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+544),a4), b=veorq_u64(ch_ld(p+608),b4); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+560),a4), b=veorq_u64(ch_ld(p+624),b4); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+640),a5), b=veorq_u64(ch_ld(p+704),b5); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+656),a5), b=veorq_u64(ch_ld(p+720),b5); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+672),a5), b=veorq_u64(ch_ld(p+736),b5); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+688),a5), b=veorq_u64(ch_ld(p+752),b5); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+768),a6), b=veorq_u64(ch_ld(p+832),b6); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+784),a6), b=veorq_u64(ch_ld(p+848),b6); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+800),a6), b=veorq_u64(ch_ld(p+864),b6); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+816),a6), b=veorq_u64(ch_ld(p+880),b6); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+896),a7), b=veorq_u64(ch_ld(p+960),b7); u0=ch_xor3(u0,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+912),a7), b=veorq_u64(ch_ld(p+976),b7); u1=ch_xor3(u1,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+928),a7), b=veorq_u64(ch_ld(p+992),b7); u2=ch_xor3(u2,ch_ll(a,b),ch_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(ch_ld(p+944),a7), b=veorq_u64(ch_ld(p+1008),b7); u3=ch_xor3(u3,ch_ll(a,b),ch_hh(a,b)); }
+        s0=ch_xor3(u0,ch_ll(s0,y),ch_hh(s0,y));
+        s1=ch_xor3(u1,ch_ll(s1,y),ch_hh(s1,y));
+        s2=ch_xor3(u2,ch_ll(s2,y),ch_hh(s2,y));
+        s3=ch_xor3(u3,ch_ll(s3,y),ch_hh(s3,y));
+        p+=1024;
+    } while(--regions);
+    uint64x2_t acc=vdupq_n_u64(0),pw;
+    pw=vcombine_u64(vcreate_u64(k->yp[3]),vcreate_u64(k->yh[3])); acc=ch_xor3(acc,ch_ll(s0,pw),ch_hh(s0,pw));
+    pw=vcombine_u64(vcreate_u64(k->yp[2]),vcreate_u64(k->yh[2])); acc=ch_xor3(acc,ch_ll(s1,pw),ch_hh(s1,pw));
+    pw=vcombine_u64(vcreate_u64(k->yp[1]),vcreate_u64(k->yh[1])); acc=ch_xor3(acc,ch_ll(s2,pw),ch_hh(s2,pw));
+    pw=vcombine_u64(vcreate_u64(k->yp[0]),vcreate_u64(k->yh[0])); acc=ch_xor3(acc,ch_ll(s3,pw),ch_hh(s3,pw));
+    ch_raw r; vst1q_u64(&r.lo,acc); return ch_reduce(r);
+}
+#endif
+static inline void ch_region(const chainhash_key *k,const uint8_t *p,size_t n,ch_raw out[4],int b) {
+    if(n==1024) {
+#ifdef CH_X86
+        if(b==3) { ch_region512(k,p,out); return; }
+        if(b==2) { ch_region256(k,p,out); return; }
+        if(b==1) { ch_region128(k,p,out); return; }
+#elif defined(CH_ARM)
+        if(b==4) { ch_region_neon(k,p,out); return; }
+#endif
+    }
+    ch_region_scalar(k,p,n,out,b);
+}
+/* Streaming keeps at most one incomplete region. len is supplied at final,
+ * so any chunking (including empty updates) has identical semantics.
+ * Backend is explicit for testing; use chainhash_backend() in applications.
+ * stride must be 1..8; lazy must be 0 or 1. key must outlive the stream.
+ */
+typedef struct {
+    const chainhash_key *key; ch_raw state[8];
+    uint64_t len, blocks; unsigned stride; int lazy, backend;
+    size_t used; uint8_t buffer[1024];
+} chainhash_stream;
+static inline void chainhash_init(chainhash_stream *s,const chainhash_key *k,unsigned stride,int lazy,int backend) {
+    assert(stride>=1 && stride<=8 && chainhash_has_backend(backend));
+    memset(s,0,sizeof(*s)); s->key=k; s->stride=stride; s->lazy=lazy; s->backend=backend;
+}
+static inline void ch_absorb(chainhash_stream *s,const uint8_t *p,size_t n) {
+    ch_raw c[4]; unsigned j,count=ch_lanes(n); const chainhash_key *k=s->key;
+    ch_region(k,p,n,c,s->backend);
+    for(j=0;j<count;j++) {
+        ch_raw *r=&s->state[s->blocks%s->stride];
+        if(s->lazy) { ch_raw a=ch_prod(r->lo,k->yp[s->stride],s->backend), b=ch_prod(r->hi,k->yh[s->stride],s->backend); r->lo=a.lo^b.lo^c[j].lo; r->hi=a.hi^b.hi^c[j].hi; }
+        else { r->lo=ch_fmul(r->lo,k->yp[s->stride],s->backend)^ch_reduce(c[j]); r->hi=0; }
+        ++s->blocks;
+    }
+}
+static inline void chainhash_update(chainhash_stream *s,const void *data,size_t n) {
+    const uint8_t *p=(const uint8_t *)data; assert(n<=UINT64_MAX-s->len); s->len+=n;
+    if(s->used) { size_t take=1024-s->used; if(take>n) take=n; if(take) { memcpy(s->buffer+s->used,p,take); p+=take; } s->used+=take; n-=take; if(s->used==1024) { ch_absorb(s,s->buffer,1024); s->used=0; } }
+    while(n>=1024) { ch_absorb(s,p,1024); p+=1024; n-=1024; }
+    if(n) { memcpy(s->buffer,p,n); s->used=n; }
+}
+/* Return the message polynomial without its leading length coefficient.
+ * This is useful for region-aligned independent thread partitions. */
+static inline uint64_t chainhash_partial(chainhash_stream *s) {
+    uint64_t v=0; unsigned j;
+    if(s->used || !s->blocks) { ch_absorb(s,s->buffer,s->used); s->used=0; }
+    for(j=0;j<s->stride && j<s->blocks;j++) { unsigned e=(unsigned)((s->blocks-1-j)%s->stride); v^=ch_fmul(ch_reduce(s->state[j]),s->key->yp[e],s->backend); }
+    return v;
+}
+static inline uint64_t chainhash_final(chainhash_stream *s) {
+    uint64_t v=chainhash_partial(s);
+    v^=ch_fmul(s->len,ch_pow(s->key->yp[1],s->blocks,s->backend),s->backend);
+    return ch_finish(s->key,v,s->backend);
+}
+/* Concatenate region-aligned chunks. right_blocks counts only actual right
+ * blocks; an empty right chunk has zero blocks (not the empty-hash sentinel).
+ * Inputs exclude length and finalizer. No inversion: y=0 works as well. */
+static inline uint64_t chainhash_join(const chainhash_key *k,uint64_t left,uint64_t right,uint64_t right_blocks,int backend) {
+    return ch_fmul(left,ch_pow(k->yp[1],right_blocks,backend),backend)^right;
+}
+static inline uint64_t chainhash_evaluate(const chainhash_key *k,const void *data,size_t len,unsigned stride,int lazy,int backend) {
+    chainhash_stream s; chainhash_init(&s,k,stride,lazy,backend); chainhash_update(&s,data,len); return chainhash_final(&s);
+}
+/* Portable reference: serial eager Horner, length leading, no round robin. */
+static inline uint64_t chainhash_portable(const chainhash_key *k,const void *data,size_t len) {
+    const uint8_t *p=(const uint8_t *)data; size_t n=len; uint64_t v=len;
+    do { ch_raw c[4]; size_t take=n<1024?n:1024; unsigned j;
+        ch_region_scalar(k,p,take,c,0);
+        for(j=0;j<ch_lanes(take);j++) v=ch_mul(v,k->yp[1])^ch_reduce(c[j]);
+        n-=take; if(!n) break; p+=take;
+    } while(1);
+    return ch_finish(k,v,0);
+}
+static inline uint64_t chainhash_with_backend(const chainhash_key *k,const void *data,size_t len,int backend) {
+    const uint8_t *p=(const uint8_t *)data; size_t full=len/1024,n=len%1024; uint64_t v=len;
+    assert(chainhash_has_backend(backend));
+    if(full) {
+#ifdef CH_X86
+        if(backend==3) v=ch_bulk512(k,p,full,len);
+        else if(backend==2) v=ch_bulk256(k,p,full,len);
+        else if(backend==1) v=ch_bulk128(k,p,full,len);
+        else return chainhash_evaluate(k,data,len,4,1,backend);
+#elif defined(CH_ARM)
+        if(backend==4) v=ch_bulk_neon(k,p,full,len);
+        else return chainhash_evaluate(k,data,len,4,1,backend);
+#else
+        return chainhash_evaluate(k,data,len,4,1,backend);
+#endif
+        p+=full*1024;
+    }
+    #ifdef CH_X86
+    if(backend==3 && (n || !full)) return ch_finish(k,ch_tail512(k,p,n,v),backend);
+#elif defined(CH_ARM)
+    if(backend==4 && (n || !full)) return ch_tail_neon(k,p,n,v);
+#endif
+    if(n || !full) { ch_raw c[4]; unsigned j; ch_region_scalar(k,p,n,c,backend); for(j=0;j<ch_lanes(n);j++) v=ch_fmul(v,k->yp[1],backend)^ch_reduce(c[j]); }
+    return ch_finish(k,v,backend);
+}
+static inline uint64_t chainhash(const chainhash_key *k,const void *data,size_t len) { return chainhash_with_backend(k,data,len,chainhash_backend()); }
+#ifdef CH_X86
+static inline uint64_t chainhash_xmm(const chainhash_key *k,const void *p,size_t n) { return chainhash_with_backend(k,p,n,CH_XMM); }
+static inline uint64_t chainhash_ymm(const chainhash_key *k,const void *p,size_t n) { return chainhash_with_backend(k,p,n,CH_YMM); }
+static inline uint64_t chainhash_zmm(const chainhash_key *k,const void *p,size_t n) { return chainhash_with_backend(k,p,n,CH_ZMM); }
+#endif
+#ifdef CH_ARM
+static inline uint64_t chainhash_neon(const chainhash_key *k,const void *p,size_t n) { return chainhash_with_backend(k,p,n,CH_NEON); }
+#endif
+static inline int chainhash_selftest(void) {
+    uint8_t m[2049]; chainhash_key k=chainhash_key_from_seed(123); size_t n; unsigned j;
+    for(j=0;j<sizeof(m);j++) m[j]=(uint8_t)j;
+    /* Constants generated by test/vectors.c's independent memo evaluator. */
+    if(chainhash(&k,m,0)!=UINT64_C(0xede120e3ad6ec193) ||
+       chainhash(&k,m,17)!=UINT64_C(0x97c346f5999acee9) ||
+       chainhash(&k,m,1024)!=UINT64_C(0xf3897c02083c9f82)) return 0;
+    for(n=0;n<sizeof(m);n=n<65?n+1:n+127) if(chainhash(&k,m,n)!=chainhash_portable(&k,m,n)) return 0;
+    return 1;
 }
 #endif

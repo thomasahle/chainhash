@@ -1,6 +1,0 @@
-backend=pmull; 5 trials, 16 MiB/trial/size; hot reused buffer; key setup excluded
-cycle basis: estimated ARM cycles, dependent-add calibration 3.342037 GHz
-bytes,bytes_per_cycle,GB_per_second,median_ns_per_hash
-256,9.0615,30.2838,8.4534
-4096,18.1886,60.7870,67.3828
-262144,20.9169,69.9051,3750.0000

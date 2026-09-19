@@ -1,0 +1,56 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 55816967..05e13ff8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -246,6 +246,7 @@ add_library(
+   tests/SeedZeroesTest.cpp
+   tests/SeedSparseTest.cpp
+   tests/SeedBitflipTest.cpp
++  tests/SeedDifferentialTest.cpp
+   tests/SeedBlockLenTest.cpp
+   tests/SeedBlockOffsetTest.cpp
+   tests/SeedAvalancheTest.cpp
+diff --git a/main.cpp b/main.cpp
+index b6b1e6b4..4f148897 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -89,6 +89,7 @@
+ #include "SeedZeroesTest.h"
+ #include "SeedSparseTest.h"
+ #include "SeedBitflipTest.h"
++#include "SeedDifferentialTest.h"
+ #include "SeedBlockLenTest.h"
+ #include "SeedBlockOffsetTest.h"
+ #include "SeedAvalancheTest.h"
+@@ -138,6 +139,7 @@ static bool g_testSeedSparse;
+ static bool g_testSeedBlockLen;
+ static bool g_testSeedBlockOffset;
+ static bool g_testSeedBitflip;
++static bool g_testSeedDifferential;
+ static bool g_testSeedAvalanche;
+ static bool g_testSeedBIC;
+ static bool g_testPerlinNoise;
+@@ -175,6 +177,7 @@ static TestOpts g_testopts[] = {
+     { g_testSeedBlockLen,     true,     false,    "SeedBlockLen" },
+     { g_testSeedBlockOffset,  true,     false,    "SeedBlockOffset" },
+     { g_testSeedBitflip,      true,     false,    "SeedBitflip" },
++    { g_testSeedDifferential, true,     false,    "SeedDifferential" },
+     { g_testSeedAvalanche,    true,     false,    "SeedAvalanche" },
+     { g_testSeedBIC,          true,     false,    "SeedBIC" },
+     { g_testPerlinNoise,      true,     false,    "PerlinNoise" },
+@@ -626,6 +629,15 @@ static bool test( const HashInfo * hInfo, const flags_t flags ) {
+         if (!result && g_exitOnFailure) { goto out; }
+     }
+ 
++    //-----------------------------------------------------------------------------
++    // Keyset 'SeedDifferential'
++
++    if (g_testSeedDifferential) {
++        result &= SeedDifferentialTest<hashtype>(hInfo, g_testExtra, flags);
++        if (g_dumpAllVCodes) { DumpVCodes(); }
++        if (!result && g_exitOnFailure) { goto out; }
++    }
++
+     //-----------------------------------------------------------------------------
+     // Test for known or unknown seed values which give bad/suspect hash values
+ 

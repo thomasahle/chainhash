@@ -1,17 +1,9 @@
-Xeon source repository HEADs at collection (working-tree files were copied).
-Content hashes in PROVENANCE.json identify the exact integrated snapshots.
+Repository HEADs of the proof development trees at collection (working-tree
+files were copied). Content hashes in PROVENANCE.json identify the exact
+integrated files; `derived_from` there uses the labels of this list.
 
-lean-hash e70213feed3dac6280fe8d7ecdc35dcfd0cf1cc8
-lean-chainhash 618f1b6abdeee57c83a6b1fa2f00b84e687b61ea
-lean-chainhash-pieces 1a0c3d6402348ddf468e6dc674fafa09246151eb
-lean-chainhash-opus-1 a75022b7a907a62267e83ffe577b3c262671f4cb
-lean-chainhash-opus-2 f2cd7fb156473dac1e61df8ed35d5904d7b14672
-lean-chainhash-opus-3 e8ba4a1c51ea443eff10fc6adac4f9d177705f27
-lean-chainhash-modelA a3939c01b87d962ae170776b656a154300d5f3ca (completed model-A integration)
-verify-chainhash-full 618f1b6abdeee57c83a6b1fa2f00b84e687b61ea
-verify-clnh a75022b7a907a62267e83ffe577b3c262671f4cb
-verify-encoding f2cd7fb156473dac1e61df8ed35d5904d7b14672
-verify-finalizer e8ba4a1c51ea443eff10fc6adac4f9d177705f27
-lean-chainhash-v3-64 54410e433a1d9f79cd4104dc9fc2cdea72164f07 (completed v3 paper/model-A/evaluation/score proofs)
-lean-chainhash128 0ff7ac3e971a118cda4ca7620aa5f70458f24986 (completed strided ChainHash-128 field/encoding lane; base of the 128-bit v3 port)
-lean-chainhash-v3-128 3698caae7c03cc359056a9cea08e9b2d6483f6a7 (completed ChainHash-128 v3 paper/model-A/evaluation/score proofs)
+shared base e70213feed3dac6280fe8d7ecdc35dcfd0cf1cc8 (Probability, Polynomial, NH, Composition, Counting, Carryless, Tabulation, MultiplyShift, Decoder, Recurrence)
+64-bit base 618f1b6abdeee57c83a6b1fa2f00b84e687b61ea (byte encoding, word representation, modulus certificate, field representation, finalizer)
+64-bit proof development 54410e433a1d9f79cd4104dc9fc2cdea72164f07 (the ten ChainHash proof modules, now ProvenHashes/ChainHash/*.lean)
+128-bit base 0ff7ac3e971a118cda4ca7620aa5f70458f24986 (GCM modulus certificate, 16-byte encoding, field representation)
+128-bit proof development 3698caae7c03cc359056a9cea08e9b2d6483f6a7 (the ten ChainHash-128 proof modules, now ProvenHashes/ChainHash128/*.lean)

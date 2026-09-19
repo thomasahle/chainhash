@@ -1,4 +1,0 @@
-SMHasher3 source SHA256: 0bb191c1f4d36534e7ed87cda4374d3c1638e07caf0724b63af9d77ce2242f7d
-PMULL benchmark source SHA256: f3c4e96de48970528c5b20d3e760bac84ba0063e67610c0d595fce07e3c578bb
-PASS 6278 byte-for-byte cases against unmodified SMHasher3 chainhash_256; all 92 reference vectors; SMHasher3 backend=hwpmull
-PASS same cases against original PMULL benchmark chainhash.h
