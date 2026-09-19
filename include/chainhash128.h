@@ -71,6 +71,7 @@ static inline ch128_word ch128_mul_ref(ch128_word a, ch128_word b) {
 }
 static inline ch128_word ch128_partial(const uint8_t *p, size_t n, size_t off) {
     uint8_t buf[16]={0};
+    if(off<n && n-off>=16) return ch128_load(p+off);
     if(off<n) { size_t count=n-off; if(count>16) count=16; memcpy(buf,p+off,count); }
     return ch128_load(buf);
 }
@@ -1644,6 +1645,34 @@ static inline ch128_word chainhash128_portable(const chainhash128_key *k,const v
         n-=take; if(!n) break; p+=take;
     } while(1); return ch128_finish(k,v,0);
 }
+#ifdef CH128_ARM
+/* Evaluate a partial comb region in vector registers. Only the final 256-byte
+ * chunk needs padding; skip absent first words so no key-only pairs are added.
+ * The cached powers combine the independent lanes without a serial Horner chain. */
+static inline ch128_word ch128_n_tail(const chainhash128_key *k,const uint8_t *p,size_t n,ch128_word v,int school) {
+    uint8_t tail[256]={0}; size_t chunks=n/256,rem=n%256; unsigned j,c,count=ch128_lanes(n);
+    ch128_n_acc sum=ch128_n_accum(ch128_n_azero(),ch128_n_load(&v),ch128_n_load(k->yp+count),0);
+    ch128_n_raw last;
+    if(rem) memcpy(tail,p+256*chunks,rem);
+    last.lo=last.hi=ch128_n_zero();
+    for(j=0;j<count;j++) {
+        ch128_n_acc a=ch128_n_azero(); ch128_n_raw r;
+        for(c=0;c<chunks;c++)
+            a=ch128_n_accum(a,ch128_n_xor(ch128_n_load(p+256*c+16*j),ch128_n_load(k->ph+2*c)),
+                              ch128_n_xor(ch128_n_load(p+256*c+16*j+128),ch128_n_load(k->ph+2*c+1)),school);
+        if(16*j<rem)
+            a=ch128_n_accum(a,ch128_n_xor(ch128_n_load(tail+16*j),ch128_n_load(k->ph+2*chunks)),
+                              ch128_n_xor(ch128_n_load(tail+16*j+128),ch128_n_load(k->ph+2*chunks+1)),school);
+        r=ch128_n_pack(a,school);
+        if(j+1<count) sum=ch128_n_accum(sum,ch128_n_reduce(r),ch128_n_load(k->yp+count-1-j),0);
+        else last=r;
+    }
+    { ch128_n_raw r=ch128_n_pack(sum,0);
+      r.lo=ch128_n_xor(r.lo,last.lo); r.hi=ch128_n_xor(r.hi,last.hi);
+      ch128_n_store(&v,ch128_n_reduce(r)); }
+    return v;
+}
+#endif
 static inline ch128_word chainhash128_with_backend(const chainhash128_key *k,const void *data,size_t len,int b,int school) {
     const uint8_t *p=(const uint8_t *)data; size_t full=len/CH128_REGION,n=len%CH128_REGION; ch128_word v=ch128_make(len,0);
     assert(chainhash128_has_backend(b)); assert(school==0 || school==1);
@@ -1666,6 +1695,9 @@ static inline ch128_word chainhash128_with_backend(const chainhash128_key *k,con
 #endif
         p+=full*CH128_REGION;
     }
+#ifdef CH128_ARM
+    if(b==4 && n) return ch128_finish(k,ch128_n_tail(k,p,n,v,school),b);
+#endif
     if(n || !full) { ch128_raw c[8]; unsigned j; ch128_region_scalar(k,p,n,c,b,school); for(j=0;j<ch128_lanes(n);j++) v=ch128_xor(ch128_mul(v,k->yp[1],b),ch128_reduce(c[j])); }
     return ch128_finish(k,v,b);
 }
