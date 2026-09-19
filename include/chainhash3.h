@@ -76,7 +76,7 @@ static inline int chv3_detect(void) {
     return (l&0xe6)==0xe6 && (b&(1u<<16)) ? 3:2;
 }
 CHV3_T128 static inline chv3_raw chv3_hwprod(uint64_t a,uint64_t b) {
-    chv3_raw r; __m128i v=_mm_clmulepi64_si128(_mm_set_epi64x(0,a),_mm_set_epi64x(0,b),0); _mm_storeu_si128((__m128i *)&r,v); return r;
+    chv3_raw r; __m128i v=_mm_clmulepi64_si128(_mm_set_epi64x(0,(long long)a),_mm_set_epi64x(0,(long long)b),0); _mm_storeu_si128((__m128i_u *)&r,v); return r;
 }
 #elif !defined(CHAINHASH_V3_PORTABLE) && defined(__aarch64__) && !defined(__AARCH64EB__) && (defined(__ARM_FEATURE_AES) || defined(__ARM_FEATURE_CRYPTO))
 #define CHV3_ARM 1
@@ -119,15 +119,16 @@ CHV3_T128 static inline __m128i chv3_vreduce(__m128i a) {
     return _mm_xor_si128(a,_mm_xor_si128(t,u));
 }
 CHV3_T128 static uint64_t chv3_fastfinish(const chainhash_v3_key *k,uint64_t v) {
-    __m128i x=_mm_set_epi64x(0,v+k->tau),q=chv3_vreduce(_mm_clmulepi64_si128(x,x,0));
-    __m128i a=_mm_xor_si128(q,_mm_set_epi64x(0,k->c[0])),b=_mm_xor_si128(_mm_xor_si128(x,q),_mm_set_epi64x(0,k->c[1]));
+    __m128i x=_mm_set_epi64x(0,(long long)(v+k->tau)),q=chv3_vreduce(_mm_clmulepi64_si128(x,x,0));
+    __m128i a=_mm_xor_si128(q,_mm_set_epi64x(0,(long long)k->c[0])),b=_mm_xor_si128(_mm_xor_si128(x,q),_mm_set_epi64x(0,(long long)k->c[1]));
     __m128i r=chv3_vreduce(_mm_clmulepi64_si128(a,b,0));
-    r=chv3_vreduce(_mm_clmulepi64_si128(_mm_xor_si128(x,_mm_set_epi64x(0,k->c[2])),_mm_xor_si128(r,_mm_set_epi64x(0,k->c[3])),0));
+    r=chv3_vreduce(_mm_clmulepi64_si128(_mm_xor_si128(x,_mm_set_epi64x(0,(long long)k->c[2])),_mm_xor_si128(r,_mm_set_epi64x(0,(long long)k->c[3])),0));
     return (uint64_t)_mm_cvtsi128_si64(r)^k->c[4];
 }
 #elif defined(CHV3_ARM)
 static inline uint64x2_t chv3_vreduce(uint64x2_t a) { const uint64x2_t r=vdupq_n_u64(27); uint64x2_t t=chv3_hh(a,r); return chv3_xor3(a,t,chv3_hh(t,r)); }
 static inline uint64x2_t chv3_v64(uint64_t v) { return vcombine_u64(vcreate_u64(v),vcreate_u64(0)); }
+static inline uint64x2_t chv3_ld(const uint8_t *p) { return vreinterpretq_u64_u8(vld1q_u8(p)); }
 static inline uint64_t chv3_finish_neon_vec(const chainhash_v3_key *k,uint64x2_t v) {
     uint64x2_t x=vaddq_u64(v,chv3_v64(k->tau)),q=chv3_vreduce(chv3_ll(x,x));
     uint64x2_t a=veorq_u64(q,chv3_v64(k->c[0])),b=chv3_xor3(x,q,chv3_v64(k->c[1]));
@@ -149,8 +150,8 @@ static uint64_t chv3_tail_neon(const chainhash_v3_key *k,const uint8_t *p,size_t
         if(take<128) { memcpy(tmp,p,take); q=tmp; }
         uint64x2_t ka=vld1q_u64(k->ph+4*c),kb=vld1q_u64(k->ph+4*c+2);
         for(j=0;j<4;j++) if(16*j<take) {
-            uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(q+16*j)),ka);
-            uint64x2_t b=veorq_u64(vld1q_u64((const uint64_t *)(q+64+16*j)),kb);
+            uint64x2_t a=veorq_u64(chv3_ld(q+16*j),ka);
+            uint64x2_t b=veorq_u64(chv3_ld(q+64+16*j),kb);
             if(take<=16*j+8) { a=vsetq_lane_u64(0,a,1); b=vsetq_lane_u64(0,b,1); }
             u[j]=chv3_xor3(u[j],chv3_ll(a,b),chv3_hh(a,b));
         }
@@ -184,40 +185,40 @@ static inline void chv3_region_scalar(const chainhash_v3_key *k,const uint8_t *p
 CHV3_T128 static inline void chv3_region128(const chainhash_v3_key *k,const uint8_t *p,chv3_raw out[4]) {
     unsigned j; for(j=0;j<4;j+=1) {
     __m128i a=_mm_setzero_si128();
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+0+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+0))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+64+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+2))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+128+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+4))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+192+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+6))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+256+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+8))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+320+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+10))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+384+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+12))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+448+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+14))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+512+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+16))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+576+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+18))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+640+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+20))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+704+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+22))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+768+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+24))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+832+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+26))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+896+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+28))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+960+16*j)),_mm_loadu_si128((const __m128i *)(k->ph+30))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
-    _mm_storeu_si128((__m128i *)(out+j),a); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+0+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+0))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+64+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+2))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+128+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+4))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+192+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+6))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+256+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+8))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+320+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+10))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+384+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+12))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+448+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+14))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+512+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+16))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+576+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+18))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+640+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+20))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+704+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+22))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+768+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+24))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+832+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+26))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    { __m128i x=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+896+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+28))), y=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+960+16*j)),_mm_loadu_si128((const __m128i_u *)(k->ph+30))); a=_mm_xor_si128(a,_mm_xor_si128(_mm_clmulepi64_si128(x,y,0),_mm_clmulepi64_si128(x,y,0x11))); }
+    _mm_storeu_si128((__m128i_u *)(out+j),a); }
 }
 CHV3_T256 static inline void chv3_region256(const chainhash_v3_key *k,const uint8_t *p,chv3_raw out[4]) {
     unsigned j; for(j=0;j<4;j+=2) {
     __m256i a=_mm256_setzero_si256();
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+0+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+0)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+64+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+2)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+128+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+4)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+192+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+6)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+256+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+8)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+320+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+10)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+384+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+12)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+448+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+14)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+512+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+16)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+576+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+18)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+640+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+20)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+704+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+22)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+768+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+24)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+832+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+26)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+896+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+28)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+960+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)(k->ph+30)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
-    _mm256_storeu_si256((__m256i *)(out+j),a); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+0+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+0)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+64+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+2)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+128+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+4)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+192+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+6)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+256+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+8)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+320+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+10)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+384+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+12)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+448+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+14)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+512+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+16)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+576+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+18)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+640+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+20)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+704+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+22)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+768+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+24)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+832+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+26)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    { __m256i x=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+896+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+28)))), y=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+960+16*j)),_mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)(k->ph+30)))); a=_mm256_xor_si256(a,_mm256_xor_si256(_mm256_clmulepi64_epi128(x,y,0),_mm256_clmulepi64_epi128(x,y,0x11))); }
+    _mm256_storeu_si256((__m256i_u *)(out+j),a); }
 }
 CHV3_T512 static inline void chv3_region512(const chainhash_v3_key *k,const uint8_t *p,chv3_raw out[4]) {
     unsigned j; for(j=0;j<4;j+=4) {
     __m512i a=_mm512_setzero_si512();
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+0+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+0)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+64+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+2)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+128+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+4)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+192+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+6)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+256+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+8)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+320+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+10)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+384+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+12)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+448+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+14)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+512+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+16)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+576+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+18)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+640+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+20)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+704+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+22)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+768+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+24)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+832+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+26)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
-    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+896+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+28)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+960+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+30)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+0+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+0)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+64+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+2)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+128+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+192+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+6)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+256+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+8)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+320+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+10)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+384+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+12)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+448+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+14)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+512+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+16)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+576+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+18)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+640+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+20)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+704+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+22)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+768+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+24)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+832+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+26)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
+    { __m512i x=_mm512_xor_si512(_mm512_loadu_si512(p+896+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+28)))), y=_mm512_xor_si512(_mm512_loadu_si512(p+960+16*j),_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+30)))); a=_mm512_xor_si512(a,_mm512_xor_si512(_mm512_clmulepi64_epi128(x,y,0),_mm512_clmulepi64_epi128(x,y,0x11))); }
     _mm512_storeu_si512((out+j),a); }
 }
 /* Keep narrow live ranges bounded: the 16-register ISA cannot retain
@@ -239,60 +240,60 @@ CHV3_T128 static uint64_t chv3_bulk128(const chainhash_v3_key *k,const uint8_t *
     __m128i s0=_mm_setzero_si128();
     __m128i s1=_mm_setzero_si128();
     __m128i s2=_mm_setzero_si128();
-    __m128i s3=_mm_set_epi64x(0,len);
-    const __m128i y=_mm_set_epi64x(k->yh[4],k->yp[4]);
+    __m128i s3=_mm_set_epi64x(0,(long long)len);
+    const __m128i y=_mm_set_epi64x((long long)k->yh[4],(long long)k->yp[4]);
     do {
         __m128i u0=_mm_setzero_si128();
         __m128i u1=_mm_setzero_si128();
         __m128i u2=_mm_setzero_si128();
         __m128i u3=_mm_setzero_si128();
         { const __m128i ka=chv3_key128(k->ph+0), kb=chv3_key128(k->ph+2);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+0)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+64)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+16)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+80)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+32)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+96)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+48)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+112)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+0)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+64)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+16)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+80)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+32)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+96)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+48)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+112)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         { const __m128i ka=chv3_key128(k->ph+4), kb=chv3_key128(k->ph+6);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+128)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+192)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+144)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+208)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+160)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+224)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+176)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+240)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+128)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+192)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+144)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+208)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+160)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+224)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+176)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+240)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         { const __m128i ka=chv3_key128(k->ph+8), kb=chv3_key128(k->ph+10);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+256)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+320)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+272)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+336)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+288)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+352)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+304)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+368)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+256)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+320)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+272)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+336)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+288)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+352)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+304)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+368)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         { const __m128i ka=chv3_key128(k->ph+12), kb=chv3_key128(k->ph+14);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+384)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+448)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+400)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+464)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+416)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+480)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+432)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+496)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+384)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+448)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+400)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+464)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+416)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+480)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+432)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+496)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         { const __m128i ka=chv3_key128(k->ph+16), kb=chv3_key128(k->ph+18);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+512)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+576)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+528)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+592)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+544)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+608)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+560)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+624)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+512)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+576)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+528)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+592)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+544)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+608)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+560)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+624)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         { const __m128i ka=chv3_key128(k->ph+20), kb=chv3_key128(k->ph+22);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+640)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+704)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+656)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+720)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+672)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+736)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+688)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+752)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+640)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+704)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+656)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+720)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+672)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+736)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+688)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+752)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         { const __m128i ka=chv3_key128(k->ph+24), kb=chv3_key128(k->ph+26);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+768)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+832)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+784)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+848)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+800)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+864)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+816)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+880)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+768)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+832)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+784)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+848)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+800)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+864)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+816)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+880)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         { const __m128i ka=chv3_key128(k->ph+28), kb=chv3_key128(k->ph+30);
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+896)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+960)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+912)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+976)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+928)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+992)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
-          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+944)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i *)(p+1008)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+896)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+960)),kb); u0=chv3_xor128(u0,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+912)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+976)),kb); u1=chv3_xor128(u1,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+928)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+992)),kb); u2=chv3_xor128(u2,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
+          { __m128i a=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+944)),ka), b=_mm_xor_si128(_mm_loadu_si128((const __m128i_u *)(p+1008)),kb); u3=chv3_xor128(u3,_mm_clmulepi64_si128(a,b,0),_mm_clmulepi64_si128(a,b,0x11)); }
         }
         s0=chv3_xor128(u0,_mm_clmulepi64_si128(s0,y,0),_mm_clmulepi64_si128(s0,y,0x11));
         s1=chv3_xor128(u1,_mm_clmulepi64_si128(s1,y,0),_mm_clmulepi64_si128(s1,y,0x11));
@@ -301,75 +302,75 @@ CHV3_T128 static uint64_t chv3_bulk128(const chainhash_v3_key *k,const uint8_t *
         p+=1024;
     } while(--regions);
     __m128i acc=_mm_setzero_si128(),pw;
-    pw=_mm_set_epi64x(k->yh[3],k->yp[3]);
+    pw=_mm_set_epi64x((long long)k->yh[3],(long long)k->yp[3]);
     acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s0,pw,0),_mm_clmulepi64_si128(s0,pw,0x11)));
-    pw=_mm_set_epi64x(k->yh[2],k->yp[2]);
+    pw=_mm_set_epi64x((long long)k->yh[2],(long long)k->yp[2]);
     acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s1,pw,0),_mm_clmulepi64_si128(s1,pw,0x11)));
-    pw=_mm_set_epi64x(k->yh[1],k->yp[1]);
+    pw=_mm_set_epi64x((long long)k->yh[1],(long long)k->yp[1]);
     acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s2,pw,0),_mm_clmulepi64_si128(s2,pw,0x11)));
-    pw=_mm_set_epi64x(k->yh[0],k->yp[0]);
+    pw=_mm_set_epi64x((long long)k->yh[0],(long long)k->yp[0]);
     acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s3,pw,0),_mm_clmulepi64_si128(s3,pw,0x11)));
     __m128i a=acc;
     return (uint64_t)_mm_cvtsi128_si64(chv3_vreduce(a));
 }
 CHV3_T256 static uint64_t chv3_bulk256(const chainhash_v3_key *k,const uint8_t *p,size_t regions,size_t len) {
     __m256i s0=_mm256_setzero_si256();
-    __m256i s1=_mm256_set_epi64x(0,len,0,0);
-    const __m256i y=_mm256_set_epi64x(k->yh[4],k->yp[4],k->yh[4],k->yp[4]);
+    __m256i s1=_mm256_set_epi64x(0,(long long)len,0,0);
+    const __m256i y=_mm256_set_epi64x((long long)k->yh[4],(long long)k->yp[4],(long long)k->yh[4],(long long)k->yp[4]);
     do {
         __m256i u0=_mm256_setzero_si256();
         __m256i u1=_mm256_setzero_si256();
         { const __m256i ka=chv3_key256(k->ph+0), kb=chv3_key256(k->ph+2);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+0)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+64)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+32)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+96)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+0)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+64)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+32)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+96)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         { const __m256i ka=chv3_key256(k->ph+4), kb=chv3_key256(k->ph+6);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+128)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+192)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+160)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+224)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+128)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+192)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+160)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+224)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         { const __m256i ka=chv3_key256(k->ph+8), kb=chv3_key256(k->ph+10);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+256)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+320)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+288)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+352)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+256)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+320)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+288)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+352)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         { const __m256i ka=chv3_key256(k->ph+12), kb=chv3_key256(k->ph+14);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+384)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+448)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+416)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+480)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+384)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+448)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+416)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+480)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         { const __m256i ka=chv3_key256(k->ph+16), kb=chv3_key256(k->ph+18);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+512)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+576)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+544)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+608)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+512)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+576)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+544)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+608)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         { const __m256i ka=chv3_key256(k->ph+20), kb=chv3_key256(k->ph+22);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+640)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+704)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+672)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+736)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+640)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+704)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+672)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+736)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         { const __m256i ka=chv3_key256(k->ph+24), kb=chv3_key256(k->ph+26);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+768)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+832)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+800)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+864)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+768)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+832)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+800)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+864)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         { const __m256i ka=chv3_key256(k->ph+28), kb=chv3_key256(k->ph+30);
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+896)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+960)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
-          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+928)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i *)(p+992)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+896)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+960)),kb); u0=chv3_xor256(u0,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
+          { __m256i a=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+928)),ka), b=_mm256_xor_si256(_mm256_loadu_si256((const __m256i_u *)(p+992)),kb); u1=chv3_xor256(u1,_mm256_clmulepi64_epi128(a,b,0),_mm256_clmulepi64_epi128(a,b,0x11)); }
         }
         s0=chv3_xor256(u0,_mm256_clmulepi64_epi128(s0,y,0),_mm256_clmulepi64_epi128(s0,y,0x11));
         s1=chv3_xor256(u1,_mm256_clmulepi64_epi128(s1,y,0),_mm256_clmulepi64_epi128(s1,y,0x11));
         p+=1024;
     } while(--regions);
     __m256i acc=_mm256_setzero_si256(),pw;
-    pw=_mm256_set_epi64x(k->yh[2],k->yp[2],k->yh[3],k->yp[3]);
+    pw=_mm256_set_epi64x((long long)k->yh[2],(long long)k->yp[2],(long long)k->yh[3],(long long)k->yp[3]);
     acc=_mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(s0,pw,0),_mm256_clmulepi64_epi128(s0,pw,0x11)));
-    pw=_mm256_set_epi64x(k->yh[0],k->yp[0],k->yh[1],k->yp[1]);
+    pw=_mm256_set_epi64x((long long)k->yh[0],(long long)k->yp[0],(long long)k->yh[1],(long long)k->yp[1]);
     acc=_mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(s1,pw,0),_mm256_clmulepi64_epi128(s1,pw,0x11)));
     __m128i a=_mm_xor_si128(_mm256_castsi256_si128(acc),_mm256_extracti128_si256(acc,1));
     return (uint64_t)_mm_cvtsi128_si64(chv3_vreduce(a));
 }
 /* The only cross-lane fold is AFTER all complete regions. */
 CHV3_T512 static inline uint64_t chv3_fold512(__m512i s,const chainhash_v3_key *k) {
-    __m512i powers=_mm512_set_epi64(k->yh[0],k->yp[0],k->yh[1],k->yp[1],k->yh[2],k->yp[2],k->yh[3],k->yp[3]);
+    __m512i powers=_mm512_set_epi64((long long)k->yh[0],(long long)k->yp[0],(long long)k->yh[1],(long long)k->yp[1],(long long)k->yh[2],(long long)k->yp[2],(long long)k->yh[3],(long long)k->yp[3]);
     s=_mm512_xor_si512(_mm512_clmulepi64_epi128(s,powers,0),_mm512_clmulepi64_epi128(s,powers,0x11));
     __m256i h=_mm256_xor_si256(_mm512_castsi512_si256(s),_mm512_extracti64x4_epi64(s,1));
     __m128i q=_mm_xor_si128(_mm256_castsi256_si128(h),_mm256_extracti128_si256(h,1));
-    chv3_raw r; _mm_storeu_si128((__m128i *)&r,q); return chv3_reduce(r);
+    chv3_raw r; _mm_storeu_si128((__m128i_u *)&r,q); return chv3_reduce(r);
 }
 /* Tail loads never cross the input object. A padded 128-byte chunk handles
  * the last partial word; both keyed multiplicands are masked by first-word
@@ -381,8 +382,8 @@ CHV3_T512 static uint64_t chv3_tail512(const chainhash_v3_key *k,const uint8_t *
         __m512i a,b; size_t take=rem<128?rem:128;
         if(take==128) { a=_mm512_loadu_si512(p); b=_mm512_loadu_si512(p+64); }
         else { uint8_t tmp[128]={0}; memcpy(tmp,p,take); a=_mm512_loadu_si512(tmp); b=_mm512_loadu_si512(tmp+64); }
-        a=_mm512_xor_si512(a,_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+4*c))));
-        b=_mm512_xor_si512(b,_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+4*c+2))));
+        a=_mm512_xor_si512(a,_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4*c))));
+        b=_mm512_xor_si512(b,_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4*c+2))));
         if(take<64) { __mmask8 mask=(__mmask8)((1u<<((take+7)/8))-1); a=_mm512_maskz_mov_epi64(mask,a); b=_mm512_maskz_mov_epi64(mask,b); }
         acc=_mm512_ternarylogic_epi64(acc,_mm512_clmulepi64_epi128(a,b,0),_mm512_clmulepi64_epi128(a,b,0x11),0x96);
         rem-=take; p+=take; ++c;
@@ -392,20 +393,20 @@ CHV3_T512 static uint64_t chv3_tail512(const chainhash_v3_key *k,const uint8_t *
     acc=_mm512_xor_si512(_mm512_clmulepi64_epi128(acc,pw,0),_mm512_clmulepi64_epi128(acc,pw,0x11));
     __m256i h=_mm256_xor_si256(_mm512_castsi512_si256(acc),_mm512_extracti64x4_epi64(acc,1));
     __m128i v=_mm_xor_si128(_mm256_castsi256_si128(h),_mm256_extracti128_si256(h,1));
-    v=_mm_xor_si128(v,_mm_clmulepi64_si128(_mm_set_epi64x(0,leading),_mm_set_epi64x(0,k->yp[lanes]),0));
+    v=_mm_xor_si128(v,_mm_clmulepi64_si128(_mm_set_epi64x(0,(long long)leading),_mm_set_epi64x(0,(long long)k->yp[lanes]),0));
     return (uint64_t)_mm_cvtsi128_si64(chv3_vreduce(v));
 }
 CHV3_T512 static uint64_t chv3_bulk512(const chainhash_v3_key *k,const uint8_t *p,size_t regions,size_t len) {
-    __m512i s=_mm512_set_epi64(0,len,0,0,0,0,0,0);
-    const __m512i y=_mm512_broadcast_i32x4(_mm_set_epi64x(k->yh[4],k->yp[4]));
-    const __m512i a0=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+0))), b0=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+2)));
-    const __m512i a1=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+4))), b1=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+6)));
-    const __m512i a2=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+8))), b2=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+10)));
-    const __m512i a3=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+12))), b3=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+14)));
-    const __m512i a4=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+16))), b4=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+18)));
-    const __m512i a5=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+20))), b5=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+22)));
-    const __m512i a6=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+24))), b6=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+26)));
-    const __m512i a7=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+28))), b7=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)(k->ph+30)));
+    __m512i s=_mm512_set_epi64(0,(long long)len,0,0,0,0,0,0);
+    const __m512i y=_mm512_broadcast_i32x4(_mm_set_epi64x((long long)k->yh[4],(long long)k->yp[4]));
+    const __m512i a0=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+0))), b0=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+2)));
+    const __m512i a1=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+4))), b1=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+6)));
+    const __m512i a2=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+8))), b2=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+10)));
+    const __m512i a3=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+12))), b3=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+14)));
+    const __m512i a4=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+16))), b4=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+18)));
+    const __m512i a5=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+20))), b5=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+22)));
+    const __m512i a6=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+24))), b6=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+26)));
+    const __m512i a7=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+28))), b7=_mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)(k->ph+30)));
     do {
         __m512i u0,u1,u2,u3;
         { __m512i a=_mm512_xor_si512(_mm512_loadu_si512(p+0),a0), b=_mm512_xor_si512(_mm512_loadu_si512(p+64),b0);
@@ -434,14 +435,14 @@ CHV3_T512 static uint64_t chv3_bulk512(const chainhash_v3_key *k,const uint8_t *
 #ifdef CHV3_ARM
 static inline void chv3_region_neon(const chainhash_v3_key *k,const uint8_t *p,chv3_raw out[4]) {
     unsigned j; for(j=0;j<4;j++) { uint64x2_t s=vdupq_n_u64(0);
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+0+16*j)),vld1q_u64(k->ph+0)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+64+16*j)),vld1q_u64(k->ph+2)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+128+16*j)),vld1q_u64(k->ph+4)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+192+16*j)),vld1q_u64(k->ph+6)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+256+16*j)),vld1q_u64(k->ph+8)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+320+16*j)),vld1q_u64(k->ph+10)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+384+16*j)),vld1q_u64(k->ph+12)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+448+16*j)),vld1q_u64(k->ph+14)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+512+16*j)),vld1q_u64(k->ph+16)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+576+16*j)),vld1q_u64(k->ph+18)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+640+16*j)),vld1q_u64(k->ph+20)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+704+16*j)),vld1q_u64(k->ph+22)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+768+16*j)),vld1q_u64(k->ph+24)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+832+16*j)),vld1q_u64(k->ph+26)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
-    { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+896+16*j)),vld1q_u64(k->ph+28)), b=veorq_u64(vld1q_u64((const uint64_t *)(p+960+16*j)),vld1q_u64(k->ph+30)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+0+16*j),vld1q_u64(k->ph+0)), b=veorq_u64(chv3_ld(p+64+16*j),vld1q_u64(k->ph+2)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+128+16*j),vld1q_u64(k->ph+4)), b=veorq_u64(chv3_ld(p+192+16*j),vld1q_u64(k->ph+6)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+256+16*j),vld1q_u64(k->ph+8)), b=veorq_u64(chv3_ld(p+320+16*j),vld1q_u64(k->ph+10)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+384+16*j),vld1q_u64(k->ph+12)), b=veorq_u64(chv3_ld(p+448+16*j),vld1q_u64(k->ph+14)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+512+16*j),vld1q_u64(k->ph+16)), b=veorq_u64(chv3_ld(p+576+16*j),vld1q_u64(k->ph+18)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+640+16*j),vld1q_u64(k->ph+20)), b=veorq_u64(chv3_ld(p+704+16*j),vld1q_u64(k->ph+22)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+768+16*j),vld1q_u64(k->ph+24)), b=veorq_u64(chv3_ld(p+832+16*j),vld1q_u64(k->ph+26)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
+    { uint64x2_t a=veorq_u64(chv3_ld(p+896+16*j),vld1q_u64(k->ph+28)), b=veorq_u64(chv3_ld(p+960+16*j),vld1q_u64(k->ph+30)); s=chv3_xor3(s,chv3_ll(a,b),chv3_hh(a,b)); }
     vst1q_u64(&out[j].lo,s); }
 }
 static uint64_t chv3_bulk_neon(const chainhash_v3_key *k,const uint8_t *p,size_t regions,size_t len) {
@@ -457,38 +458,38 @@ static uint64_t chv3_bulk_neon(const chainhash_v3_key *k,const uint8_t *p,size_t
     const uint64x2_t a7=vld1q_u64(k->ph+28),b7=vld1q_u64(k->ph+30);
     do {
         uint64x2_t u0=vdupq_n_u64(0),u1=u0,u2=u0,u3=u0;
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+0)),a0), b=veorq_u64(vld1q_u64((const uint64_t *)(p+64)),b0); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+16)),a0), b=veorq_u64(vld1q_u64((const uint64_t *)(p+80)),b0); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+32)),a0), b=veorq_u64(vld1q_u64((const uint64_t *)(p+96)),b0); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+48)),a0), b=veorq_u64(vld1q_u64((const uint64_t *)(p+112)),b0); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+128)),a1), b=veorq_u64(vld1q_u64((const uint64_t *)(p+192)),b1); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+144)),a1), b=veorq_u64(vld1q_u64((const uint64_t *)(p+208)),b1); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+160)),a1), b=veorq_u64(vld1q_u64((const uint64_t *)(p+224)),b1); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+176)),a1), b=veorq_u64(vld1q_u64((const uint64_t *)(p+240)),b1); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+256)),a2), b=veorq_u64(vld1q_u64((const uint64_t *)(p+320)),b2); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+272)),a2), b=veorq_u64(vld1q_u64((const uint64_t *)(p+336)),b2); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+288)),a2), b=veorq_u64(vld1q_u64((const uint64_t *)(p+352)),b2); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+304)),a2), b=veorq_u64(vld1q_u64((const uint64_t *)(p+368)),b2); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+384)),a3), b=veorq_u64(vld1q_u64((const uint64_t *)(p+448)),b3); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+400)),a3), b=veorq_u64(vld1q_u64((const uint64_t *)(p+464)),b3); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+416)),a3), b=veorq_u64(vld1q_u64((const uint64_t *)(p+480)),b3); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+432)),a3), b=veorq_u64(vld1q_u64((const uint64_t *)(p+496)),b3); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+512)),a4), b=veorq_u64(vld1q_u64((const uint64_t *)(p+576)),b4); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+528)),a4), b=veorq_u64(vld1q_u64((const uint64_t *)(p+592)),b4); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+544)),a4), b=veorq_u64(vld1q_u64((const uint64_t *)(p+608)),b4); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+560)),a4), b=veorq_u64(vld1q_u64((const uint64_t *)(p+624)),b4); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+640)),a5), b=veorq_u64(vld1q_u64((const uint64_t *)(p+704)),b5); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+656)),a5), b=veorq_u64(vld1q_u64((const uint64_t *)(p+720)),b5); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+672)),a5), b=veorq_u64(vld1q_u64((const uint64_t *)(p+736)),b5); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+688)),a5), b=veorq_u64(vld1q_u64((const uint64_t *)(p+752)),b5); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+768)),a6), b=veorq_u64(vld1q_u64((const uint64_t *)(p+832)),b6); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+784)),a6), b=veorq_u64(vld1q_u64((const uint64_t *)(p+848)),b6); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+800)),a6), b=veorq_u64(vld1q_u64((const uint64_t *)(p+864)),b6); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+816)),a6), b=veorq_u64(vld1q_u64((const uint64_t *)(p+880)),b6); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+896)),a7), b=veorq_u64(vld1q_u64((const uint64_t *)(p+960)),b7); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+912)),a7), b=veorq_u64(vld1q_u64((const uint64_t *)(p+976)),b7); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+928)),a7), b=veorq_u64(vld1q_u64((const uint64_t *)(p+992)),b7); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
-        { uint64x2_t a=veorq_u64(vld1q_u64((const uint64_t *)(p+944)),a7), b=veorq_u64(vld1q_u64((const uint64_t *)(p+1008)),b7); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+0),a0), b=veorq_u64(chv3_ld(p+64),b0); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+16),a0), b=veorq_u64(chv3_ld(p+80),b0); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+32),a0), b=veorq_u64(chv3_ld(p+96),b0); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+48),a0), b=veorq_u64(chv3_ld(p+112),b0); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+128),a1), b=veorq_u64(chv3_ld(p+192),b1); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+144),a1), b=veorq_u64(chv3_ld(p+208),b1); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+160),a1), b=veorq_u64(chv3_ld(p+224),b1); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+176),a1), b=veorq_u64(chv3_ld(p+240),b1); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+256),a2), b=veorq_u64(chv3_ld(p+320),b2); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+272),a2), b=veorq_u64(chv3_ld(p+336),b2); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+288),a2), b=veorq_u64(chv3_ld(p+352),b2); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+304),a2), b=veorq_u64(chv3_ld(p+368),b2); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+384),a3), b=veorq_u64(chv3_ld(p+448),b3); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+400),a3), b=veorq_u64(chv3_ld(p+464),b3); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+416),a3), b=veorq_u64(chv3_ld(p+480),b3); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+432),a3), b=veorq_u64(chv3_ld(p+496),b3); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+512),a4), b=veorq_u64(chv3_ld(p+576),b4); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+528),a4), b=veorq_u64(chv3_ld(p+592),b4); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+544),a4), b=veorq_u64(chv3_ld(p+608),b4); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+560),a4), b=veorq_u64(chv3_ld(p+624),b4); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+640),a5), b=veorq_u64(chv3_ld(p+704),b5); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+656),a5), b=veorq_u64(chv3_ld(p+720),b5); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+672),a5), b=veorq_u64(chv3_ld(p+736),b5); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+688),a5), b=veorq_u64(chv3_ld(p+752),b5); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+768),a6), b=veorq_u64(chv3_ld(p+832),b6); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+784),a6), b=veorq_u64(chv3_ld(p+848),b6); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+800),a6), b=veorq_u64(chv3_ld(p+864),b6); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+816),a6), b=veorq_u64(chv3_ld(p+880),b6); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+896),a7), b=veorq_u64(chv3_ld(p+960),b7); u0=chv3_xor3(u0,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+912),a7), b=veorq_u64(chv3_ld(p+976),b7); u1=chv3_xor3(u1,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+928),a7), b=veorq_u64(chv3_ld(p+992),b7); u2=chv3_xor3(u2,chv3_ll(a,b),chv3_hh(a,b)); }
+        { uint64x2_t a=veorq_u64(chv3_ld(p+944),a7), b=veorq_u64(chv3_ld(p+1008),b7); u3=chv3_xor3(u3,chv3_ll(a,b),chv3_hh(a,b)); }
         s0=chv3_xor3(u0,chv3_ll(s0,y),chv3_hh(s0,y));
         s1=chv3_xor3(u1,chv3_ll(s1,y),chv3_hh(s1,y));
         s2=chv3_xor3(u2,chv3_ll(s2,y),chv3_hh(s2,y));

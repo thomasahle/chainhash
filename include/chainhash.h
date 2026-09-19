@@ -207,7 +207,7 @@ static inline uint64_t chainhash_portable(const chainhash_key *key, const void *
 #define CHAINHASH_HARDWARE 1
 #include <wmmintrin.h>
 typedef __m128i ch_vec;
-static inline ch_vec ch_vload(const void *p) { return _mm_loadu_si128((const __m128i *)p); }
+static inline ch_vec ch_vload(const void *p) { return _mm_loadu_si128((const __m128i_u *)p); }
 static inline ch_vec ch_vzero(void) { return _mm_setzero_si128(); }
 static inline ch_vec ch_v64(uint64_t v) { return _mm_cvtsi64_si128((long long)v); }
 static inline ch_vec ch_vdup(uint64_t v) { return _mm_set1_epi64x((long long)v); }
@@ -361,7 +361,7 @@ __attribute__((target("ssse3,pclmul"),always_inline)) static inline __m128i ch_w
 }
 
 CH_HEADER_WIDE256 static inline __m256i ch_wload256(const uint8_t *p, int swap) {
-    __m256i v = _mm256_loadu_si256((const __m256i *)p);
+    __m256i v = _mm256_loadu_si256((const __m256i_u *)p);
     if (swap) v = _mm256_shuffle_epi8(v,_mm256_setr_epi8(7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8));
     return v;
 }
@@ -380,8 +380,8 @@ CH_HEADER_WIDE512 static inline __m512i ch_wload512(const uint8_t *p, int swap) 
 CH_HEADER_WIDE256 static inline __m128i ch_ph256(const uint64_t *k,const uint8_t *p) {
     __m256i acc = _mm256_setzero_si256();
     for (int i=0;i<32;i+=8) {
-        __m256i x = _mm256_xor_si256(ch_wload256(p+8*i,0),_mm256_loadu_si256((const __m256i *)(k+i)));
-        __m256i y = _mm256_xor_si256(ch_wload256(p+8*i+32,0),_mm256_loadu_si256((const __m256i *)(k+i+4)));
+        __m256i x = _mm256_xor_si256(ch_wload256(p+8*i,0),_mm256_loadu_si256((const __m256i_u *)(k+i)));
+        __m256i y = _mm256_xor_si256(ch_wload256(p+8*i+32,0),_mm256_loadu_si256((const __m256i_u *)(k+i+4)));
         __m256i a = _mm256_permute2x128_si256(x,y,0x20), b = _mm256_permute2x128_si256(x,y,0x31);
         acc = _mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(a,b,0x00),_mm256_clmulepi64_epi128(a,b,0x11)));
     }
@@ -406,7 +406,7 @@ CH_HEADER_WIDE256 static inline __m128i ch_narrow_ph(const uint64_t *k,const uin
 }
 
 CH_HEADER_WIDE256 static uint64_t chainhash_narrow(const chainhash_key *key,const void *data,size_t len) {
-    const int SW=32,S=1;
+    const size_t SW=32,S=1;
     const uint64_t *k=key->words;
     const uint8_t *p=(const uint8_t *)data;
     const size_t SB=256,BB=256;
@@ -426,8 +426,8 @@ CH_HEADER_WIDE256 static uint64_t chainhash_narrow(const chainhash_key *key,cons
         ++j;
     }
     const size_t rem = len-full*SB;
-    for (int i=0;i<S;++i) {
-        const size_t off = (size_t)i*SB;
+    for (size_t i=0;i<S;++i) {
+        const size_t off = i*SB;
         const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
         __m128i acc;
         if (n==SB) acc = ch_narrow_ph(k+i*SW,p+(full+i)*SB);
@@ -446,7 +446,7 @@ CH_HEADER_WIDE256 static uint64_t chainhash_narrow(const chainhash_key *key,cons
 }
 
 CH_HEADER_WIDE256 static uint64_t chainhash_wide256(const chainhash_key *key,const void *data,size_t len) {
-    const int SW=32,S=1;
+    const size_t SW=32,S=1;
     const uint64_t *k=key->words;
     const uint8_t *p=(const uint8_t *)data;
     const size_t SB=256,BB=256;
@@ -466,8 +466,8 @@ CH_HEADER_WIDE256 static uint64_t chainhash_wide256(const chainhash_key *key,con
         ++j;
     }
     const size_t rem = len-full*SB;
-    for (int i=0;i<S;++i) {
-        const size_t off = (size_t)i*SB;
+    for (size_t i=0;i<S;++i) {
+        const size_t off = i*SB;
         const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
         __m128i acc;
         if (n==SB) acc = ch_ph256(k+i*SW,p+(full+i)*SB);
@@ -486,7 +486,7 @@ CH_HEADER_WIDE256 static uint64_t chainhash_wide256(const chainhash_key *key,con
 }
 
 CH_HEADER_WIDE512 static uint64_t chainhash_wide512(const chainhash_key *key,const void *data,size_t len) {
-    const int SW=32,S=1;
+    const size_t SW=32,S=1;
     const uint64_t *k=key->words;
     const uint8_t *p=(const uint8_t *)data;
     const size_t SB=256,BB=256;
@@ -506,8 +506,8 @@ CH_HEADER_WIDE512 static uint64_t chainhash_wide512(const chainhash_key *key,con
         ++j;
     }
     const size_t rem = len-full*SB;
-    for (int i=0;i<S;++i) {
-        const size_t off = (size_t)i*SB;
+    for (size_t i=0;i<S;++i) {
+        const size_t off = i*SB;
         const size_t n = rem>off ? (rem-off<SB ? rem-off : SB) : 0;
         __m128i acc;
         if (n==SB) acc = ch_ph512(k+i*SW,p+(full+i)*SB);
