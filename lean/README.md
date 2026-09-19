@@ -1,8 +1,14 @@
 # Machine-checked ChainHash proofs
 
-This project proves **v1, the paper's function** in `include/chainhash.h`.
-ChainHash-Horner v3 has a different encoding and recurrence; its Lean status
-is **in progress**. See [the v3 statements](../docs/THEOREM_v3.md).
+This project proves **ChainHash-Horner v3** in namespace
+`ProvenHashes.ChainHash.V3`, alongside the retained **v1** proofs.
+The v3 paper model uses 39 independent key words; model A uses exactly
+64 independent random key bytes. Both byte collision envelopes, evaluation
+independence for every positive stride, and exact score minima of 63 are
+Lean-proved. See [the v3 statements](../docs/THEOREM_v3.md) and the
+[integration and reproduction record](V3_INTEGRATION.md).
+
+The following v1 results concern `include/chainhash.h`:
 
 This Lake project ships the shared ProvenHashes work and the complete
 concrete **41-independent-word** ChainHash theorem. The mathematical hash
@@ -46,10 +52,11 @@ eight Lean threads; only the final audit uses CPUs 0–31 and 32 threads.
 
 `verify.sh` runs cache retrieval, build, and the explicit axiom audit with
 `nice -n 10 taskset -c 0-31`; it records all output and the source grep
-results in [VERIFICATION.txt](VERIFICATION.txt). The integration build reuses
-the existing project and Mathlib cache from
-`chainhash-repo-check`; changed modules and their dependents are rebuilt.
-The recorded build passes all 583 exported theorem/lemma audits.
+results and the 464 v3 C/Lean vector comparison in
+[VERIFICATION.txt](VERIFICATION.txt). The integration build reuses a copy
+of the earlier integration's Mathlib and project cache; changed modules
+and their dependents are rebuilt.
+The recorded build passes all 672 exported theorem/lemma audits.
 The alternate field certificate can take several minutes on a shared host.
 The scripts reject unapproved axioms. Standard Lean axioms `propext`,
 `Classical.choice`, and `Quot.sound` are allowed.
@@ -66,6 +73,52 @@ These signatures are copied verbatim from the integrated source; namespace
 qualifications are shown above them. Context definitions, typeclass instances,
 and section variables are in their source modules. The complete catalogue of
 all exported signatures is [THEOREM_STATEMENTS.md](THEOREM_STATEMENTS.md).
+
+### V3 principal endpoints
+
+All five signatures below are in `ProvenHashes.ChainHash.V3`.
+`Key39 = Fin 39 → Word 64`; `Byte = Fin 8 → ZMod 2` represents one byte.
+`hashBytes` and `modelAHashBytes` accept `List UInt8` and return `UInt64`.
+`paperEpsilon L = (blocks (8*L)+1)/2^64` and
+`modelAEpsilon L = (degreeBudget L+blocks (8*L))/2^64` in `ℚ≥0`.
+These envelopes are not clipped at one in the Lean definitions.
+
+```lean
+theorem paper_collision_bound_bytes (L : ℕ) (hL : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Key39 => hashBytes k m = hashBytes k m') ≤ paperEpsilon L
+```
+
+```lean
+theorem modelA_collision_bound_bytes (L : ℕ) (hL : 0 < L) (hcap : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Fin 64 → Byte => modelAHashBytes k m = modelAHashBytes k m') ≤ modelAEpsilon L
+```
+
+```lean
+theorem complete_evaluation_independence (k : ℕ) (hk : 0 < k) :
+    scheduledHash k = hash ∧ lazyHash = hash
+```
+
+```lean
+theorem paper_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score paperEpsilon L.val)) 63
+```
+
+```lean
+theorem modelA_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score modelAEpsilon L.val)) 63
+```
+
+The collision bounds include empty messages and byte tails; equal fixed
+lengths specialize the at-most bounds. The key is sampled independently of
+the two messages. `scheduledHash` is the physical exact-count round-robin
+schedule; `lazyHash` uses a bounded 128-bit raw polynomial state. Their
+function equalities include zero multipliers and strides above the block
+count. The score is `log₂(L/epsilon(L))` for the certified envelope, with
+minimum 63 attained at `L=1`, not an assertion of an attained collision rate.
+
+### Retained v1 principal endpoints
 
 Model A uses `ModelA.Key = (F × (Fin 3 → F)) × (F × (Fin 5 → F))`,
 with cardinality `(2^64)^10`. `epsilonFixed L = min 1 ((d(L)+n+1)/2^64)`;
@@ -206,8 +259,8 @@ pre-finalizer values. It is not unconditional five-wise independence.
 ## Modules and resolution of proof lanes
 
 [PROVENANCE.json](PROVENANCE.json) records source and integrated SHA256
-hashes for all 69 modules. Sources were copied from the specified Xeon lanes;
-all source lanes remain untouched.
+hashes for all 79 modules and the V3 vector sources. Sources were copied
+from the specified Xeon lanes; all source lanes remain untouched.
 
 - Shared `Probability`, `Polynomial`, `NH`, `Tabulation`, `Decoder`,
   `Recurrence`, and `Composition` are present once. `MultiplyShift` preserves
@@ -230,6 +283,12 @@ all source lanes remain untouched.
   `verify-finalizer` copies matched their respective source lane modules
   byte-for-byte and were deduplicated. All baseline modules in `lean-hash`
   matched the collected baseline (except the deliberate strengthening of NH).
+- The ten `ChainHashV3*` modules are copied byte-for-byte from proof commit
+  `54410e433a1d9f79cd4104dc9fc2cdea72164f07`. They add 89 theorems for comb
+  encoding, reduced CLNH, Frobenius root counts, Horner composition, byte/key
+  interfaces, seeded PH, physical scheduling, bounded lazy reduction and
+  scores. The source lane's `NH` differs from this project's stronger shared
+  version; the integrated build checks the unchanged V3 sources against it.
 - `SeededPH`, `ModelAStream`, and `ModelA` are copied unchanged from the
   completed model-A lane at `a3939c01b87d962ae170776b656a154300d5f3ca`.
   They prove the seeded PH bounds, connect them to the raw low/high stream,
@@ -247,9 +306,10 @@ identical shared statements are not duplicated merely to preserve lane names.
 
 ## Precise remaining statements and scope
 
-Nothing remains to prove for the displayed **41-word and model-A mathematical
-collision bounds**. The following stronger or differently distributed claims are not
-established by the Lean files shipped here:
+Nothing remains to prove for the displayed **v3 paper/model-A collision bounds,
+evaluation equalities and score minima**, or the **v1 41-word/model-A bounds**.
+The following stronger or differently distributed claims are not established
+by the Lean files shipped here:
 
 1. **Model B:** for independent uniform `s,t,c0..c4`, PH words `s^(i+1)`,
    `(u,y,z)=(t²,t³,t)` and `tau=s⁴`, prove the corresponding bounds
@@ -271,9 +331,9 @@ The raw PH low/high halves cannot simply be treated as degree-32 field
 polynomials after sharing the PH seed with the recurrence. The seeded
 write-up explains this obstruction and gives counterexamples to that shortcut.
 
-## Shipped pairing and vector agreement
+## Retained v1 pairing and vector agreement
 
-All header paths use `(w0,w2),(w1,w3)` in every four-word group, including
+All v1 header paths use `(w0,w2),(w1,w3)` in every four-word group, including
 portable, NEON, baseline/pipelined XMM, YMM, and ZMM. `ByteEncoding.pairPosition`,
 `KeyLayout`, and `referenceHash_matches` already use this strided map and
 remain unchanged. The separate ChainHash-x86 SPEC describes a different

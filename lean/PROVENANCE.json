@@ -415,5 +415,77 @@
     "source_sha256": "a9fe40218d5a8dd838e3f8074b194864dbd6144f28dcd4643c22cd2c7c7ed66f",
     "integrated_sha256": "a9fe40218d5a8dd838e3f8074b194864dbd6144f28dcd4643c22cd2c7c7ed66f",
     "source_commit": "a3939c01b87d962ae170776b656a154300d5f3ca"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Bytes.lean",
+    "target": "ProvenHashes/ChainHashV3Bytes.lean",
+    "source_sha256": "05ae596b9ca05cce209fb2ac84a502e8dadc19aa4ef5d0f6dc83ca3bc9a48da8",
+    "integrated_sha256": "05ae596b9ca05cce209fb2ac84a502e8dadc19aa4ef5d0f6dc83ca3bc9a48da8"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Comb.lean",
+    "target": "ProvenHashes/ChainHashV3Comb.lean",
+    "source_sha256": "ab5265063aa56507163e77a4c98babb2542925218830e2cb307bbb6cae68d263",
+    "integrated_sha256": "ab5265063aa56507163e77a4c98babb2542925218830e2cb307bbb6cae68d263"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Evaluation.lean",
+    "target": "ProvenHashes/ChainHashV3Evaluation.lean",
+    "source_sha256": "336706bdf44a7c4bc967fdecc65d50789e4914a016e8d5c531fba55966bef393",
+    "integrated_sha256": "336706bdf44a7c4bc967fdecc65d50789e4914a016e8d5c531fba55966bef393"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Horner.lean",
+    "target": "ProvenHashes/ChainHashV3Horner.lean",
+    "source_sha256": "4b65471f68cd39b5b8b26fa29cb2451b9a2786e39226afb82b867740cbd93eec",
+    "integrated_sha256": "4b65471f68cd39b5b8b26fa29cb2451b9a2786e39226afb82b867740cbd93eec"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Keys.lean",
+    "target": "ProvenHashes/ChainHashV3Keys.lean",
+    "source_sha256": "0b3fabbe436436d15a6d16fdbe18aa36161ea33f98894ab337deae6e06fc6a49",
+    "integrated_sha256": "0b3fabbe436436d15a6d16fdbe18aa36161ea33f98894ab337deae6e06fc6a49"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Lazy.lean",
+    "target": "ProvenHashes/ChainHashV3Lazy.lean",
+    "source_sha256": "a903b6276141c4a4970fec40b41d77aa57e468026073b3cd83f2970ab2d8e46b",
+    "integrated_sha256": "a903b6276141c4a4970fec40b41d77aa57e468026073b3cd83f2970ab2d8e46b"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Model.lean",
+    "target": "ProvenHashes/ChainHashV3Model.lean",
+    "source_sha256": "d51c90afb0809f98b091982f104c4899338a73e20c25e76c5b27e1bd332a0664",
+    "integrated_sha256": "d51c90afb0809f98b091982f104c4899338a73e20c25e76c5b27e1bd332a0664"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3PH.lean",
+    "target": "ProvenHashes/ChainHashV3PH.lean",
+    "source_sha256": "52856118d30d657d16f1a945241f2646ac373092670563daf660a15add92f6cc",
+    "integrated_sha256": "52856118d30d657d16f1a945241f2646ac373092670563daf660a15add92f6cc"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Scores.lean",
+    "target": "ProvenHashes/ChainHashV3Scores.lean",
+    "source_sha256": "8617ac1e926eb6f3b30e066a844b3fe6fb14adabb2f825b2b0085f4eea14835d",
+    "integrated_sha256": "8617ac1e926eb6f3b30e066a844b3fe6fb14adabb2f825b2b0085f4eea14835d"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/ProvenHashes/ChainHashV3Seeded.lean",
+    "target": "ProvenHashes/ChainHashV3Seeded.lean",
+    "source_sha256": "ebe42fb33eb0ffd55153d4a0481bc885413777361ab4c2e72dcbbaf5b2c46771",
+    "integrated_sha256": "ebe42fb33eb0ffd55153d4a0481bc885413777361ab4c2e72dcbbaf5b2c46771"
+  },
+  {
+    "source": "lean-chainhash-v3-64/lean/vectors/V3.lean",
+    "target": "vectors/V3.lean",
+    "source_sha256": "a5ab300677c61b8e7129c4ec07a0a73a96aa76c106131ba0b9798a864c9ae0dc",
+    "integrated_sha256": "a5ab300677c61b8e7129c4ec07a0a73a96aa76c106131ba0b9798a864c9ae0dc"
+  },
+  {
+    "source": "lean-chainhash-v3-64/reference/vectors.c",
+    "target": "../test/lean_vectors_v3.c",
+    "source_sha256": "c12e58f29340c861415fc25134a39b2960546cf746e436082e12556507433c46",
+    "integrated_sha256": "900257c9081149ac00154a5f24e6c199d570af7733b76cb4e142736f9aab7ced"
   }
 ]

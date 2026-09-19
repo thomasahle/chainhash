@@ -1,0 +1,455 @@
+Retained source-lane checkpoints: 89 successful builds.
+Source proof commit: 54410e433a1d9f79cd4104dc9fc2cdea72164f07
+Commands: LEAN_NUM_THREADS=8 nice -n 10 taskset -c 48-55 lake build
+
+For each checkpoint, hash the module prefix through the full multiline regex
+match ^-- checkpoint: (\w+)\s*$ and append exactly
+"\n\nend ProvenHashes.ChainHash.V3\n".
+All 89 prefix hashes were recomputed from the unchanged integrated sources
+and matched the source-lane stamps. Results below are extracted from the
+source logs; these per-theorem builds were not rerun during integration.
+
+ChainHashV3Bytes-coefficientsAt_collision
+  source_prefix_sha256: 5d34ba02274308c747eeaab4e8b632657133e0269bf9b34e742f14229747133a
+  source_log_sha256: 1741cf35884e66bbe3804f88dc1dccc3336a374da4f89b9ed690f359e05dd2d3
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Bytes-paper_collision_equal_length
+  source_prefix_sha256: 0a2a6247f4afd15ece4f93c04cfee72d8d94ffd86f64f73f44d0d35c5566399e
+  source_log_sha256: 225c58a294c82909d8303283f52c8ec1a957b9fe6d80339f68b0bc5a00cb54ad
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Bytes-lengthField_zero
+  source_prefix_sha256: 7c02907a7b4b03a8c6d0d79e8e521f12754f0d407e6fa0e014ddf9145960b2fd
+  source_log_sha256: 048ae5ca84f5f35035f3ed4e8d0d5c7bdbfb47925b63a331cea57a58ee060f89
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Bytes-lengthField_ne_zero
+  source_prefix_sha256: 044656ff4ec7f335e642eb9eb29651411b8b1bfaa47a743d28b4a4361c671895
+  source_log_sha256: 4833ce9922916b2383fd5422fd2e28f7abae6a6998f48199081f42bf9f1a28b9
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Bytes-byte_polynomial_ne
+  source_prefix_sha256: 543f903d62443c71a11bfe0ec90060a431b0888c231c4263e53cca3d68fc11be
+  source_log_sha256: 7c4daebff5b124b3dec653a7d2397450fcc64b040131cd5b919ce76efce8e0be
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Bytes-horner_collision_of_nonzero
+  source_prefix_sha256: ed266e84bb8f06e7655804e4f1ee88db6d765b7deda13410b7de54be7e122972
+  source_log_sha256: 6f00e16ead06537aff5ee4adff37523a57f32d99919714d5b23fce482f70cc0f
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Bytes-family_collision_unequal_length
+  source_prefix_sha256: 9bedc9efa87c6156fac6164bf4cb2d51981b4255f3c40aac5169bebcf2ea8ac9
+  source_log_sha256: 435c2aa6193596340206f5998f8c75e7bdfee9b3e59c7b59c2e553398244181e
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Bytes-chainHashHorner_collision_bound
+  source_prefix_sha256: 90b5248cdd6fae69906a6460c6997f7aa00328ff9c2f68d0d149f063a54aa6f6
+  source_log_sha256: 8b88c25f13833cf4c7de517a50e9b9ae1b29eac1ca7a022c281f406528103053
+  Build completed successfully (7397 jobs).
+
+ChainHashV3Comb-partnerExponent_injective
+  source_prefix_sha256: a95dc87cfb3a4b436e94abd30dde4219f30576e81c483e6697d1b1ec257f6ea8
+  source_log_sha256: 7a2185ee24dc1b28fb6c2b0af80e6d43230730c7950d7ec4083f1ee5f05ce837
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-wordIndex_decode
+  source_prefix_sha256: 58a9b0c388baa866e69d5540e46ddbb2d0ebca0299e1106b2a4639e6d32ceb73
+  source_log_sha256: fd4aa94633bee6c775b708537d1d9c9d714064a71ccb791cd0a88919d2e775a3
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-blockOf_lt
+  source_prefix_sha256: cc90979aafb1fa622d7af45c381dc5f4e1e9a412e7da316ef9bcd47ed38d1fb9
+  source_log_sha256: 1bf2e36e19e3df91ae91858d5eec973838dd76c0bbc2dc1f1cfc284b4c396235
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-slotOf_active
+  source_prefix_sha256: 96b8f426500dd5657b81bd9a2b8b45a161964cec85dd8fe8b8c584296d8040f1
+  source_log_sha256: 98a4f05994ea0775f90ec582d7ecd100ed04beb54484cf659178e05f95cb2ce7
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-comb_encoding_injective
+  source_prefix_sha256: 2db125abc0946ea1452089be5e6782d024d8708ae4f3b14d2c22d837a5bcd8a7
+  source_log_sha256: 60e2428b6532258ab4979a979f59f64fe86ae401f558e3d2798a617a3222a3a8
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-blocks_pos
+  source_prefix_sha256: 97211e4b8ac6a91c696b2bc0c62290eef9de0885398faad461ee167044beaeda
+  source_log_sha256: f6f788358235816b7414c486682b9b339a5a2d757c21860514d0809b6ed1551a
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-blocks_mono
+  source_prefix_sha256: c9790796dde7502a599388ba1dcbf23112ae5f75359deadfeba0a807d7ed7bec
+  source_log_sha256: f66b75b787e5cc6adba28c4f978e19bc2728e15f11f6cc8a3d9da16856755cff
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-square_injective
+  source_prefix_sha256: 1cbe7dc30706397e309e5a1c327bada045428a4f79c7e2d5a6b14334a430f926
+  source_log_sha256: 48cab747b21014c1a2c632b5c1419b937cf7cabc37a07bcd255dc6d07d3b8457
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Comb-frobenius_root_count
+  source_prefix_sha256: 6ebe8017c07de16f23801cff0ca550a0f7f75230fc989128b863d6e3ce23f5ed
+  source_log_sha256: 04a7bcf6074c180180a8f6d63f280c266a9885042e157b7e59c909af0ca6ce7e
+  Build completed successfully (7393 jobs).
+
+ChainHashV3Evaluation-serialHorner_expansion
+  source_prefix_sha256: 0cd9f07cb9d013127f7ddcff2d3ac29f2fdbde434949a8ffd1677e736e456390
+  source_log_sha256: aeeb73535167b2ad78488cc5a18dcc9c607097660cfc0f7d4005bf1486f8ec5c
+  Build completed successfully (7400 jobs).
+
+ChainHashV3Evaluation-hornerValue_eq_serial
+  source_prefix_sha256: 10fc9b000687cae1fa7078e3eb6cf4b0fe91dfbeb274deb527e6268432f5a202
+  source_log_sha256: 11840a694d83138f9bda536fd0aee83e7be380803c90713cd23ec5869f7f7075
+  Build completed successfully (7400 jobs).
+
+ChainHashV3Evaluation-scheduledHorner_eq_serial
+  source_prefix_sha256: 62a87f15ff767e3c5a88677e8fcce64cc5c8cc781e980b6fbbe315fd98684a55
+  source_log_sha256: 1c48f0d971894db796e8ba05604067026f3a5766e1a802215c76bbea7b77752c
+  Build completed successfully (7400 jobs).
+
+ChainHashV3Evaluation-map_serialHorner
+  source_prefix_sha256: a4e0175f57d6b4079a0a9280f46977fe024c96e46360c0f5c9cc154b4c1f1d62
+  source_log_sha256: b4ebd98af53302b6ccd13149acc6bd6081457e1fb76fe3bb2e639ffe192f4e16
+  Build completed successfully (7400 jobs).
+
+ChainHashV3Evaluation-evaluation_independence
+  source_prefix_sha256: 2d3ceddbabc431299e3e52c2331b8e4a97823fcab2d6decba6fabc7b4d636150
+  source_log_sha256: 150f99173df4ab454aa95827a6ebc73fbdc579082d524770ca4ad6853ccf6a52
+  Build completed successfully (7400 jobs).
+
+ChainHashV3Evaluation-hash_evaluation_independence
+  source_prefix_sha256: 45a24392f7da52645bd629d136f6102304479faa5da72f7e2a80a7680d994a47
+  source_log_sha256: e0563d11f30aae46ae717631797909e00558b09b0a49b64f52694de2a043ab37
+  Build completed successfully (7400 jobs).
+
+ChainHashV3Horner-hornerPoly_top
+  source_prefix_sha256: 16c9d19371c12cfda2a3032205eca86e915e90dce66cc42d57019947bb22a3e2
+  source_log_sha256: d9379341b4784459b3e90675079b458965cfd1d455cb10f0256e281fd0862944
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Horner-hornerPoly_degree
+  source_prefix_sha256: bcf30791fb5591c9312e531a18cef3d09d8874c0e665092ba4f42408657c03c2
+  source_log_sha256: e025afbd1dad9f231de0fb9363da83e037a14d02701b188efeaaf8f14d8eb636
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Horner-hornerPoly_equal_length_difference
+  source_prefix_sha256: 41cefc72a7471bf73f600da8e4a017e0285c887ca2981a2583823423aafce603
+  source_log_sha256: 827f106446fbc9012496720e413673d7fd98530ad0af9ceb2d08524aaee19d0d
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Horner-hornerPoly_distinct_length
+  source_prefix_sha256: dd30654f90eafaa159a2b92017dac70b9d3c260ed71f15f8c78ddb9d3227d0df
+  source_log_sha256: 827f106446fbc9012496720e413673d7fd98530ad0af9ceb2d08524aaee19d0d
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Horner-hornerPoly_distinct_blocks
+  source_prefix_sha256: cdf4c3f12e677af581fc8295ec67ef950aad1b99d337f14000f85799a3c9302b
+  source_log_sha256: 827f106446fbc9012496720e413673d7fd98530ad0af9ceb2d08524aaee19d0d
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Horner-hornerValue_expansion
+  source_prefix_sha256: 8fa6207972db86638f189981acded42a4723018641630a8364d49458dc02eb0d
+  source_log_sha256: 18424d69e07d21665a16e6fc0f6db9141cbb9b665f80dc8db217191575a55f39
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Horner-horner_equal_collision
+  source_prefix_sha256: c3cc4330746dc30948390adbca39f35a4e5d9105e7807be827be0fb1a349e713
+  source_log_sha256: 18424d69e07d21665a16e6fc0f6db9141cbb9b665f80dc8db217191575a55f39
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Horner-horner_equal_from_stages
+  source_prefix_sha256: 26b45fc8bc70155aed2c2374845fdd301b6ae34583b58f7368adaafafc52c8ac
+  source_log_sha256: bf1e86dc62f4108e7b8b07b7a12dc4e900d7582e061b9d0798d9d49eb84b1187
+  Build completed successfully (7395 jobs).
+
+ChainHashV3Keys-unposition_position
+  source_prefix_sha256: 6a3656b6267753c793a61fdd22b23e1ebf9160f875261f9ea4413b8d2fc66d96
+  source_log_sha256: b869bfdba6517f8061741119154341c808058afa4e41c86086b9a4e7b6cfc12c
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-position_unposition
+  source_prefix_sha256: 8c50330ed75934c71d3165d7bb7c1d461b3b219a7a982bee8b8a5d51795e0852
+  source_log_sha256: df2cf513201fe4a9544f39ce4627fe113d12de4b8e99c4a68923deed48a654e3
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-encode_decodeIdeal
+  source_prefix_sha256: 80483181b52eea378e9d7575f2ed60e42e77674026a0bba4a6ba41109c608f53
+  source_log_sha256: 5e79d4773b16943bc01e97da1b803eabf80736c7fdfd1e572d3de42fc44399a9
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-decode_encodeIdeal
+  source_prefix_sha256: 12d32c12ff0f5d47b9e1390d7ce66f0bcba5181a027a6bee5bbb8a3611b7f014
+  source_log_sha256: f2dc44b6f8129e5e034db043314bf70f854c26202ad26be8b3a50c38a4d33219
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-encode_decodeModelA
+  source_prefix_sha256: faaff56e5934dbea2f0d8a3f56d37e1db658123cc25514d10c6e03a444eac05a
+  source_log_sha256: 60d76897d52d1b29262358829851518e1e98e229cd76d6f71d20e8b216bb90a9
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-decode_encodeModelA
+  source_prefix_sha256: 3fceae2f48ac84eae9e93254067dd5237b4f3f14b6fc6deea4a1c2f479a56963
+  source_log_sha256: ba55ec65b6f7140502d5b13e8d63b36477a542fefecdd9996a76e2d980809f95
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-expandedWords_power
+  source_prefix_sha256: dd297fcd59102075dce4a18d8d9f8e473fadb37ce71a86045bebbb7c456ca9d8
+  source_log_sha256: 1f12c2fa71798dcd80f8a8bb0c0d82bea21b27acbbfd536fa28f373159d5e5b3
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-encode_decodeKeyBytes
+  source_prefix_sha256: 0006e07a6b143c4f8d06bb401ba386b59a23040896aebdab8bc99b9cf49172f6
+  source_log_sha256: 246d4fe413a9b7a2e2ffbc6a31408f698f2b09021f2298a55c75fcfd1dfd4431
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-decode_encodeKeyBytes
+  source_prefix_sha256: abc49302aac3b6f4a1761fc78f188e32734eefcebb85ad7c93b3611100171940
+  source_log_sha256: 422bdb531f7b853c2e18a51fe3ea2c55b25ad82b208e629ee1135117df78cd50
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-digestWord_injective
+  source_prefix_sha256: 11cdb287a985f899715763018faca1f458379828defec9097671e3b9a2c7c9b6
+  source_log_sha256: 71b7fc1530547250eeb79913d173f3bd3f6e5767be7fe2d3c2a886f47bc86c80
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-paper_collision_bound_bytes
+  source_prefix_sha256: 2bbd911411c4550a5c7c5573973e91d4b6e8af5283be3710abe1adb8212af18a
+  source_log_sha256: 422bdb531f7b853c2e18a51fe3ea2c55b25ad82b208e629ee1135117df78cd50
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Keys-modelA_collision_bound_bytes
+  source_prefix_sha256: 919275e15b822d9c6bf2673a0b5872c9cf65f784fbdff3a71702a1a86d5618e7
+  source_log_sha256: 7611f26199e5cb0b97ed64a575946790ae0808ae53fd50981c52f35f499051d2
+  Build completed successfully (7399 jobs).
+
+ChainHashV3Lazy-rawPolynomial_degree
+  source_prefix_sha256: 86c1b569ae73fa4e89fcf0fbb069a60e8b77b4942662aa467bdc312c1d8dcbf2
+  source_log_sha256: e70f49e0a2f4e85ab83b22ace942ff9fa414e8a21715ad203e53f46357f476c7
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-rawPolynomial_split
+  source_prefix_sha256: 5c1544843e52d2196579ecd922087c0ccfd63dd98001c22e9c46eb64a07cc66a
+  source_log_sha256: a597d060e86190b279055a5df999fd7dfee1db775090f91d5d0bd1ccb2472188
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-alpha_eq_tail
+  source_prefix_sha256: ec9bd01310841b944ae3d0d4e836e988dfc004075cb2bdb878fb31bcaa15cd8a
+  source_log_sha256: eb5a2c4b0116d7795e9df51d884a1706d02f23d4f4f5033a68dc0fcf77947ba7
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-tail_word_27
+  source_prefix_sha256: ba2201d8dfcd4a3aa59957d7c0a8a93e882c5569b5475358666d5b4f1858eec8
+  source_log_sha256: e5baacd67e9a012bfffbf8fd6a0e45cffbd6351e18d522dfdcb3acf7cbda05f5
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-alpha_eq_27
+  source_prefix_sha256: de955876946a58cf25161e461fbee4cc68670208c0fcc582a735cb9f21f5f973
+  source_log_sha256: b0898c9451e01ebf0e4036385f283a189133e8cc5e99744f23adbe54d3d18d3c
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-lazyRawStep_degree
+  source_prefix_sha256: e2538574e5619557f3a764c64431d7785fd6d435bdfd4954763608a39d1102ce
+  source_log_sha256: d8178779e02497ee40705b04f909f747fff62cebd705f9ee0d0abeb896dbc23c
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-lazyStep_reduce
+  source_prefix_sha256: 7758f2354855ad7f9de248efb3843d9d189ae4bb9af1781b4ecf1c7c866013d1
+  source_log_sha256: 96c24b0a4f7f1861a867cdf6ee098d89ffe3ee8f03b133274277597525bf5eed
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-lazyHorner_eq_serial
+  source_prefix_sha256: 53228b5e1ae8706104be830d8a640821f047c312b6b21a03b1a298ffaddf2d80
+  source_log_sha256: 6eea2d05fc4770a1e5cd807b0fd3cf928d05532f9faf5b5574c4a6e1c80ceaaf
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-lazyHorner_eq_schedule
+  source_prefix_sha256: 43a4d780e12512c8f89ccd118f0d13476ab1a3da8af1d4b30e67eb8a9e696cf0
+  source_log_sha256: d0851d265cfb07616ea2230999fa01fdd9898eae03fe2bf9f466ac468410ad1e
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-reduce_clnh
+  source_prefix_sha256: 46d1e150f364c6999b2dcf8693d7a8ef562eef841229388f568afcca4bb715ac
+  source_log_sha256: 91519a5099524cede7862b44dd6d226a96ec0ceb5e06f02e3673e99e5618e8df
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-rawBlock_matches
+  source_prefix_sha256: bb7b7631581992e70ebd1edc66ea6945ba1c1159f85cf56cbff17450e4bad5eb
+  source_log_sha256: bbc94aa2e3c69d8dd97ea7694d5f8c6bce3889313d83fdb68ab46503c60bcac1
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-rawCoefficients_matches
+  source_prefix_sha256: 9bc7d72c38da4d788c138e16d0bd7061ff6517e0c7b419cbd083f17b2dc89203
+  source_log_sha256: 7a074cfdc09e71c4239262aafb94d629f1bf6f173cc294d7aa57d1328ab3773a
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-rawLength_matches
+  source_prefix_sha256: dfbc44d9cc7e7dbe6ffbb3054a5bea27499aa0b335d040d4b39d65b3745b6e05
+  source_log_sha256: 7a074cfdc09e71c4239262aafb94d629f1bf6f173cc294d7aa57d1328ab3773a
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-lazyHash_eq_hash
+  source_prefix_sha256: dc74d50a6f27e2942894ea7b45f39b0a0f6cc29392027905b49633b1c40b03da
+  source_log_sha256: f23fb4095b972ffb633a6be44b4719d4f6eb104e6561e08de20789d98f8feddc
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Lazy-complete_evaluation_independence
+  source_prefix_sha256: 0f1983dada1117e66b08dcc3003e7e64cd6ae6948bc8577d1d7948b3c779d5b4
+  source_log_sha256: 6339ee10c0f767b698ba258b9117005da10de8046f62cf89c698b6ddee914b6f
+  Build completed successfully (7401 jobs).
+
+ChainHashV3Model-idealKey_card
+  source_prefix_sha256: 8c2df51114b879a0cfbb7a0b91a2921d5677edd1171112f06d18af8720cf55ee
+  source_log_sha256: 6501e3eb90277d2d613870126c8ab5287b366c6f91a77bdc32fb764aca525785
+  Build completed successfully (7396 jobs).
+
+ChainHashV3Model-modelAKey_card
+  source_prefix_sha256: 4bb54fd74aab1dea9df893e803c55195e12a7cfb2bb5bd07cca7258fd071328c
+  source_log_sha256: 806b6bc53d5b5f8410995cd2f49aaaaad3fff9f2562678f5421bd35b9cb11500
+  Build completed successfully (7396 jobs).
+
+ChainHashV3Model-lengthField_injective
+  source_prefix_sha256: 72cd89da5b5dc430b23b5e89a3ccc34d9ac8f674aed8ea15b1df3cc605bb13ef
+  source_log_sha256: ffcd30b9bd44e0e8d527deb5c2abab0ff7aa3fbedeeceeb61e736be44fa72578
+  Build completed successfully (7396 jobs).
+
+ChainHashV3Model-paper_envelope_arithmetic
+  source_prefix_sha256: 677acdf202bda0de097a8441056e32d9ddaec92709e3f062d5561817fc8c34a0
+  source_log_sha256: aae8513eaf0f74ab9ee07f546fd7026be4f2c46ec3df0a1f0e3be7f9904bf41e
+  Build completed successfully (7396 jobs).
+
+ChainHashV3Model-modelA_envelope_arithmetic
+  source_prefix_sha256: 8eefcee79d83ab5fe45670bc65f68401cefe3e3c46adb864bf9ab16d4fdcdedc
+  source_log_sha256: 5eebf1c656ce337b4d330d31fbcbad425fe2a2da9b75a7ceaeec9c31c4eb6d9b
+  Build completed successfully (7396 jobs).
+
+ChainHashV3Model-paper_score_ratio
+  source_prefix_sha256: 54f74d779c4822f5b6a858db8250ae7ebefdd2bfece27875da2ef03f53f26ce7
+  source_log_sha256: c18cbb15d89d0bd7673f8318c30c7f0505bbcaacf81018849aecafc2c2af09c4
+  Build completed successfully (7396 jobs).
+
+ChainHashV3Model-modelA_score_ratio
+  source_prefix_sha256: ae3b566cdd3c06bc9f046ea3d5c728db499251986996bf9eff6366f3bcbf88b3
+  source_log_sha256: b3dde30065970299aec1a26b9c4c226c9c5d2369bccc584e47739f80ca416ae8
+  Build completed successfully (7396 jobs).
+
+ChainHashV3Model-score_attained
+  source_prefix_sha256: 9fff6ac214a746508d7596f96dfb2414f36b87cac1e2c5bed2ad3b6748240663
+  source_log_sha256: ab8d5098472ec1bca7357e478d0590542c6fef9c9abd94583707a05d496a3472
+  Build completed successfully (7396 jobs).
+
+ChainHashV3PH-eval_phPoly
+  source_prefix_sha256: c66c65d8fada5ac98eb7d8ad6e18e2e3ff4344b0c1d8d20b0324b58f3bee05da
+  source_log_sha256: 9aa015379c3d856b2b237cb739fc253679c014b503d21cc59b30676626d383c4
+  Build completed successfully (7394 jobs).
+
+ChainHashV3PH-phPoly_difference
+  source_prefix_sha256: 82e1eca30f437c3833debad840c907d6df25338ab0f7070e9ef3e798bfa010f1
+  source_log_sha256: aa30208d7e7149ad716f50217d174231031faaf40092e1f960136774932587ce
+  Build completed successfully (7394 jobs).
+
+ChainHashV3PH-differencePoly_coeff
+  source_prefix_sha256: 871502eee8779dd305cd90313eccb7efab7ba345ae6e197532a7653dc9b42444
+  source_log_sha256: 9b0e3cdcdb99e9f998612859c7dbbd83329edb07cf4fe390d79359e1fb59dd97
+  Build completed successfully (7394 jobs).
+
+ChainHashV3PH-differencePoly_nonzero_degree
+  source_prefix_sha256: b456fdb991e74475e20a52982a9b5afaad4ed7116e5f38d0c3e11eeff31fbd56
+  source_log_sha256: d89992770ae31a196b9d802d865d26e8da573fae6ac2b1990e2b07b2a554a289
+  Build completed successfully (7394 jobs).
+
+ChainHashV3PH-polynomial_probability_le
+  source_prefix_sha256: d37250035c6d59011dbb9aee05697f2eb5f9259ecaee7dc72fd7c74548c47ce6
+  source_log_sha256: 9b0e3cdcdb99e9f998612859c7dbbd83329edb07cf4fe390d79359e1fb59dd97
+  Build completed successfully (7394 jobs).
+
+ChainHashV3PH-ph_equal_groups_bound
+  source_prefix_sha256: f6c09a9969ed01ed6138e1d2433aeacfab952c1d731fe630abd1448ee4c85ca3
+  source_log_sha256: a6f33d13cb8e03a091347e5ccd4b826edb3b1c291c753b8e473c9ace2f2e4f82
+  Build completed successfully (7394 jobs).
+
+ChainHashV3PH-reducedPH_difference
+  source_prefix_sha256: c49c9e52ae871f74e52c161e1a1729034f60684793fbd01b40e06315bd9a54ac
+  source_log_sha256: 24e5dda37ba863dbff3901abe86c8cef7f5a2271c7da01fe8da6215f38f3b1de
+  Build completed successfully (7394 jobs).
+
+ChainHashV3PH-reducedPH_difference_uniform
+  source_prefix_sha256: 6cc3eda15def4b4146afbd225945ec399f910dff61f8f71be4ba1251c2d23c5f
+  source_log_sha256: 24e5dda37ba863dbff3901abe86c8cef7f5a2271c7da01fe8da6215f38f3b1de
+  Build completed successfully (7394 jobs).
+
+ChainHashV3Scores-score_lower_bound
+  source_prefix_sha256: d1c02efb12c48e489e857479f175e838495d3eeb6d6270dbf70691601781d33c
+  source_log_sha256: 6e421c99a2913197a789df3cfaefd0373e2811db78d7e588d3637a7677e4b830
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Scores-paper_score
+  source_prefix_sha256: 81eb1f11411bbc0eaebcf59c44ee1a92e16242357acc180f23e9b08e36640583
+  source_log_sha256: d85e7f7a44d5f275e7d2551762a3ab61bb9f2589cf772194eb80b98b16b5559e
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Scores-modelA_score
+  source_prefix_sha256: 0962c5b5a5e968f0968d0ce5ea8529755657efd47a1c8e5c7a85264b8b49682b
+  source_log_sha256: 8b39f9e6b9a359a045a36bd1aaad92906c7f8067ff488bb8e014b9306bf6d46d
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Scores-scores_at_one
+  source_prefix_sha256: 94a48bcf04bf4ad4d004f194681f131fa37f4bd6894324809dfed01b12279ec3
+  source_log_sha256: c111f0bfc1fba6e41ef2a7e0b9be04887f2987e8860f38dcef5ed44c22caaef2
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Scores-paper_score_minimum
+  source_prefix_sha256: 6666b52df42faf15c4f9dfa3b16cc8e4eba60bdb8b1789830d5d9f5ae47589b7
+  source_log_sha256: bc8cee908c660ccf48870aed40030fca7b75379c72683621f8fb17b5d423f595
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Scores-modelA_score_minimum
+  source_prefix_sha256: 2b536d8b15a379f9f30c6ccd339c580714863850c9ef2ea3b69270df503793b6
+  source_log_sha256: bc8cee908c660ccf48870aed40030fca7b75379c72683621f8fb17b5d423f595
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Scores-envelope_table
+  source_prefix_sha256: 18edb0321ae3a58493f017e49b4d3e405b3f3f05bda1ab185367cd886fae2c63
+  source_log_sha256: 6e421c99a2913197a789df3cfaefd0373e2811db78d7e588d3637a7677e4b830
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Scores-envelope_large_examples
+  source_prefix_sha256: 77c3e730f8b1bae6d7eca5aaf3f365c2013f080c1fb0c671605fc24a2a901cd8
+  source_log_sha256: d85e7f7a44d5f275e7d2551762a3ab61bb9f2589cf772194eb80b98b16b5559e
+  Build completed successfully (7402 jobs).
+
+ChainHashV3Seeded-halfPoly_comp
+  source_prefix_sha256: ccc66f446cbeab3a5b0c677187f2996c0c833b7f84578f387907257a2e86a1ba
+  source_log_sha256: 3499507502531f7306ab0b2298004e64c61fa629ab76b50d700f05f5de6e0d4a
+  Build completed successfully (7398 jobs).
+
+ChainHashV3Seeded-ph_frobenius_bound
+  source_prefix_sha256: 44360ed19bea9ee376c6c452ea7523cceae781811dd6e18e2dab21891d146c65
+  source_log_sha256: 5433102933f8f96db1cfdc06b587464cac64a20f88401cefca4579be4903407a
+  Build completed successfully (7398 jobs).
+
+ChainHashV3Seeded-partner_exponent_budget
+  source_prefix_sha256: 8e130312e3ee3eea9f05b832ca914d8a730fdcd71e60600732e3552e3c61d137
+  source_log_sha256: 3545f0cb7a321334776cb957f121d66093214c234f36c0c3d0d6c1cee74f25c2
+  Build completed successfully (7398 jobs).
+
+ChainHashV3Seeded-field_char_two
+  source_prefix_sha256: 145422c0def71148cf9e89d8036f0651d96c649afc720fa8562dfbb6b633c911
+  source_log_sha256: 231b1f9b4cb41f7b3f6b1ae127b5142c8d4cabc629e478fafc9b67493cb7f282
+  Build completed successfully (7398 jobs).
+
+ChainHashV3Seeded-seeded_coefficients_collision
+  source_prefix_sha256: a99d764c542a6d0a5717c188532b4dd80c258a88415a3f318a8d753e6218b6fa
+  source_log_sha256: eb70ebc454bde9515219853d57f12e38f2f1402d96362e5eb74345f8698295f5
+  Build completed successfully (7398 jobs).
+
+ChainHashV3Seeded-modelA_collision_equal_length
+  source_prefix_sha256: 0d01722fb0c71645a3110005e7fd48bc0d859ee1c8d3667d5c63e4cd5320a469
+  source_log_sha256: eb70ebc454bde9515219853d57f12e38f2f1402d96362e5eb74345f8698295f5
+  Build completed successfully (7398 jobs).
+
+ChainHashV3Seeded-chainHashHorner_modelA_collision_bound
+  source_prefix_sha256: 15cc33b732045713ba961c5c6ce99c3d56e1a967fa92d55c1331463c551ea8a4
+  source_log_sha256: 660351ac7b8dbbe9dda018c82941b083df57bdc00ed3fe2074ba839ffb8005d8
+  Build completed successfully (7398 jobs).

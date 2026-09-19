@@ -1,0 +1,11 @@
+Sanitized excerpt from the interrupted cache-fetch attempt.
+Verification UTC: 2026-09-19T00:35:54Z
+Command: LEAN_NUM_THREADS=32 nice -n 10 taskset -c 0-31 ./verify.sh
+Stage: lake exe cache get (before lake build).
+
+Downloaded: 0 file(s) [attempted 25/7335 = 0%], 25 failed<xeon-home>/.cache/mathlib/ced9d38fcce9b28b.ltar.part: Transfer failed (error code: 0): OpenSSL/3.0.8: error:16000069:STORE routines::unregistered scheme
+
+Further equivalent per-file transfer errors omitted.
+The process was stopped and verification restarted using the source-lane
+environment, including SSL_CERT_FILE and CURL_CA_BUNDLE set to
+/etc/pki/tls/certs/ca-bundle.crt. See VERIFICATION.txt for the completed run.

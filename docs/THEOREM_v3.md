@@ -1,11 +1,12 @@
 # ChainHash-Horner v3 collision guarantees
 
-**Lean status: in progress.** The statements and written derivation below
-concern the new [v3 definition](SPEC_v3.md). The checked v1 proofs in
-[`lean/`](../lean/README.md) do not establish a concrete v3 theorem.
-The [design record](DESIGN_MEMO_v3.md), sections 5 and 7, records the proof
-argument and remaining formalization. Property tests establish implementation
-agreement on a finite corpus, not a proof over all keys and messages.
+**Lean status: Lean-proved.** The paper and model-A byte collision bounds,
+evaluation independence and exact score minima are checked in
+`ProvenHashes.ChainHash.V3`: 89 theorems across ten modules, using only
+`propext`, `Classical.choice` and `Quot.sound`. The [full audit](../lean/VERIFICATION.txt)
+covers both V3 and the retained proofs. The [design record](DESIGN_MEMO_v3.md)
+preserves the original proof plan; those V3 formalization obligations are
+now discharged. See the [integration record](../lean/V3_INTEGRATION.md).
 
 ## Statement, domain and key models
 
@@ -165,13 +166,61 @@ Divide each numerator by `2^64`. For A the numerators at L=1..20 are
 
 ## Formalization and limits
 
-Lean status remains **in progress** for both v3 models. Required work
-includes the comb encoding and partner-exponent bijection, reduced CLNH
-universality, the Frobenius root-count lemma, Horner leading-coefficient
-arguments, stride/lazy evaluation identities, the new 39-word concrete
-instance, model-A composition and envelope/score arithmetic. The existing
-field and finalizer proofs are reusable components; there is no complete
-v3 theorem claimed by this integration.
+The following are verbatim source signatures in namespace
+`ProvenHashes.ChainHash.V3`; definitions and all exported statements are in
+[the catalogue](../lean/THEOREM_STATEMENTS.md).
+
+```lean
+theorem paper_collision_bound_bytes (L : ℕ) (hL : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Key39 => hashBytes k m = hashBytes k m') ≤ paperEpsilon L
+```
+
+```lean
+theorem modelA_collision_bound_bytes (L : ℕ) (hL : 0 < L) (hcap : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Fin 64 → Byte => modelAHashBytes k m = modelAHashBytes k m') ≤ modelAEpsilon L
+```
+
+```lean
+theorem complete_evaluation_independence (k : ℕ) (hk : 0 < k) :
+    scheduledHash k = hash ∧ lazyHash = hash
+```
+
+```lean
+theorem paper_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score paperEpsilon L.val)) 63
+```
+
+```lean
+theorem modelA_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score modelAEpsilon L.val)) 63
+```
+
+`Key39 = Fin 39 → Word 64` supplies 2496 independent uniform key bits.
+`Fin 64 → Byte` supplies exactly 512 independent uniform key bits, with
+`Byte = Fin 8 → ZMod 2`; both byte-message hashes return `UInt64`.
+`uniformProb` is the exact event/key-space cardinality ratio in `ℚ≥0`.
+The definitions are `paperEpsilon L = (blocks (8*L)+1)/2^64` and
+`modelAEpsilon L = (degreeBudget L+blocks (8*L))/2^64`, with `p(L)=blocks (8*L)`
+and `d(L)=degreeBudget L`. These Lean envelopes are un-clipped; the displayed
+clipped bounds also follow from a probability being at most one.
+
+The score theorems concern `log₂(L/epsilon(L))` over all positive natural L,
+with minimum 63 attained at L=1. In particular they cover the collision
+length domain above. The schedule equality holds for every positive natural
+stride, including strides greater than the block count, and every multiplier,
+including zero. The lazy equality uses a bounded 128-bit raw polynomial
+state and the reduction identity `X^64 = 0x1b`.
+
+There are no assumed probabilistic stage bounds in the endpoints. The proofs
+include comb byte injectivity, reduced CLNH difference universality, the
+general characteristic-two Frobenius root bound, Horner leading coefficients,
+key encoding bijections, model-A composition and envelope arithmetic.
+The [464-vector comparison](../lean/V3_VECTORS.txt) checks the public C header
+against a separate executable Lean reference, across both key models and
+available backends, strides 1–8 and eager/lazy evaluation. These finite tests
+do not constitute a formal C/compiler/SIMD or memory-safety refinement proof.
 
 The guarantee concerns fixed messages independent of the key. It does not
 establish adaptive or cryptographic security, a MAC, or bounds for truncated

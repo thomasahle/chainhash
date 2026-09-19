@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-09-19 — Machine-checked v3 proofs
+
+- Integrate 89 V3 theorems in ten modules: the 39-word paper bound, exactly
+  64-byte model-A bound, evaluation independence for every positive stride,
+  and exact certificate score minima of 63.
+- Audit all 672 exported theorems/lemmas with only the standard Lean axioms;
+  guard the generated audit against missing V3 endpoints and modules.
+- Publish exact signatures, source hashes and reproduction details. Run the
+  integrated verification on the Xeon with 32 threads, CPU affinity 0–31
+  and nice scheduling; retain the complete transcript.
+- Add the 464-vector C/Lean corpus to verification against the public v3
+  header, including available backends, strides 1–8 and eager/lazy evaluation.
+
 ## 2026-09-19 — ChainHash v3 / ChainHash-Horner
 
 - Add `include/chainhash3.h`, preserving `include/chainhash.h` byte-for-byte as
@@ -13,7 +26,8 @@
   configurable eager/lazy evaluation, streaming, region-aligned partial joins,
   and a callable self-test. Model A takes 64 random bytes; ideal keys take 312.
 - Publish the complete specification, written ideal/model-A bounds and 63/63
-  certificate scores. v3 Lean status is **in progress**; v1 proofs remain v1.
+  certificate scores. The subsequent proof integration is recorded above;
+  v1 proofs remain available separately.
 - Preserve design alternatives and measurements. Both supplied bulk gates
   passed (Xeon 27.717 B/TSC; M2 26.26 B/calibrated cycle). Short-input speed
   regresses; no short-key parity or new v3 full-SMHasher-suite claim is made.

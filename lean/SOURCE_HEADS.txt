@@ -12,3 +12,4 @@ verify-chainhash-full 618f1b6abdeee57c83a6b1fa2f00b84e687b61ea
 verify-clnh a75022b7a907a62267e83ffe577b3c262671f4cb
 verify-encoding f2cd7fb156473dac1e61df8ed35d5904d7b14672
 verify-finalizer e8ba4a1c51ea443eff10fc6adac4f9d177705f27
+lean-chainhash-v3-64 54410e433a1d9f79cd4104dc9fc2cdea72164f07 (completed v3 paper/model-A/evaluation/score proofs)

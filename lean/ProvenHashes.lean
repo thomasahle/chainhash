@@ -67,3 +67,13 @@ import ProvenHashes.Tabulation
 import ProvenHashes.UnreducedNH
 import ProvenHashes.WordRepresentation
 import ProvenHashes.WordSplit
+import ProvenHashes.ChainHashV3Bytes
+import ProvenHashes.ChainHashV3Comb
+import ProvenHashes.ChainHashV3Evaluation
+import ProvenHashes.ChainHashV3Horner
+import ProvenHashes.ChainHashV3Keys
+import ProvenHashes.ChainHashV3Lazy
+import ProvenHashes.ChainHashV3Model
+import ProvenHashes.ChainHashV3PH
+import ProvenHashes.ChainHashV3Scores
+import ProvenHashes.ChainHashV3Seeded

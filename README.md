@@ -8,9 +8,10 @@ It is a C99/C++11 header with no allocation or library dependency.
 
 Use [`include/chainhash3.h`](include/chainhash3.h) for v3. Its default key
 constructor takes **64 random bytes** and prepares a 448-byte key object.
-The written model-A collision guarantee has a **63 / 63 fixed / at-most
-length-adjusted score**. **Lean status: in progress** for v3; the existing
-checked proofs apply to v1. See [the precise statements](docs/THEOREM_v3.md).
+The Lean-proved model-A collision guarantee has a **63 / 63 fixed / at-most
+length-adjusted score**. **Lean ✓: paper + model A + evaluation independence**
+for v3, including exact score minima; the checked v1 proofs remain available.
+See [the precise statements](docs/THEOREM_v3.md).
 This is not a cryptographic digest or message authenticator.
 
 ## What changed, and why
@@ -50,11 +51,11 @@ Both headers can be included together. v2 is the historical adjacent-pair
 Bulk throughput for 262,144-byte inputs; larger is faster. Scores summarize
 published collision bounds in eight-byte word units, not measured attack work.
 
-| Function | Xeon 8375C, B/TSC | M2 Pro, B/calibrated cycle | Random key bytes | Model-A score, fixed / at-most | Ideal-key score, fixed / at-most |
-| --- | ---: | ---: | ---: | --- | --- |
-| v1: paper, strided 256 B | 15.40 | 22.8 | 80 A / 328 ideal | 62.415 / 61 | 62.415 / 62.415 |
-| v2: adjacent 1 KiB | 24.86 | 17.45 | 1096 ideal | Not established here | 62.415 / 62.415 |
-| **v3: ChainHash-Horner** | **28.31** | **26.26** | **64 A / 312 ideal** | **63 / 63** | **63 / 63** |
+| Function | Xeon 8375C, B/TSC | M2 Pro, B/calibrated cycle | Random key bytes | Model-A score, fixed / at-most | Ideal-key score, fixed / at-most | Lean proof |
+| --- | ---: | ---: | ---: | --- | --- | --- |
+| v1: paper, strided 256 B | 15.40 | 22.8 | 80 A / 328 ideal | 62.415 / 61 | 62.415 / 62.415 | ✓ paper + model A |
+| v2: adjacent 1 KiB | 24.86 | 17.45 | 1096 ideal | Not established here | 62.415 / 62.415 | Not established here |
+| **v3: ChainHash-Horner** | **28.31** | **26.26** | **64 A / 312 ideal** | **63 / 63** | **63 / 63** | **✓ paper + model A + evaluation independence** |
 
 These are retained measurements from different runs, not a fresh paired
 benchmark. v1 uses the [previous integration's results](docs/V1.md#measured-performance).
@@ -177,8 +178,10 @@ on both hosts. See [test instructions](test/v3/README.md) and the
 The historical v1 200/200 SMHasher3 result is **not** a v3 full-suite result.
 The retained v3 evidence covers Xeon Sanity/Zeroes and M2 Sanity, with
 verification LE `66672BD6`, BE `FA8A8D3B` (the BE adapter swaps output
-serialization, not input-word interpretation). Lean work on v3 remains in
-progress and is independent of these implementation tests.
+serialization, not input-word interpretation). The
+[V3 Lean audit](lean/VERIFICATION.txt) checks 89 V3 theorems within 672 exported
+theorems/lemmas. A separate [464-vector C/Lean comparison](lean/V3_VECTORS.txt)
+checks implementation agreement; it is not a formal C refinement proof.
 
 ## Design record, attribution and license
 

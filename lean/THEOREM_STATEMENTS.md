@@ -702,6 +702,690 @@ theorem collision_bound_words_model {F : Type*} [Field F] [Fintype F]
     uniformProb (fun k : IdealKey F => hash repr word k m = hash repr word k m') ≤ epsilon L
 ```
 
+## [ChainHashV3Bytes.lean](ProvenHashes/ChainHashV3Bytes.lean)
+
+`ProvenHashes.ChainHash.V3.coefficientsAt_collision`
+
+```lean
+theorem coefficientsAt_collision (m m' : Message) (hlen : m.length = m'.length)
+    (hne : m ≠ m') :
+    uniformProb (fun k : Slot → F => coefficientsAt m (blocks m.length) k =
+      coefficientsAt m' (blocks m.length) k) ≤ 1/Fintype.card F
+```
+
+`ProvenHashes.ChainHash.V3.paper_collision_equal_length`
+
+```lean
+theorem paper_collision_equal_length (m m' : Message) (hlen : m.length = m'.length)
+    (hne : m ≠ m') :
+    uniformProb (fun k : IdealKey => hash k m = hash k m') ≤
+      ((blocks m.length+1 : ℕ) : ℚ≥0)/2^64
+```
+
+`ProvenHashes.ChainHash.V3.lengthField_zero`
+
+```lean
+theorem lengthField_zero : lengthField 0 = 0
+```
+
+`ProvenHashes.ChainHash.V3.lengthField_ne_zero`
+
+```lean
+theorem lengthField_ne_zero {n : ℕ} (hn : n < 2^64) (hpos : 0 < n) : lengthField n ≠ 0
+```
+
+`ProvenHashes.ChainHash.V3.byte_polynomial_ne`
+
+```lean
+theorem byte_polynomial_ne (m m' : Message) (hm : m.length < 2^64) (hm' : m'.length < 2^64)
+    (hne : m.length ≠ m'.length) (k : Slot → F) :
+    hornerPoly (lengthField m.length) (coefficients m k) -
+      hornerPoly (lengthField m'.length) (coefficients m' k) ≠ 0
+```
+
+`ProvenHashes.ChainHash.V3.horner_collision_of_nonzero`
+
+```lean
+theorem horner_collision_of_nonzero {K : Type*} [Field K] [Fintype K] {p q : ℕ}
+    (ell ell' : K) (c : Fin p → K) (d : Fin q → K)
+    (hne : hornerPoly ell c - hornerPoly ell' d ≠ 0) :
+    uniformProb (fun y : K => hornerValue ell c y = hornerValue ell' d y) ≤
+      ((max p q : ℕ) : ℚ≥0)/Fintype.card K
+```
+
+`ProvenHashes.ChainHash.V3.family_collision_unequal_length`
+
+```lean
+theorem family_collision_unequal_length {A : Type*} [Fintype A] [Nonempty A]
+    (expand : A → Slot → F) (m m' : Message)
+    (hm : m.length < 2^64) (hm' : m'.length < 2^64) (hne : m.length ≠ m'.length) :
+    uniformProb (fun k : (A × F) × (F × (Fin 5 → F)) =>
+      hash ((expand k.1.1,k.1.2),k.2) m = hash ((expand k.1.1,k.1.2),k.2) m') ≤
+      ((max (blocks m.length) (blocks m'.length)+1 : ℕ) : ℚ≥0)/2^64
+```
+
+`ProvenHashes.ChainHash.V3.chainHashHorner_collision_bound`
+
+```lean
+theorem chainHashHorner_collision_bound (L : ℕ) (hL : 8*L < 2^64)
+    (m m' : Message) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : IdealKey => hash k m = hash k m') ≤ paperEpsilon L
+```
+
+## [ChainHashV3Comb.lean](ProvenHashes/ChainHashV3Comb.lean)
+
+`ProvenHashes.ChainHash.V3.partnerExponent_injective`
+
+```lean
+theorem partnerExponent_injective : Function.Injective (fun j => exponent (partner j))
+```
+
+`ProvenHashes.ChainHash.V3.wordIndex_decode`
+
+```lean
+theorem wordIndex_decode (i : ℕ) : wordIndex (blockOf i) (slotOf i) = i
+```
+
+`ProvenHashes.ChainHash.V3.blockOf_lt`
+
+```lean
+theorem blockOf_lt (i n : ℕ) (hi : 8 * i < n) : blockOf i < blocks n
+```
+
+`ProvenHashes.ChainHash.V3.slotOf_active`
+
+```lean
+theorem slotOf_active (m : Message) (i : ℕ) (hi : 8 * i < m.length) :
+    (slotOf i).1 ∈ active m (blockOf i)
+```
+
+`ProvenHashes.ChainHash.V3.comb_encoding_injective`
+
+```lean
+theorem comb_encoding_injective (m m' : Message) (hlen : m.length = m'.length)
+    (h : ∀ t, t < blocks m.length → ∀ j : Slot, j.1 ∈ active m t → data m t j = data m' t j) :
+    m = m'
+```
+
+`ProvenHashes.ChainHash.V3.blocks_pos`
+
+```lean
+theorem blocks_pos (n : ℕ) : 0 < blocks n
+```
+
+`ProvenHashes.ChainHash.V3.blocks_mono`
+
+```lean
+theorem blocks_mono {n m : ℕ} (h : n ≤ m) : blocks n ≤ blocks m
+```
+
+`ProvenHashes.ChainHash.V3.square_injective`
+
+```lean
+theorem square_injective {K : Type*} [Field K] [CharP K 2] :
+    Function.Injective (fun x : K => x ^ 2)
+```
+
+`ProvenHashes.ChainHash.V3.frobenius_root_count`
+
+```lean
+theorem frobenius_root_count {K : Type*} [Field K] [Fintype K] [CharP K 2]
+    [DecidableEq K] (h : K[X]) (hne : h ≠ 0) :
+    (Finset.univ.filter fun x : K => (h.comp (X^2)).eval x = 0).card ≤ h.natDegree
+```
+
+## [ChainHashV3Evaluation.lean](ProvenHashes/ChainHashV3Evaluation.lean)
+
+`ProvenHashes.ChainHash.V3.serialHorner_expansion`
+
+```lean
+theorem serialHorner_expansion {K : Type*} [CommSemiring K] (ell y : K) (cs : List K) :
+    serialHorner ell y cs = ell*y^cs.length +
+      ∑ i ∈ Finset.range cs.length, cs[i]?.getD 0 * y^i
+```
+
+`ProvenHashes.ChainHash.V3.hornerValue_eq_serial`
+
+```lean
+theorem hornerValue_eq_serial {K : Type*} [CommRing K] {p : ℕ}
+    (ell y : K) (c : Fin p → K) :
+    hornerValue ell c y = serialHorner ell y (List.ofFn c)
+```
+
+`ProvenHashes.ChainHash.V3.scheduledHorner_eq_serial`
+
+```lean
+theorem scheduledHorner_eq_serial {K : Type*} [CommSemiring K]
+    (k : ℕ) (hk : 0 < k) : scheduledHorner (K := K) k = serialHorner
+```
+
+`ProvenHashes.ChainHash.V3.map_serialHorner`
+
+```lean
+theorem map_serialHorner {R K : Type*} [CommSemiring R] [CommSemiring K]
+    (reduce : R →+* K) (ell y : R) (cs : List R) :
+    reduce (serialHorner ell y cs) = serialHorner (reduce ell) (reduce y) (cs.map reduce)
+```
+
+`ProvenHashes.ChainHash.V3.evaluation_independence`
+
+```lean
+theorem evaluation_independence (k : ℕ) (hk : 0 < k) (ell y : BitsPolynomial) :
+    (fun cs => (AdjoinRoot.mk modulus) (serialHorner ell y cs)) =
+      (fun cs => scheduledHorner k ((AdjoinRoot.mk modulus) ell)
+        ((AdjoinRoot.mk modulus) y) (cs.map (AdjoinRoot.mk modulus)))
+```
+
+`ProvenHashes.ChainHash.V3.hash_evaluation_independence`
+
+```lean
+theorem hash_evaluation_independence (stride : ℕ) (hstride : 0 < stride) :
+    scheduledHash stride = hash
+```
+
+## [ChainHashV3Horner.lean](ProvenHashes/ChainHashV3Horner.lean)
+
+`ProvenHashes.ChainHash.V3.hornerPoly_top`
+
+```lean
+theorem hornerPoly_top {K : Type*} [CommRing K] {p : ℕ} (ell : K) (c : Fin p → K) :
+    (hornerPoly ell c).coeff p = ell
+```
+
+`ProvenHashes.ChainHash.V3.hornerPoly_degree`
+
+```lean
+theorem hornerPoly_degree {K : Type*} [CommRing K] {p : ℕ} (ell : K) (c : Fin p → K) :
+    (hornerPoly ell c).natDegree ≤ p
+```
+
+`ProvenHashes.ChainHash.V3.hornerPoly_equal_length_difference`
+
+```lean
+theorem hornerPoly_equal_length_difference {K : Type*} [Field K] {p : ℕ}
+    (ell : K) (c d : Fin p → K) (hne : c ≠ d) :
+    hornerPoly ell c - hornerPoly ell d ≠ 0 ∧
+      (hornerPoly ell c - hornerPoly ell d).natDegree ≤ p-1
+```
+
+`ProvenHashes.ChainHash.V3.hornerPoly_distinct_length`
+
+```lean
+theorem hornerPoly_distinct_length {K : Type*} [Field K] {p : ℕ}
+    (ell ell' : K) (c d : Fin p → K) (hne : ell ≠ ell') :
+    hornerPoly ell c - hornerPoly ell' d ≠ 0
+```
+
+`ProvenHashes.ChainHash.V3.hornerPoly_distinct_blocks`
+
+```lean
+theorem hornerPoly_distinct_blocks {K : Type*} [Field K] {p q : ℕ}
+    (ell ell' : K) (c : Fin p → K) (d : Fin q → K) (hpq : q < p) (hne : ell ≠ 0) :
+    hornerPoly ell c - hornerPoly ell' d ≠ 0
+```
+
+`ProvenHashes.ChainHash.V3.hornerValue_expansion`
+
+```lean
+theorem hornerValue_expansion {K : Type*} [CommRing K] {p : ℕ}
+    (ell : K) (c : Fin p → K) (y : K) :
+    hornerValue ell c y = ell*y^p + ∑ i, c i*y^i.val
+```
+
+`ProvenHashes.ChainHash.V3.horner_equal_collision`
+
+```lean
+theorem horner_equal_collision {K : Type*} [Field K] [Fintype K] {p : ℕ}
+    (ell : K) (c d : Fin p → K) (hne : c ≠ d) :
+    uniformProb (fun y : K => hornerValue ell c y = hornerValue ell d y) ≤
+      ((p-1 : ℕ) : ℚ≥0) / Fintype.card K
+```
+
+`ProvenHashes.ChainHash.V3.horner_equal_from_stages`
+
+```lean
+theorem horner_equal_from_stages {K A J : Type*} [Field K] [Fintype K]
+    [Fintype A] [Fintype J] [Nonempty A] [Nonempty J]
+    (p D : ℕ) (hp : 0 < p) (ell : K) (s s' : A → Fin p → K) (g : J → K → K)
+    (hs : uniformProb (fun a => s a = s' a) ≤ (D : ℚ≥0)/Fintype.card K)
+    (hg : ∀ v w, v ≠ w → uniformProb (fun j => g j v = g j w) ≤ 1/Fintype.card K) :
+    uniformProb (fun k : (A × K) × J =>
+      g k.2 (hornerValue ell (s k.1.1) k.1.2) =
+      g k.2 (hornerValue ell (s' k.1.1) k.1.2)) ≤
+      ((D+p : ℕ) : ℚ≥0)/Fintype.card K
+```
+
+## [ChainHashV3Keys.lean](ProvenHashes/ChainHashV3Keys.lean)
+
+`ProvenHashes.ChainHash.V3.unposition_position`
+
+```lean
+theorem unposition_position (j : Slot) : unposition (position j) = j
+```
+
+`ProvenHashes.ChainHash.V3.position_unposition`
+
+```lean
+theorem position_unposition (i : Fin 32) : position (unposition i) = i
+```
+
+`ProvenHashes.ChainHash.V3.encode_decodeIdeal`
+
+```lean
+theorem encode_decodeIdeal (k : Key39) : encodeIdeal (decodeIdeal k) = k
+```
+
+`ProvenHashes.ChainHash.V3.decode_encodeIdeal`
+
+```lean
+theorem decode_encodeIdeal (k : IdealKey) : decodeIdeal (encodeIdeal k) = k
+```
+
+`ProvenHashes.ChainHash.V3.encode_decodeModelA`
+
+```lean
+theorem encode_decodeModelA (k : Key8) : encodeModelA (decodeModelA k) = k
+```
+
+`ProvenHashes.ChainHash.V3.decode_encodeModelA`
+
+```lean
+theorem decode_encodeModelA (k : ModelAKey) : decodeModelA (encodeModelA k) = k
+```
+
+`ProvenHashes.ChainHash.V3.expandedWords_power`
+
+```lean
+theorem expandedWords_power (k : ModelAKey) (j : Fin 32) :
+    fieldRepr (expandedWords k ⟨j.val,by omega⟩) = k.1.1^(j.val+1)
+```
+
+`ProvenHashes.ChainHash.V3.encode_decodeKeyBytes`
+
+```lean
+theorem encode_decodeKeyBytes (n : ℕ) (b : Fin (8*n) → Byte) :
+    encodeKeyBytes n (decodeKeyBytes n b) = b
+```
+
+`ProvenHashes.ChainHash.V3.decode_encodeKeyBytes`
+
+```lean
+theorem decode_encodeKeyBytes (n : ℕ) (w : Fin n → Word 64) :
+    decodeKeyBytes n (encodeKeyBytes n w) = w
+```
+
+`ProvenHashes.ChainHash.V3.digestWord_injective`
+
+```lean
+theorem digestWord_injective : Function.Injective digestWord
+```
+
+`ProvenHashes.ChainHash.V3.paper_collision_bound_bytes`
+
+```lean
+theorem paper_collision_bound_bytes (L : ℕ) (hL : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Key39 => hashBytes k m = hashBytes k m') ≤ paperEpsilon L
+```
+
+`ProvenHashes.ChainHash.V3.modelA_collision_bound_bytes`
+
+```lean
+theorem modelA_collision_bound_bytes (L : ℕ) (hL : 0 < L) (hcap : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Fin 64 → Byte => modelAHashBytes k m = modelAHashBytes k m') ≤ modelAEpsilon L
+```
+
+## [ChainHashV3Lazy.lean](ProvenHashes/ChainHashV3Lazy.lean)
+
+`ProvenHashes.ChainHash.V3.rawPolynomial_degree`
+
+```lean
+theorem rawPolynomial_degree (u : RawState) : (rawPolynomial u).natDegree < 128
+```
+
+`ProvenHashes.ChainHash.V3.rawPolynomial_split`
+
+```lean
+theorem rawPolynomial_split (p : BitsPolynomial) (hp : p.natDegree < 128) :
+    rawPolynomial (splitRaw p) = p
+```
+
+`ProvenHashes.ChainHash.V3.alpha_eq_tail`
+
+```lean
+theorem alpha_eq_tail : alpha = (AdjoinRoot.mk modulus) (X^4+X^3+X+1)
+```
+
+`ProvenHashes.ChainHash.V3.tail_word_27`
+
+```lean
+theorem tail_word_27 : (pack 64 (lengthWord 27)) = (X^4+X^3+X+1 : BitsPolynomial)
+```
+
+`ProvenHashes.ChainHash.V3.alpha_eq_27`
+
+```lean
+theorem alpha_eq_27 : alpha = fieldRepr (lengthWord 27)
+```
+
+`ProvenHashes.ChainHash.V3.lazyRawStep_degree`
+
+```lean
+theorem lazyRawStep_degree (y : Word 64) (u c : RawState) :
+    (lazyRawStep y u c).natDegree < 128
+```
+
+`ProvenHashes.ChainHash.V3.lazyStep_reduce`
+
+```lean
+theorem lazyStep_reduce (y : Word 64) (u c : RawState) :
+    rawReduce (lazyStep y u c) = fieldRepr y * rawReduce u + rawReduce c
+```
+
+`ProvenHashes.ChainHash.V3.lazyHorner_eq_serial`
+
+```lean
+theorem lazyHorner_eq_serial (ell : RawState) (y : Word 64) :
+    (fun cs => rawReduce (lazyHorner ell y cs)) =
+      (fun cs => serialHorner (rawReduce ell) (fieldRepr y) (cs.map rawReduce))
+```
+
+`ProvenHashes.ChainHash.V3.lazyHorner_eq_schedule`
+
+```lean
+theorem lazyHorner_eq_schedule (k : ℕ) (hk : 0 < k) (ell : RawState) (y : Word 64) :
+    (fun cs => rawReduce (lazyHorner ell y cs)) =
+      (fun cs => scheduledHorner k (rawReduce ell) (fieldRepr y) (cs.map rawReduce))
+```
+
+`ProvenHashes.ChainHash.V3.reduce_clnh`
+
+```lean
+theorem reduce_clnh (a : Finset (Fin 16)) (m k : Slot → Word 64) :
+    (AdjoinRoot.mk modulus) (clnh a m k) =
+      reducedPH a (fun j => fieldRepr (m j)) (fun j => fieldRepr (k j))
+```
+
+`ProvenHashes.ChainHash.V3.rawBlock_matches`
+
+```lean
+theorem rawBlock_matches (m : Message) (k : Slot → F) (t : ℕ) :
+    rawReduce (rawBlock m k t) = reducedPH (active m t) (data m t) k
+```
+
+`ProvenHashes.ChainHash.V3.rawCoefficients_matches`
+
+```lean
+theorem rawCoefficients_matches (m : Message) (k : Slot → F) :
+    (rawCoefficients m k).map rawReduce = List.ofFn (coefficients m k)
+```
+
+`ProvenHashes.ChainHash.V3.rawLength_matches`
+
+```lean
+theorem rawLength_matches (n : ℕ) : rawReduce (lengthWord n,0) = lengthField n
+```
+
+`ProvenHashes.ChainHash.V3.lazyHash_eq_hash`
+
+```lean
+theorem lazyHash_eq_hash : lazyHash = hash
+```
+
+`ProvenHashes.ChainHash.V3.complete_evaluation_independence`
+
+```lean
+theorem complete_evaluation_independence (k : ℕ) (hk : 0 < k) :
+    scheduledHash k = hash ∧ lazyHash = hash
+```
+
+## [ChainHashV3Model.lean](ProvenHashes/ChainHashV3Model.lean)
+
+`ProvenHashes.ChainHash.V3.idealKey_card`
+
+```lean
+theorem idealKey_card : Fintype.card IdealKey = (2^64)^39
+```
+
+`ProvenHashes.ChainHash.V3.modelAKey_card`
+
+```lean
+theorem modelAKey_card : Fintype.card ModelAKey = (2^64)^8
+```
+
+`ProvenHashes.ChainHash.V3.lengthField_injective`
+
+```lean
+theorem lengthField_injective {n m : ℕ} (hn : n < 2^64) (hm : m < 2^64)
+    (h : lengthField n = lengthField m) : n = m
+```
+
+`ProvenHashes.ChainHash.V3.paper_envelope_arithmetic`
+
+```lean
+theorem paper_envelope_arithmetic (L : ℕ) (hL : 0 < L) : blocks (8*L)+1 ≤ 2*L
+```
+
+`ProvenHashes.ChainHash.V3.modelA_envelope_arithmetic`
+
+```lean
+theorem modelA_envelope_arithmetic (L : ℕ) (hL : 0 < L) :
+    degreeBudget L + blocks (8*L) ≤ 2*L
+```
+
+`ProvenHashes.ChainHash.V3.paper_score_ratio`
+
+```lean
+theorem paper_score_ratio (L : ℕ) (hL : 0 < L) :
+    paperEpsilon L ≤ (L : ℚ≥0)/2^63
+```
+
+`ProvenHashes.ChainHash.V3.modelA_score_ratio`
+
+```lean
+theorem modelA_score_ratio (L : ℕ) (hL : 0 < L) :
+    modelAEpsilon L ≤ (L : ℚ≥0)/2^63
+```
+
+`ProvenHashes.ChainHash.V3.score_attained`
+
+```lean
+theorem score_attained : paperEpsilon 1 = 1/2^63 ∧ modelAEpsilon 1 = 1/2^63
+```
+
+## [ChainHashV3PH.lean](ProvenHashes/ChainHashV3PH.lean)
+
+`ProvenHashes.ChainHash.V3.eval_phPoly`
+
+```lean
+theorem eval_phPoly {F : Type*} [CommRing F] (a : Finset (Fin 16))
+    (m : Slot → F) (s : F) : (phPoly a m).eval s = ph a m s
+```
+
+`ProvenHashes.ChainHash.V3.phPoly_difference`
+
+```lean
+theorem phPoly_difference {F : Type*} [CommRing F] (a : Finset (Fin 16))
+    (m m' : Slot → F) (t : F) :
+    phPoly a m - phPoly a m' - C t = differencePoly a m m' t
+```
+
+`ProvenHashes.ChainHash.V3.differencePoly_coeff`
+
+```lean
+theorem differencePoly_coeff {F : Type*} [CommRing F] (a : Finset (Fin 16))
+    (m m' : Slot → F) (t : F) (j : Slot) (hj : j.1 ∈ a) :
+    (differencePoly a m m' t).coeff (exponent (partner j)) = m j - m' j
+```
+
+`ProvenHashes.ChainHash.V3.differencePoly_nonzero_degree`
+
+```lean
+theorem differencePoly_nonzero_degree {F : Type*} [Field F]
+    (a : Finset (Fin 16)) (m m' : Slot → F) (t : F) (D : ℕ)
+    (hne : ∃ j : Slot, j.1 ∈ a ∧ m j ≠ m' j)
+    (hD : ∀ j : Slot, j.1 ∈ a → m j ≠ m' j → exponent (partner j) ≤ D) :
+    differencePoly a m m' t ≠ 0 ∧ (differencePoly a m m' t).natDegree ≤ D
+```
+
+`ProvenHashes.ChainHash.V3.polynomial_probability_le`
+
+```lean
+theorem polynomial_probability_le {F : Type*} [Field F] [Fintype F]
+    (p : F[X]) (hp : p ≠ 0) (D : ℕ) (hd : p.natDegree ≤ D) :
+    uniformProb (fun s : F => p.eval s = 0) ≤ (D : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.V3.ph_equal_groups_bound`
+
+```lean
+theorem ph_equal_groups_bound {F : Type*} [Field F] [Fintype F]
+    (a : Finset (Fin 16)) (m m' : Slot → F) (t : F) (D : ℕ)
+    (hne : ∃ j : Slot, j.1 ∈ a ∧ m j ≠ m' j)
+    (hD : ∀ j : Slot, j.1 ∈ a → m j ≠ m' j → exponent (partner j) ≤ D) :
+    uniformProb (fun s : F => ph a m s - ph a m' s = t) ≤
+      (D : ℚ≥0) / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.V3.reducedPH_difference`
+
+```lean
+theorem reducedPH_difference {K : Type*} [Field K]
+    (a : Finset (Fin 16)) (m m' k : Slot → K) :
+    reducedPH a m k - reducedPH a m' k =
+      constantDiff a m m' 0 + ∑ j, reducedCoefficient a m m' j * k j
+```
+
+`ProvenHashes.ChainHash.V3.reducedPH_difference_uniform`
+
+```lean
+theorem reducedPH_difference_uniform {K : Type*} [Field K] [Fintype K]
+    (a : Finset (Fin 16)) (m m' : Slot → K)
+    (hne : ∃ j : Slot, j.1 ∈ a ∧ m j ≠ m' j) (z : K) :
+    uniformProb (fun k : Slot → K => reducedPH a m k - reducedPH a m' k = z) =
+      1 / Fintype.card K
+```
+
+## [ChainHashV3Scores.lean](ProvenHashes/ChainHashV3Scores.lean)
+
+`ProvenHashes.ChainHash.V3.score_lower_bound`
+
+```lean
+theorem score_lower_bound (epsilon : ℕ → ℚ≥0) (L : ℕ)
+    (hpos : 0 < epsilon L) (hbound : epsilon L ≤ (L : ℚ≥0)/2^63) :
+    63 ≤ score epsilon L
+```
+
+`ProvenHashes.ChainHash.V3.paper_score`
+
+```lean
+theorem paper_score (L : ℕ) (hL : 0 < L) : 63 ≤ score paperEpsilon L
+```
+
+`ProvenHashes.ChainHash.V3.modelA_score`
+
+```lean
+theorem modelA_score (L : ℕ) (hL : 0 < L) : 63 ≤ score modelAEpsilon L
+```
+
+`ProvenHashes.ChainHash.V3.scores_at_one`
+
+```lean
+theorem scores_at_one : score paperEpsilon 1 = 63 ∧ score modelAEpsilon 1 = 63
+```
+
+`ProvenHashes.ChainHash.V3.paper_score_minimum`
+
+```lean
+theorem paper_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score paperEpsilon L.val)) 63
+```
+
+`ProvenHashes.ChainHash.V3.modelA_score_minimum`
+
+```lean
+theorem modelA_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score modelAEpsilon L.val)) 63
+```
+
+`ProvenHashes.ChainHash.V3.envelope_table`
+
+```lean
+theorem envelope_table :
+    ([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map
+      (fun L => degreeBudget L+blocks (8*L))) =
+      [2,3,4,4,5,5,6,6,8,8,8,8,8,8,8,8,10,12,12,12]
+```
+
+`ProvenHashes.ChainHash.V3.envelope_large_examples`
+
+```lean
+theorem envelope_large_examples :
+    ([32,121,128,129,1024,131072].map (fun L => degreeBudget L+blocks (8*L))) =
+      [12,36,36,37,64,4128]
+```
+
+## [ChainHashV3Seeded.lean](ProvenHashes/ChainHashV3Seeded.lean)
+
+`ProvenHashes.ChainHash.V3.halfPoly_comp`
+
+```lean
+theorem halfPoly_comp {K : Type*} [CommRing K] (a : Finset (Fin 16)) (m m' : Slot → K)
+    (hpad : ∀ i, m (i,true)=0 ∧ m' (i,true)=0) :
+    (halfPoly a m m').comp (X^2) = differencePoly a m m' 0
+```
+
+`ProvenHashes.ChainHash.V3.ph_frobenius_bound`
+
+```lean
+theorem ph_frobenius_bound {K : Type*} [Field K] [Fintype K] [CharP K 2]
+    (a : Finset (Fin 16)) (m m' : Slot → K) (D : ℕ)
+    (hpad : ∀ i, m (i,true)=0 ∧ m' (i,true)=0)
+    (hne : ∃ j : Slot, j.1 ∈ a ∧ m j ≠ m' j)
+    (hD : ∀ i, i ∈ a → m (i,false) ≠ m' (i,false) → i.val+1 ≤ D) :
+    uniformProb (fun s : K => ph a m s = ph a m' s) ≤ (D : ℚ≥0)/Fintype.card K
+```
+
+`ProvenHashes.ChainHash.V3.partner_exponent_budget`
+
+```lean
+theorem partner_exponent_budget (L t : ℕ) (hL : 9 ≤ L) (j : Slot)
+    (hj : wordIndex t j < L) : exponent (partner j) ≤ degreeBudget L
+```
+
+`ProvenHashes.ChainHash.V3.field_char_two`
+
+```lean
+theorem field_char_two : CharP F 2
+```
+
+`ProvenHashes.ChainHash.V3.seeded_coefficients_collision`
+
+```lean
+theorem seeded_coefficients_collision (L : ℕ) (hL : 0 < L) (m m' : Message)
+    (hm : m.length ≤ 8*L) (hlen : m.length = m'.length) (hne : m ≠ m') :
+    uniformProb (fun s : F => coefficientsAt m (blocks m.length) (powerKey s) =
+      coefficientsAt m' (blocks m.length) (powerKey s)) ≤
+      (degreeBudget L : ℚ≥0)/Fintype.card F
+```
+
+`ProvenHashes.ChainHash.V3.modelA_collision_equal_length`
+
+```lean
+theorem modelA_collision_equal_length (L : ℕ) (hL : 0 < L) (m m' : Message)
+    (hm : m.length ≤ 8*L) (hlen : m.length = m'.length) (hne : m ≠ m') :
+    uniformProb (fun k : ModelAKey => modelAHash k m = modelAHash k m') ≤ modelAEpsilon L
+```
+
+`ProvenHashes.ChainHash.V3.chainHashHorner_modelA_collision_bound`
+
+```lean
+theorem chainHashHorner_modelA_collision_bound (L : ℕ) (hL : 0 < L) (hcap : 8*L < 2^64)
+    (m m' : Message) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : ModelAKey => modelAHash k m = modelAHash k m') ≤ modelAEpsilon L
+```
+
 ## [Composition.lean](ProvenHashes/Composition.lean)
 
 `ProvenHashes.uniformProb_mono`
