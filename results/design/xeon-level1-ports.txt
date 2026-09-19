@@ -1,0 +1,94 @@
+== record: level-1 engine probe on the Xeon, 2026-09-18 design lane (host name replaced by <xeon>)
+== host: <xeon> 2026-09-18T17:01:17Z
+== cpu: Intel Xeon Platinum 8375C (Ice Lake-SP, family 6 model 106), gcc 11.5, -O3 -march=native
+== core: 34 82  (combined busy%: 0)
+OK: 20000 random trials, PH pairing and NH lanes match the references
+
+== isolated reciprocal throughput (TSC cycles per instruction) ==
+  clmul  zmm (4 clmul/instr)       1.7227   PH engine, 64 B/instr
+  clmul  ymm (2 clmul/instr)       1.6622   
+  clmul  xmm (1 clmul/instr)       0.8489   
+  vpmuludq zmm (8 32x32/instr)     0.5179   NH engine A
+  vpmadd52luq zmm (8 52x52)        0.6308   NH engine B
+  mulx r64 (1 64x64)               0.8530   NH engine C
+  vpxorq zmm                       0.4265   
+  vpternlogq zmm                   0.4265   
+  vpaddd zmm                       0.4265   
+  vshufi64x2 zmm                   0.8530   
+
+== core clock / TSC ratio (dependent add chain = 1 core cycle) ==
+  scalar only                        0.8444 TSC/core-cycle  (core GHz ~ 3.434 at 2.9 GHz TSC)
+  + 16 clmul zmm per 64 adds         0.8639 TSC/core-cycle  (core GHz ~ 3.357 at 2.9 GHz TSC)
+  + 16 vpmuludq zmm per 64 adds      0.8628 TSC/core-cycle  (core GHz ~ 3.361 at 2.9 GHz TSC)
+  + 16 vpmadd52 zmm per 64 adds      0.8634 TSC/core-cycle  (core GHz ~ 3.359 at 2.9 GHz TSC)
+  + 24 clmul zmm per 64 adds (sat)   0.8632 TSC/core-cycle  (core GHz ~ 3.360 at 2.9 GHz TSC)
+  + 96 vpmuludq zmm per 64 adds      1.0477 TSC/core-cycle  (core GHz ~ 2.768 at 2.9 GHz TSC)
+
+== mixtures (TSC cycles per group of 8 of the FIRST instruction) ==
+  8 clmulZ alone                 1.7059
+  8 clmulZ + 8 vpmuludqZ         1.7326
+  8 clmulZ + 16 vpmuludqZ        2.1536
+  8 clmulZ + 8 vpmadd52Z         1.9271
+  8 clmulZ + 16 vpmadd52Z        2.3549
+  8 clmulZ + 8 mulx              2.5803
+  8 clmulZ + 16 mulx             3.4449
+  8 clmulZ + 8 vpxorqZ           1.7059
+  8 clmulZ + 8 vshufi64x2        2.5753
+  8 clmulZ + 8 vpadddZ           1.7059
+  8 vpmuludqZ alone              0.5179
+  8 vpmuludqZ + 8 vpadddZ        0.8530
+  8 vpmadd52Z + 8 vpadddZ        0.8530
+  8 clmulX alone                 0.8530
+  8 clmulX + 8 mulx              1.6825
+  8 clmulX + 8 vpmuludqZ         0.8530
+  8 clmulZ + 16 vpxorqZ          2.1482
+  8 clmulZ + 24 vpxorqZ          2.5753
+  8 clmulX + 8 vshufi64x2        1.7515
+  8 clmulZ + NH mix(16add+8mul)   2.5752
+
+bytes per TSC cycle, best of 7 timed passes over one buffer
+
+  variant                            32 KiB   256KiB    1 MiB   note
+  P   PH zmm, no shuffle              32.90    31.98    27.73   8 clmul-uops/256 B
+  Ps  PH zmm + vshufi64x2             19.97    19.98    19.53   current impl. layout
+  N   NH x2 (vpmuludq)                18.63    16.87    16.07   eps 2^-64
+  Ni  NH x2 (IFMA 52lo/52hi)          16.29    16.09    15.31   eps 2^-64
+  Nx  NH-64 (scalar mulx)              6.64     6.45     6.43   eps 2^-64
+  D1  dual 256 PH + 64 NH             28.68    28.45    25.40   NH share 20%
+  D2  dual 256 PH + 128 NH            26.33    26.38    23.94   NH share 33%
+  D4  dual 256 PH + 256 NH            24.19    23.97    22.37   NH share 50%
+  Dx  dual 256 PH + 64 NH mulx        22.88    19.70    18.46   scalar partner
+  R1  P + recurrence /256 B           14.12    14.02    13.67   S=1, 256-byte blocks
+  R2  P + recurrence /512 B           21.47    21.44    20.20   S=2, 1 KB config
+  R4  P + recurrence /1024 B          26.18    26.06    24.04   
+  R8  P + recurrence /2048 B          29.00    28.80    25.66   
+  B   512 PH  +   0 NH / rec          21.84    21.49    19.98   matched block 512 B
+  B   256 PH + 256 NH / rec           15.71    15.48    15.06   matched block 512 B, DUAL
+  B   256 PH + 128 NH / rec           14.19    14.15    13.76   block 384 B, DUAL
+  B  1024 PH +   0 NH / rec           27.01    26.21    24.08   matched block 1024 B
+  B   768 PH + 256 NH / rec           21.64    20.96    20.12   matched block 1024 B, DUAL
+  B   512 PH + 512 NH / rec           19.75    19.11    18.46   matched block 1024 B, DUAL
+  T   256 PH / rec, tbl reduce        16.13    15.93    15.20   fast reduction
+  T   128 PH + 128 NH / tbl            7.53     7.53     7.42   block 256 B, DUAL
+  T   512 PH / rec, tbl reduce        22.16    21.81    20.34   fast reduction
+  T   256 PH + 256 NH / tbl           15.62    15.40    15.05   block 512 B, DUAL
+  T  1024 PH / rec, tbl reduce        26.97    26.16    24.06   fast reduction
+  T   768 PH + 256 NH / tbl           21.80    21.15    20.27   block 1024 B, DUAL
+  T  2048 PH / rec, tbl reduce        30.84    28.80    25.69   
+  V   256 PH +  64 NH / tbl           13.55    13.49    13.18   DUAL, vec fold, 20%
+  V   512 PH +  64 NH / tbl           18.44    18.13    17.52   DUAL, vec fold, 11%
+  V  1024 PH +  64 NH / tbl           23.21    23.15    21.96   DUAL, vec fold, 5.9%
+  V  2048 PH +  64 NH / tbl           28.11    27.09    25.17   DUAL, vec fold, 3.0%
+  V  2048 PH + 128 NH / tbl           26.79    26.69    24.82   DUAL, vec fold, 5.9%
+  S  1024 PH +  64 NH, no rec         31.61    31.78    28.28   DUAL level 1 only
+  S   512 PH +  64 NH, no rec         30.83    30.53    27.31   DUAL level 1 only
+  S  2048 PH +  64 NH, no rec         33.23    32.34    28.48   DUAL level 1 only
+
+sink 88abf9991d2a4bda
+
+== paired A/B (best of 21 interleaved trials, 256 KiB, B/TSC) ==
+  PH 2048/iter            33.35 (avg  33.12)   dual 2048 PH + 64 NH      32.34 (avg  31.77)   dual/PH = 0.9698
+  PH 2048/iter            33.34 (avg  32.78)   dual 2048 PH + 128 NH     31.75 (avg  31.63)   dual/PH = 0.9523
+  PH 4096/iter            32.49 (avg  32.28)   dual 4096 PH + 64 NH      31.84 (avg  31.47)   dual/PH = 0.9799
+  PH 1024/iter            33.21 (avg  32.82)   dual 1024 PH + 64 NH      31.78 (avg  31.46)   dual/PH = 0.9570
+  PH  512/iter            32.83 (avg  32.63)   dual  512 PH + 64 NH      30.54 (avg  30.12)   dual/PH = 0.9302
