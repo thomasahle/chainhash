@@ -1,0 +1,37 @@
+{
+  "__ZL15ch128v3_n_bulk0PK19chainhash128_v3_keyPKhmm": {
+    "loop_start": "0x1728",
+    "loop_end": "0x3568",
+    "bytes_per_iteration": 4096,
+    "instructions": 1937,
+    "opcode_counts": {
+      "add": 65,
+      "b.ne": 1,
+      "eor.16b": 992,
+      "eor3.16b": 8,
+      "ext.16b": 304,
+      "ld1.2d": 100,
+      "mov": 2,
+      "movi.2d": 32,
+      "pmull.1q": 288,
+      "pmull2.1q": 144,
+      "subs": 1
+    },
+    "per_KiB": {
+      "add": 16.25,
+      "b.ne": 0.25,
+      "eor.16b": 248.0,
+      "eor3.16b": 2.0,
+      "ext.16b": 76.0,
+      "ld1.2d": 25.0,
+      "mov": 0.5,
+      "movi.2d": 8.0,
+      "pmull.1q": 72.0,
+      "pmull2.1q": 36.0,
+      "subs": 0.25
+    },
+    "stack_memory_instructions": 0,
+    "carryless_multiplies": 432,
+    "shuffle_or_extract_instructions": 304
+  }
+}

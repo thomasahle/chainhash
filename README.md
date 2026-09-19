@@ -5,6 +5,8 @@ bounds for messages chosen independently of a random key.
 **ChainHash v3, “ChainHash-Horner,” is one function for every machine:**
 portable C, x86 XMM/YMM/ZMM and ARM NEON compute identical digests.
 It is a C99/C++11 header with no allocation or library dependency.
+**[ChainHash-128 v3](#chainhash-128-v3)** ([`include/chainhash128_v3.h`](include/chainhash128_v3.h))
+is the same design over `GF(2^128)` with a 128-bit result and a 128-byte key.
 
 Use [`include/chainhash3.h`](include/chainhash3.h) for v3. Its default key
 constructor takes **64 random bytes** and prepares a 448-byte key object.
@@ -56,6 +58,8 @@ published collision bounds in eight-byte word units, not measured attack work.
 | v1: paper, strided 256 B | 15.40 | 22.8 | 80 A / 328 ideal | 62.415 / 61 | 62.415 / 62.415 | ✓ paper + model A |
 | v2: adjacent 1 KiB | 24.86 | 17.45 | 1096 ideal | Not established here | 62.415 / 62.415 | Not established here |
 | **v3: ChainHash-Horner** | **28.31** | **26.26** | **64 A / 312 ideal** | **63 / 63** | **63 / 63** | **✓ paper + model A + evaluation independence** |
+| 128-bit, strided 512 B (previous; archived control, not a public header) | 8.14 | 10.07 | 160 A / 656 ideal | 126.415 / 125 | 126.415 / 126.415 | ✓ ideal + model A, in the paper repository's proof lane, not shipped here |
+| **128-bit v3: ChainHash-128 v3** | **14.43** | **10.26** | **128 A / 624 ideal** | **127 / 127 refined; 122.96 coarse envelope** | **127 / 127** | **Port in progress** |
 
 These are retained measurements from different runs, not a fresh paired
 benchmark. v1 uses the [previous integration's results](docs/V1.md#measured-performance).
@@ -64,6 +68,21 @@ for the same adjacent 1 KiB definition; [comparison provenance](results/v2/READM
 keeps those distinct from the strided 1 KiB control. v3 uses best-of-two
 Xeon and median-of-three M2 SMHasher3 runs. The contemporary v1 controls
 in the v3 run were 14.80 and 22.44, respectively.
+
+The two 128-bit rows are contemporaneous controls from one SMHasher3 run
+per host (Xeon best of two passes, M2 median of three gated passes); their
+scores are against `2^128`. The ChainHash-128 v3 row is the forced schoolbook
+registration, which is the shipped dispatch; the public entry point measured
+14.45 on Xeon (one of two passes) and 10.13 on M2. The previous strided
+ChainHash-128 was never a public header here; its measured source is archived
+as a [timing control](results/v3-128/README.md#directory-map). Its model-A
+score of 125 is the Lean-proved at-most-length certificate of that design.
+For ChainHash-128 v3, the paper certificate `(p+1)/2^128` scores 127 bits;
+the coarse model-A envelope `(p+W)/2^128` alone would score
+`128-log2(W+1) = 122.955606` bits for the 512-byte block, and the
+short-length refinement `E_A(L) = p_B(L)+d_B(L)` scores 127. Do not
+silently score the coarse envelope as 127; see
+[SPEC_v3_128.md](docs/SPEC_v3_128.md#collision-certificates-and-chart-scores).
 
 The separate v3 gate harness measured **27.717 B/TSC** on Xeon, exceeding
 24.86; the M2 result **26.26** exceeds 22.8. Xeon TSC ticks are fixed-rate
@@ -136,6 +155,55 @@ before reuse. Total length must stay below `2^64`. Parallel partial values
 can be joined at 1 KiB region boundaries; empty partitions count zero
 blocks. See [the API and partition convention](docs/SPEC_v3.md#streaming-partial-values-and-parallel-joins).
 
+## ChainHash-128 v3
+
+[`include/chainhash128_v3.h`](include/chainhash128_v3.h) is ChainHash-Horner
+v3 over the GCM field `GF(2)[X]/(X^128+X^7+X^2+X+1)`: 512-byte logical CLNH
+blocks of 128-bit words with the comb pairing `(w_i, w_(i+8))`, schoolbook
+128×128 products (Karatsuba on YMM and in the portable path), Horner in an
+independent key word y with the byte length as leading coefficient, k lazy
+chains, and the 128-bit integer twist plus quintic. Every backend, stride,
+reduction schedule, product method, chunking and region-aligned split
+computes the same digest; the block size is part of the definition. The
+default key constructor takes **128 random bytes** (model A); the ideal
+constructor takes 624. The result is a `ch128v3_word` (two `uint64_t`
+limbs); `chainhash128_v3_store` writes the canonical 16 little-endian bytes.
+
+```c
+#include "chainhash128_v3.h"
+uint8_t random_bytes[CHAINHASH128_V3_RANDOM_BYTES];
+arc4random_buf(random_bytes, sizeof random_bytes);
+chainhash128_v3_key key = chainhash128_v3_key_from_bytes(random_bytes);
+ch128v3_word h = chainhash128_v3(&key, "hello", 5);
+uint8_t digest[16];
+chainhash128_v3_store(digest, h);
+```
+
+Build flags are the same as for the 64-bit header: no global ISA flags on
+x86 (runtime dispatch to XMM/YMM/ZMM), `-march=native+crypto` or
+`-march=armv8-a+crypto` for NEON, `CHAINHASH128_V3_PORTABLE` for a
+hardware-free build. Streaming (`chainhash128_v3_init/update/final`, stride
+1..8, lazy flag, backend, schoolbook flag), partial values and
+`chainhash128_v3_join` at 4 KiB region boundaries follow
+[the specification](docs/SPEC_v3_128.md#streaming-and-two-thread-concatenation).
+
+For distinct messages chosen independently of the same uniform random key,
+the collision probability is at most `(p+1)/2^128` in the paper model and,
+in model A, at most `(p+32)/2^128` for any pair and `E_A(L)/2^128` for
+messages of at most 8L bytes, where p is the larger block count
+(`p = 8` through 4 KiB, 2048 at 1 MiB). [THEOREM_v3_128.md](docs/THEOREM_v3_128.md)
+states the certificates, their 127-bit scores and the transfer argument from
+the Lean-proved 64-bit theorem; **the Lean port for the 128-bit function is
+in progress** and no 128-bit theorem is machine-checked in this repository.
+
+**Digests differ** from the earlier strided ChainHash-128 (SMHasher3
+verification `0x742DE5A5`); ChainHash-128 v3 verifies as `0x1FCA728C`.
+Measured bulk throughput is 14.43 B/TSC on the Xeon and 10.26 B/calibrated
+cycle on the M2 Pro, 1.77× and 1.02× the strided function and 73% and 82%
+of XXH3-128; short inputs cost 168–176 cycles per hash. The
+[measurement report](results/v3-128/REPORT.md), [aggregation](results/v3-128/speeds_chainhash128_v3.json)
+and [evidence index](results/v3-128/README.md) give provenance and selection rules.
+
 ## Guarantee
 
 For distinct messages chosen independently of the same uniform random key,
@@ -158,6 +226,7 @@ make all       # Build v1 tools and v3 C99/C++11 smoke tests.
 make test      # Both versions; v3 native and forced-portable property matrices.
 make sanitize  # ASan/UBSan, including v3 guards, alignment and property checks.
 make test-v3   # v3 only; 20,000 random cases plus exhaustive/boundary/long cases.
+make test-v3-128  # ChainHash-128 v3 only; 20,000-input oracle matrix, vectors, guards.
 make speed     # Existing v1 benchmark; v3 timings are archived under results/v3.
 ```
 
@@ -175,6 +244,17 @@ overreads. The original recorded corpus has checksum `635920a0020c7922`
 on both hosts. See [test instructions](test/v3/README.md) and the
 [integration record](results/v3/INTEGRATION.md) for fresh versus retained checks.
 
+The ChainHash-128 v3 tests ([test/v3-128](test/v3-128/README.md)) compare
+every available backend, stride 1/2/4/8, eager/lazy state, schoolbook and
+Karatsuba products, chunked streams and two-thread joins with a separate
+bit-serial oracle over 20,000 inputs, including every length 0..8192; check
+the nine archived vectors, 10,000 raw products, the exact-count schedule,
+edge keys, the short kernel and guarded tails; and build the header in C99,
+C++11, portable and 256-byte-family modes. The integration run reproduced
+the lane's corpus checksum `11b7726e88284e6d` on this Mac (NEON, 32
+configurations) and on the Xeon (XMM/YMM/ZMM, 64 configurations); see
+[results/v3-128/INTEGRATION.md](results/v3-128/INTEGRATION.md).
+
 The historical v1 200/200 SMHasher3 result is **not** a v3 full-suite result.
 The retained v3 evidence covers Xeon Sanity/Zeroes and M2 Sanity, with
 verification LE `66672BD6`, BE `FA8A8D3B` (the BE adapter swaps output
@@ -189,7 +269,11 @@ We build in public: the [design memo](docs/DESIGN_MEMO_v3.md) preserves
 rejected alternatives, predictions, corrections and proof obligations;
 the [measurement report](results/v3/REPORT.md) records what was actually
 measured, including the short-input regression. The normative definition is
-[SPEC_v3.md](docs/SPEC_v3.md). See [CHANGELOG.md](CHANGELOG.md) for compatibility.
+[SPEC_v3.md](docs/SPEC_v3.md); for the 128-bit function it is
+[SPEC_v3_128.md](docs/SPEC_v3_128.md) with its own
+[report](results/v3-128/REPORT.md), including the schoolbook-versus-Karatsuba
+selection and the superseded NEON pilots. See [CHANGELOG.md](CHANGELOG.md)
+for compatibility.
 
 The long-input loop structure is inspired by **Orson Peters's
 [PolymurHash](https://github.com/orlp/polymur-hash#how-it-works-and-why-its-fast)**:

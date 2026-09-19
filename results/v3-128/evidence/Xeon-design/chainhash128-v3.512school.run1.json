@@ -1,0 +1,31 @@
+{
+  "name": "chainhash128-v3.512school",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:02:44.461045+00:00",
+    "load": [
+      17.57,
+      15.35,
+      10.13
+    ],
+    "smhasher_pids": [
+      "3199590",
+      "3269117",
+      "3271378"
+    ],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:03:55.443152+00:00",
+    "load": [
+      17.85,
+      15.89,
+      10.7
+    ]
+  },
+  "elapsed_seconds": 70.92839567607734,
+  "returncode": 0,
+  "raw_file": "chainhash128-v3.512school.run1.txt",
+  "raw_sha256": "c4d94d6e41713bce55d8a661dabf11fb8e5814706041df515b834c139b20cce6",
+  "binary_sha256": "d8df2fbcf18e4e56ec2c6a96242ef47b10935cd20d05f0b249e6fdecae92846a"
+}

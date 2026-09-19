@@ -1,0 +1,71 @@
+WARNING: Hash with verification code 1fca728c was already registered: chainhash128-v3
+         Are you certain chainhash128-v3.512 is a unique implementation?
+WARNING: Hash with verification code 1fca728c was already registered: chainhash128-v3
+         Are you certain chainhash128-v3.512school is a unique implementation?
+WARNING: Hash with verification code 0f709cad was already registered: chainhash128-v3.256
+         Are you certain chainhash128-v3.school is a unique implementation?
+--- Testing UMASH-128 "UMASH-128" [hwclmul]
+
+[[[ Speed Tests ]]]
+
+Small key speed test - [1, 31]-byte keys
+   1-byte keys -    25.81 cycles/hash
+   2-byte keys -    25.81 cycles/hash
+   3-byte keys -    26.27 cycles/hash
+   4-byte keys -    26.27 cycles/hash
+   5-byte keys -    26.27 cycles/hash
+   6-byte keys -    25.57 cycles/hash
+   7-byte keys -    26.27 cycles/hash
+   8-byte keys -    25.81 cycles/hash
+   9-byte keys -    46.03 cycles/hash
+  10-byte keys -    46.03 cycles/hash
+  11-byte keys -    46.03 cycles/hash
+  12-byte keys -    45.57 cycles/hash
+  13-byte keys -    45.57 cycles/hash
+  14-byte keys -    45.57 cycles/hash
+  15-byte keys -    45.57 cycles/hash
+  16-byte keys -    45.57 cycles/hash
+  17-byte keys -    50.91 cycles/hash
+  18-byte keys -    51.15 cycles/hash
+  19-byte keys -    50.91 cycles/hash
+  20-byte keys -    50.68 cycles/hash
+  21-byte keys -    50.68 cycles/hash
+  22-byte keys -    50.91 cycles/hash
+  23-byte keys -    50.68 cycles/hash
+  24-byte keys -    51.38 cycles/hash
+  25-byte keys -    51.38 cycles/hash
+  26-byte keys -    50.91 cycles/hash
+  27-byte keys -    51.15 cycles/hash
+  28-byte keys -    51.38 cycles/hash
+  29-byte keys -    50.68 cycles/hash
+  30-byte keys -    50.68 cycles/hash
+  31-byte keys -    50.91 cycles/hash
+Average        -    43.17 cycles/hash
+ rnd-byte keys -    43.35 cycles/hash
+
+Bulk speed test - 262144-byte keys
+Alignment   7 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   6 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   5 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   4 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   3 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   2 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   1 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   0 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Average       -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment rnd -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+
+Bulk speed test - [262017, 262144]-byte keys
+Alignment   7 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   6 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   5 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   4 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   3 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   2 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   1 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment   0 -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Average       -  7.52 bytes/cycle - 24.50 GiB/sec @ 3.5 ghz
+Alignment rnd -  7.39 bytes/cycle - 24.07 GiB/sec @ 3.5 ghz
+
+Verification value is 0x00000001 - Testing took 62.247631 seconds
+

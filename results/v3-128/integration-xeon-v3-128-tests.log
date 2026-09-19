@@ -1,0 +1,163 @@
+gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14)
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/property.c -o build/v3-128-property
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/schedule.c -o build/v3-128-schedule
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/guard.c -o build/v3-128-guard
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/arithmetic.c -o build/v3-128-arithmetic
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/edges.c -o build/v3-128-edges
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/short.c -o build/v3-128-short
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/vectors.c -o build/v3-128-vectors
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/frozen.c -o build/v3-128-frozen
+test/v3-128/short.c: In function 'main':
+test/v3-128/short.c:11:3: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   11 |   if(i%17==0)memset(bytes+16,0,16);if(i%19==0){memset(bytes+16,0,16);bytes[16]=1;}
+      |   ^~
+test/v3-128/short.c:11:36: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   11 |   if(i%17==0)memset(bytes+16,0,16);if(i%19==0){memset(bytes+16,0,16);bytes[16]=1;}
+      |                                    ^~
+test/v3-128/property.c: In function 'main':
+test/v3-128/property.c:23:3: warning: this 'for' clause does not guard... [-Wmisleading-indentation]
+   23 |   for(i=0;i<n;i++)p[i]=(uint8_t)random64();for(i=0;i<sizeof(random_key);i++)random_key[i]=(uint8_t)random64();
+      |   ^~~
+test/v3-128/property.c:23:44: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'for'
+   23 |   for(i=0;i<n;i++)p[i]=(uint8_t)random64();for(i=0;i<sizeof(random_key);i++)random_key[i]=(uint8_t)random64();
+      |                                            ^~~
+test/v3-128/property.c:25:3: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   25 |   if(trial%17==0)memset(random_key,0,16); if(trial%19==0)memset(random_key+16,0,16);if(trial%23==0){memset(random_key+16,0,16);random_key[16]=1;}
+      |   ^~
+test/v3-128/property.c:25:43: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   25 |   if(trial%17==0)memset(random_key,0,16); if(trial%19==0)memset(random_key+16,0,16);if(trial%23==0){memset(random_key+16,0,16);random_key[16]=1;}
+      |                                           ^~
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -mpclmul -pthread test/v3-128/compile.c -o build/v3-128-compile
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/property.c -o build/v3-128-property-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/schedule.c -o build/v3-128-schedule-portable
+test/v3-128/property.c: In function 'main':
+test/v3-128/property.c:23:3: warning: this 'for' clause does not guard... [-Wmisleading-indentation]
+   23 |   for(i=0;i<n;i++)p[i]=(uint8_t)random64();for(i=0;i<sizeof(random_key);i++)random_key[i]=(uint8_t)random64();
+      |   ^~~
+test/v3-128/property.c:23:44: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'for'
+   23 |   for(i=0;i<n;i++)p[i]=(uint8_t)random64();for(i=0;i<sizeof(random_key);i++)random_key[i]=(uint8_t)random64();
+      |                                            ^~~
+test/v3-128/property.c:25:3: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   25 |   if(trial%17==0)memset(random_key,0,16); if(trial%19==0)memset(random_key+16,0,16);if(trial%23==0){memset(random_key+16,0,16);random_key[16]=1;}
+      |   ^~
+test/v3-128/property.c:25:43: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   25 |   if(trial%17==0)memset(random_key,0,16); if(trial%19==0)memset(random_key+16,0,16);if(trial%23==0){memset(random_key+16,0,16);random_key[16]=1;}
+      |                                           ^~
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/guard.c -o build/v3-128-guard-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/arithmetic.c -o build/v3-128-arithmetic-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/edges.c -o build/v3-128-edges-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/short.c -o build/v3-128-short-portable
+test/v3-128/short.c: In function 'main':
+test/v3-128/short.c:11:3: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   11 |   if(i%17==0)memset(bytes+16,0,16);if(i%19==0){memset(bytes+16,0,16);bytes[16]=1;}
+      |   ^~
+test/v3-128/short.c:11:36: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   11 |   if(i%17==0)memset(bytes+16,0,16);if(i%19==0){memset(bytes+16,0,16);bytes[16]=1;}
+      |                                    ^~
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/vectors.c -o build/v3-128-vectors-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/frozen.c -o build/v3-128-frozen-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/compile.c -o build/v3-128-compile-portable
+./build/v3-128-compile
+backend=3 selftest=1 block=512
+./build/v3-128-compile-portable
+backend=0 selftest=1 block=512
+./build/v3-128-cpp
+backend=3 selftest=1 block=512
+./build/v3-128-compile-256
+backend=3 selftest=1 block=256
+./build/v3-128-frozen
+PASS nine frozen vectors: reference, dispatch, every backend x product, strides 1..8 eager/lazy
+./build/v3-128-frozen-portable
+PASS nine frozen vectors: reference, dispatch, every backend x product, strides 1..8 eager/lazy
+./build/v3-128-schedule
+PASS exact-count schedule: 5140 cases, all residues, p<k, y=0/1
+./build/v3-128-schedule-portable
+PASS exact-count schedule: 5140 cases, all residues, p<k, y=0/1
+./build/v3-128-arithmetic
+PASS 10000 raw products, field division, integer carry
+./build/v3-128-arithmetic-portable
+PASS 10000 raw products, field division, integer carry
+python3 test/v3-128/check_vectors.py
+PASS independent oracle matches all nine archived vectors (native and portable builds)
+python3 test/v3-128/bounds.py
+{
+  "256": {
+    "paper_score_bits": 127,
+    "model_A_refined_score_bits": 127,
+    "model_A_coarse_score_bits": 123.91253715874966,
+    "at_1MiB": {
+      "p": 4096,
+      "paper_numerator": 4097,
+      "model_A_numerator": 4112
+    },
+    "integer_envelope_checks": 131463
+  },
+  "512": {
+    "paper_score_bits": 127,
+    "model_A_refined_score_bits": 127,
+    "model_A_coarse_score_bits": 122.95560588064154,
+    "at_1MiB": {
+      "p": 2048,
+      "paper_numerator": 2049,
+      "model_A_numerator": 2080
+    },
+    "integer_envelope_checks": 131463
+  }
+}
+./build/v3-128-edges
+PASS zero/one/all-ones/high-bit keys, tails, and all evaluation choices
+./build/v3-128-edges-portable
+PASS zero/one/all-ones/high-bit keys, tails, and all evaluation choices
+./build/v3-128-guard
+PASS protected-page tails and NULL empty
+./build/v3-128-guard-portable
+PASS protected-page tails and NULL empty
+./build/v3-128-short
+PASS 20000 short factorizations checksum=3362e55d538e8995
+./build/v3-128-short-portable
+PASS 20000 short factorizations checksum=3362e55d538e8995
+./build/v3-128-property 20000
+checked=0 configs=64 block=512 checksum=a657d87da6c263c0
+checked=1000 configs=64 block=512 checksum=2627d11c22788a14
+checked=2000 configs=64 block=512 checksum=f9104a32ae1c7905
+checked=3000 configs=64 block=512 checksum=f5109769f352891a
+checked=4000 configs=64 block=512 checksum=b5a9a36d8978ce54
+checked=5000 configs=64 block=512 checksum=030fcbab6af1477c
+checked=6000 configs=64 block=512 checksum=885b38be49f037c6
+checked=7000 configs=64 block=512 checksum=35d38d637eedc454
+checked=8000 configs=64 block=512 checksum=d04b4ada8cbc9eeb
+checked=9000 configs=64 block=512 checksum=f13146644017eb99
+checked=10000 configs=64 block=512 checksum=ab1079b625f33162
+checked=11000 configs=64 block=512 checksum=e93c4f70ea94a9c3
+checked=12000 configs=64 block=512 checksum=676472b21cd6f04c
+checked=13000 configs=64 block=512 checksum=043f3cd26aa366de
+checked=14000 configs=64 block=512 checksum=00b288ddeb79633a
+checked=15000 configs=64 block=512 checksum=c60f8659b9244ef4
+checked=16000 configs=64 block=512 checksum=dfe41e0174006072
+checked=17000 configs=64 block=512 checksum=31b2f864a0dff407
+checked=18000 configs=64 block=512 checksum=6deede7c74503b88
+checked=19000 configs=64 block=512 checksum=4c3d9951c8f4f053
+PASS inputs=20000 configs=64 block=512 oracle=bit_serial streaming=all two_threads=all checksum=11b7726e88284e6d
+./build/v3-128-property-portable 20000
+checked=0 configs=16 block=512 checksum=a657d87da6c263c0
+checked=1000 configs=16 block=512 checksum=2627d11c22788a14
+checked=2000 configs=16 block=512 checksum=f9104a32ae1c7905
+checked=3000 configs=16 block=512 checksum=f5109769f352891a
+checked=4000 configs=16 block=512 checksum=b5a9a36d8978ce54
+checked=5000 configs=16 block=512 checksum=030fcbab6af1477c
+checked=6000 configs=16 block=512 checksum=885b38be49f037c6
+checked=7000 configs=16 block=512 checksum=35d38d637eedc454
+checked=8000 configs=16 block=512 checksum=d04b4ada8cbc9eeb
+checked=9000 configs=16 block=512 checksum=f13146644017eb99
+checked=10000 configs=16 block=512 checksum=ab1079b625f33162
+checked=11000 configs=16 block=512 checksum=e93c4f70ea94a9c3
+checked=12000 configs=16 block=512 checksum=676472b21cd6f04c
+checked=13000 configs=16 block=512 checksum=043f3cd26aa366de
+checked=14000 configs=16 block=512 checksum=00b288ddeb79633a
+checked=15000 configs=16 block=512 checksum=c60f8659b9244ef4
+checked=16000 configs=16 block=512 checksum=dfe41e0174006072
+checked=17000 configs=16 block=512 checksum=31b2f864a0dff407
+checked=18000 configs=16 block=512 checksum=6deede7c74503b88
+checked=19000 configs=16 block=512 checksum=4c3d9951c8f4f053
+PASS inputs=20000 configs=16 block=512 oracle=bit_serial streaming=all two_threads=all checksum=11b7726e88284e6d
+TEST_V3_128_EXIT=0

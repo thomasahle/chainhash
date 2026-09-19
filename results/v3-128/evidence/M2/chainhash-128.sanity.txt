@@ -1,0 +1,20 @@
+WARNING: Hash with verification code 1fca728c was already registered: chainhash128-v3
+         Are you certain chainhash128-v3.512 is a unique implementation?
+WARNING: Hash with verification code 1fca728c was already registered: chainhash128-v3
+         Are you certain chainhash128-v3.512school is a unique implementation?
+WARNING: Hash with verification code 0f709cad was already registered: chainhash128-v3.256
+         Are you certain chainhash128-v3.school is a unique implementation?
+--- Testing chainhash-128 "ChainHash-128: 512-byte blocks, 3-product Karatsuba (benchmark seed expansion outside theorem)" [pmull]
+
+[[[ Sanity Tests ]]]
+
+Verification value CE 0x742DE5A5 ...... PASS
+Running sanity check 1       .......... PASS
+Running sanity check 2       .......... PASS
+Running append zeroes test   .......... PASS
+Running prepend zeroes test  .......... PASS
+Running thread-safety test 1 .......... PASS
+Running thread-safety test 2 .......... PASS
+
+Verification value is 0x00000001 - Testing took 0.204060 seconds
+

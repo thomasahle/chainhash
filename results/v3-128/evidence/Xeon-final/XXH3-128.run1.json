@@ -1,0 +1,27 @@
+{
+  "name": "XXH3-128",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:50:36.470108+00:00",
+    "load": [
+      50.35,
+      53.01,
+      52.6
+    ],
+    "smhasher_pids": [],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:51:16.747787+00:00",
+    "load": [
+      50.17,
+      52.58,
+      52.47
+    ]
+  },
+  "elapsed_seconds": 40.222428089007735,
+  "returncode": 0,
+  "raw_file": "XXH3-128.run1.txt",
+  "raw_sha256": "504987c8002b39a1152279b5526c0b4060dde77bdfd6cc05bcb9eee1f2c8ce84",
+  "binary_sha256": "46f9c41d928df259f8d4ec14ac3b31c4265333fb312d617925d1456ad0d7a276"
+}

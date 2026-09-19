@@ -1,0 +1,31 @@
+{
+  "name": "UMASH-128",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:05:47.510823+00:00",
+    "load": [
+      23.28,
+      18.35,
+      12.19
+    ],
+    "smhasher_pids": [
+      "3199590",
+      "3333285",
+      "3342767"
+    ],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:07:26.080997+00:00",
+    "load": [
+      24.89,
+      20.27,
+      13.47
+    ]
+  },
+  "elapsed_seconds": 98.51528251497075,
+  "returncode": 0,
+  "raw_file": "UMASH-128.run1.txt",
+  "raw_sha256": "eb9ff6cc81f4f934caca1f26d7a6a629f9b75f0f7333ecffbf28112002cbdd81",
+  "binary_sha256": "d8df2fbcf18e4e56ec2c6a96242ef47b10935cd20d05f0b249e6fdecae92846a"
+}

@@ -1,0 +1,27 @@
+{
+  "compiler": "c++ (GCC) 11.5.0 20240719 (Red Hat 11.5.0-14)",
+  "flags": [
+    "-O3",
+    "-std=c++11",
+    "-DNDEBUG",
+    "-DHAVE_THREADS",
+    "-march=native"
+  ],
+  "reused_objects": {
+    "main.cpp.o": "877a4598076d3c30326b11a352bbc3f8bd9a9a881035657e1af6756521ae8c39",
+    "libSMHasher3Tests.a": "677e878c7e4a41add883cff0d1fd1b3f7bdfef01fe9d279d2c6ba3cbaa60d55b",
+    "libSMHasher3Hashlib.a": "81dee0aff7103f2a98e520bcc18c139f2cb3b90ad31895775c43dc085301fc00"
+  },
+  "registration_sources": {
+    "chainhash128_v3.cpp": "8d93a40152785dc94d0bdd1f2488090a5bc5d792b94dcdd117d82722264a7f72",
+    "chainhash128_v3__256.cpp": "1e364b38217ee730e7c8286dca66ae183cb030278a3ea6c821ee5f90290ebc25",
+    "chainhash128_v3__512.cpp": "5a84bacafd974e196adea54675c251fde8d314ef960233e8078325fb29dc36c0",
+    "chainhash128_v3__512school.cpp": "0f85c660b71a77e604f1e7577ab3d71d44e9b5764df7b14644442d6c8479c81b",
+    "chainhash128_v3__school.cpp": "b873e541a7bddd67f4a18a6a5557853631439020e413d8cfa3c5ea8126972c66",
+    "control64.cpp": "d5f95ea08decb267ddaf247e36ba2efd2782cb9d83f5243acad46d0504abe722",
+    "control128.cpp": "5cea415be9e0569bf28e3960235bf6234f4a7e8c8701d29b27b9550ac9d25b30",
+    "registration.inc": "5826a63fc70a485a285094dc02f18f51ad3abccd1d0b03c78a269a8be30f0afb"
+  },
+  "header_sha256": "71b3be699518ffebcac89c4d6cd536cf82c2c56e2be6e2b5a361d2f0de874f7f",
+  "binary_sha256": "46f9c41d928df259f8d4ec14ac3b31c4265333fb312d617925d1456ad0d7a276"
+}

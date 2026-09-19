@@ -24,4 +24,11 @@ reproduction commands and the resolved initial cache-fetch failure.
 The measured speed gates are retained evidence, not fresh timings.
 A complete v3 SMHasher3 suite is not claimed.
 
+ChainHash-128 v3 is integrated as include/chainhash128_v3.h (byte-identical
+to the measured header), with docs/SPEC_v3_128.md, docs/THEOREM_v3_128.md,
+test/v3-128 wired into make test and make sanitize, and the retained
+two-host evidence under results/v3-128. Fresh make test passed on this Mac
+(NEON) and on the Xeon (XMM/YMM/ZMM), reproducing the lane's corpus
+checksum 11b7726e88284e6d. The 128-bit Lean port is in progress.
+
 Local commit only. No push performed; the lead handles publication.

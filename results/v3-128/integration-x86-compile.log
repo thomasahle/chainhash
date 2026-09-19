@@ -1,0 +1,7 @@
+# Apple Clang 17, baseline x86_64, no ISA flags
+Apple clang version 17.0.0 (clang-1700.6.4.2)
+C99 x86_64 object: OK
+C++11 x86_64 object: OK
+# Homebrew Clang, Intel assembly syntax
+Homebrew clang version 22.1.6
+Intel-syntax x86_64 object: OK

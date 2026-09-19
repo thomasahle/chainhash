@@ -1,0 +1,27 @@
+{
+  "compiler": "Apple clang version 17.0.0 (clang-1700.6.4.2)",
+  "flags": [
+    "-O3",
+    "-std=c++11",
+    "-DNDEBUG",
+    "-DHAVE_THREADS",
+    "-march=native+crypto"
+  ],
+  "reused_objects": {
+    "main.cpp.o": "0b557883351f4b54fe180bf393cf75a35c5968889363ef3269bfaf0d152c41d5",
+    "libSMHasher3Tests.a": "3551d62aab1340f4c80cb8aff92ac1a0b04ac51cb3fdcb7b107f1ab552bd9eba",
+    "libSMHasher3Hashlib.a": "11f9daf90decfd4edb08d66245b25f2b1cea84df9826ae707f96e9afeb1e840d"
+  },
+  "registration_sources": {
+    "chainhash128_v3.cpp": "8d93a40152785dc94d0bdd1f2488090a5bc5d792b94dcdd117d82722264a7f72",
+    "chainhash128_v3__256.cpp": "1e364b38217ee730e7c8286dca66ae183cb030278a3ea6c821ee5f90290ebc25",
+    "chainhash128_v3__512.cpp": "5a84bacafd974e196adea54675c251fde8d314ef960233e8078325fb29dc36c0",
+    "chainhash128_v3__512school.cpp": "0f85c660b71a77e604f1e7577ab3d71d44e9b5764df7b14644442d6c8479c81b",
+    "chainhash128_v3__school.cpp": "b873e541a7bddd67f4a18a6a5557853631439020e413d8cfa3c5ea8126972c66",
+    "control64.cpp": "d5f95ea08decb267ddaf247e36ba2efd2782cb9d83f5243acad46d0504abe722",
+    "control128.cpp": "5cea415be9e0569bf28e3960235bf6234f4a7e8c8701d29b27b9550ac9d25b30",
+    "registration.inc": "5826a63fc70a485a285094dc02f18f51ad3abccd1d0b03c78a269a8be30f0afb"
+  },
+  "header_sha256": "6c31b6f3638d545f3d95c95bd4edd7483a8964a429957fb1ab3111d9b107a455",
+  "binary_sha256": "305d1d85bc07c179b46c5420d6f1decbf492d1796daf4e5cd0b15f1c37b2572e"
+}

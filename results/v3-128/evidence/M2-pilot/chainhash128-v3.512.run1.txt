@@ -1,0 +1,22 @@
+--- Testing chainhash128-v3.512 "ChainHash-128 v3 comb Horner" [lazy-k8]
+
+[[[ Speed Tests ]]]
+
+Small key speed test - [1, 31]-byte keys
+   1-byte keys -   151.58 cycles/hash
+   2-byte keys -   156.18 cycles/hash
+   3-byte keys -   152.27 cycles/hash
+   4-byte keys -   155.72 cycles/hash
+   5-byte keys -   155.03 cycles/hash
+   6-byte keys -   153.42 cycles/hash
+   7-byte keys -   153.65 cycles/hash
+   8-byte keys -   152.50 cycles/hash
+   9-byte keys -   156.64 cycles/hash
+  10-byte keys -   151.81 cycles/hash
+  11-byte keys -   152.50 cycles/hash
+  12-byte keys -   150.89 cycles/hash
+  13-byte keys -   151.35 cycles/hash
+  14-byte keys -   150.89 cycles/hash
+  15-byte keys -   151.58 cycles/hash
+  16-byte keys -   151.35 cycles/hash
+  17-byte keys -   192.52 cycles/hash

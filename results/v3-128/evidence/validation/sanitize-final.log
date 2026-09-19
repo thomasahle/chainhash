@@ -1,0 +1,2 @@
+checked=0 configs=64 block=512 checksum=a657d87da6c263c0
+PASS inputs=1000 configs=64 block=512 oracle=bit_serial streaming=all two_threads=all checksum=2e2adcfd84153631

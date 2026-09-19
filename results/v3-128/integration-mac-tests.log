@@ -1,0 +1,253 @@
+mkdir -p build
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -march=native+crypto test/selftest.cpp -o build/selftest
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto test/c99.c -o build/c99
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto test/speed.c -o build/speed
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/compile.c -o build/v3-compile
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -march=native+crypto -x c++ test/v3/compile.c -o build/v3-cpp
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/compile.c -o build/v3-128-compile
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -march=native+crypto -x c++ test/v3-128/compile.c -o build/v3-128-cpp
+ALL_EXIT=0
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -DCHAINHASH_FORCE_PORTABLE test/selftest.cpp -o build/portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_FORCE_PORTABLE test/c99.c -o build/c99-portable
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -march=native+crypto test/key_schedule.cpp -o build/key-schedule
+c++ -Iinclude -O3 -std=c++11 -Wall -Wextra -DCHAINHASH_FORCE_PORTABLE test/key_schedule.cpp -o build/key-schedule-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto test/key_schedule_c99.c -o build/key-schedule-c99
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_FORCE_PORTABLE test/key_schedule_c99.c -o build/key-schedule-c99-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/property.c -o build/v3-property
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/guard.c -o build/v3-guard
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/key_alignment.c -o build/v3-key_alignment
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/vectors.c -o build/v3-vectors
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/frozen.c -o build/v3-frozen
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -march=native+crypto -pthread test/v3/schedule.c -o build/v3-schedule
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_V3_PORTABLE -pthread test/v3/property.c -o build/v3-property-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_V3_PORTABLE -pthread test/v3/guard.c -o build/v3-guard-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_V3_PORTABLE -pthread test/v3/key_alignment.c -o build/v3-key_alignment-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_V3_PORTABLE -pthread test/v3/compile.c -o build/v3-compile-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_V3_PORTABLE -pthread test/v3/vectors.c -o build/v3-vectors-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_V3_PORTABLE -pthread test/v3/frozen.c -o build/v3-frozen-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -DCHAINHASH_V3_PORTABLE -pthread test/v3/schedule.c -o build/v3-schedule-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/property.c -o build/v3-128-property
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/schedule.c -o build/v3-128-schedule
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/guard.c -o build/v3-128-guard
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/arithmetic.c -o build/v3-128-arithmetic
+In file included from test/v3-128/arithmetic.c:2:
+test/v3-128/oracle.h:13:21: warning: unused function 'oracle' [-Wunused-function]
+   13 | static ch128v3_word oracle(const chainhash128_v3_key *key,const uint8_t *p,size_t n) {
+      |                     ^~~~~~
+1 warning generated.
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/edges.c -o build/v3-128-edges
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/short.c -o build/v3-128-short
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/vectors.c -o build/v3-128-vectors
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -pthread test/v3-128/frozen.c -o build/v3-128-frozen
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/property.c -o build/v3-128-property-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/schedule.c -o build/v3-128-schedule-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/guard.c -o build/v3-128-guard-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/arithmetic.c -o build/v3-128-arithmetic-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/edges.c -o build/v3-128-edges-portable
+In file included from test/v3-128/arithmetic.c:2:
+test/v3-128/oracle.h:13:21: warning: unused function 'oracle' [-Wunused-function]
+   13 | static ch128v3_word oracle(const chainhash128_v3_key *key,const uint8_t *p,size_t n) {
+      |                     ^~~~~~
+1 warning generated.
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/short.c -o build/v3-128-short-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/vectors.c -o build/v3-128-vectors-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/frozen.c -o build/v3-128-frozen-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -DCHAINHASH128_V3_PORTABLE -pthread test/v3-128/compile.c -o build/v3-128-compile-portable
+cc -Iinclude -O3 -std=c99 -Wall -Wextra -Wpedantic -Wno-overlength-strings -march=native+crypto -DCHAINHASH128_V3_BLOCK_BYTES=256 test/v3-128/compile.c -o build/v3-128-compile-256
+./build/v3-compile
+./build/v3-128-compile
+./build/v3-compile-portable
+backend=4 selftest=1 block=512
+./build/v3-128-compile-portable
+./build/v3-cpp
+backend=0 selftest=1 block=512
+./build/v3-128-cpp
+./build/v3-frozen
+backend=4 selftest=1 block=512
+./build/v3-128-compile-256
+PASS seven frozen vectors, every backend, strides 1..8, eager/lazy streaming
+./build/v3-frozen-portable
+backend=4 selftest=1 block=256
+./build/v3-128-frozen
+PASS seven frozen vectors, every backend, strides 1..8, eager/lazy streaming
+./build/v3-schedule
+PASS nine frozen vectors: reference, dispatch, every backend x product, strides 1..8 eager/lazy
+./build/v3-128-frozen-portable
+PASS nine frozen vectors: reference, dispatch, every backend x product, strides 1..8 eager/lazy
+./build/v3-128-schedule
+PASS exact p multiplications with lookahead, k=1..16, p=1..257, y=0/1/random
+./build/v3-schedule-portable
+PASS exact-count schedule: 5140 cases, all residues, p<k, y=0/1
+./build/v3-128-schedule-portable
+PASS exact p multiplications with lookahead, k=1..16, p=1..257, y=0/1/random
+python3 test/v3/check_vectors.py
+PASS exact-count schedule: 5140 cases, all residues, p<k, y=0/1
+./build/v3-128-arithmetic
+PASS 10000 raw products, field division, integer carry
+./build/v3-128-arithmetic-portable
+PASS independent evaluator matches all seven frozen vectors
+./build/v3-guard
+PASS guarded tails 0..4096; NULL empty
+./build/v3-guard-portable
+PASS 10000 raw products, field division, integer carry
+python3 test/v3-128/check_vectors.py
+PASS guarded tails 0..4096; NULL empty
+./build/v3-key_alignment
+PASS key with only 8-byte alignment
+./build/v3-key_alignment-portable
+PASS independent oracle matches all nine archived vectors (native and portable builds)
+python3 test/v3-128/bounds.py
+PASS key with only 8-byte alignment
+./build/v3-property 20000 123456789
+{
+  "256": {
+    "paper_score_bits": 127,
+    "model_A_refined_score_bits": 127,
+    "model_A_coarse_score_bits": 123.91253715874966,
+    "at_1MiB": {
+      "p": 4096,
+      "paper_numerator": 4097,
+      "model_A_numerator": 4112
+    },
+    "integer_envelope_checks": 131463
+  },
+  "512": {
+    "paper_score_bits": 127,
+    "model_A_refined_score_bits": 127,
+    "model_A_coarse_score_bits": 122.95560588064154,
+    "at_1MiB": {
+      "p": 2048,
+      "paper_numerator": 2049,
+      "model_A_numerator": 2080
+    },
+    "integer_envelope_checks": 131463
+  }
+}
+./build/v3-128-edges
+progress 0 n=3030
+PASS zero/one/all-ones/high-bit keys, tails, and all evaluation choices
+./build/v3-128-edges-portable
+progress 1000 n=4070
+progress 2000 n=866
+PASS zero/one/all-ones/high-bit keys, tails, and all evaluation choices
+./build/v3-128-guard
+progress 3000 n=136
+PASS protected-page tails and NULL empty
+./build/v3-128-guard-portable
+progress 4000 n=428
+progress 5000 n=1599
+progress 6000 n=2198
+progress 7000 n=3828
+PASS protected-page tails and NULL empty
+./build/v3-128-short
+progress 8000 n=3289
+progress 9000 n=4091
+progress 10000 n=1709
+progress 11000 n=3884
+progress 12000 n=2429
+progress 13000 n=628
+progress 14000 n=3984
+progress 15000 n=3388
+progress 16000 n=1235
+progress 17000 n=3559
+progress 18000 n=3833
+PASS 20000 short factorizations checksum=3362e55d538e8995
+./build/v3-128-short-portable
+progress 19000 n=722
+progress 20000 n=0
+progress 21000 n=1000
+progress 22000 n=2000
+progress 23000 n=3000
+progress 24000 n=4000
+PASS random=20000 exhaustive=4097 long/boundary=23 backend=4 checksum=635920a0020c7922
+./build/v3-property-portable 20000 123456789
+progress 0 n=3030
+progress 1000 n=4070
+progress 2000 n=866
+progress 3000 n=136
+progress 4000 n=428
+progress 5000 n=1599
+PASS 20000 short factorizations checksum=3362e55d538e8995
+./build/v3-128-property 20000
+progress 6000 n=2198
+checked=0 configs=32 block=512 checksum=a657d87da6c263c0
+progress 7000 n=3828
+progress 8000 n=3289
+progress 9000 n=4091
+progress 10000 n=1709
+checked=1000 configs=32 block=512 checksum=2627d11c22788a14
+progress 11000 n=3884
+progress 12000 n=2429
+progress 13000 n=628
+progress 14000 n=3984
+progress 15000 n=3388
+progress 16000 n=1235
+progress 17000 n=3559
+checked=2000 configs=32 block=512 checksum=f9104a32ae1c7905
+progress 18000 n=3833
+progress 19000 n=722
+progress 20000 n=0
+progress 21000 n=1000
+progress 22000 n=2000
+progress 23000 n=3000
+progress 24000 n=4000
+PASS random=20000 exhaustive=4097 long/boundary=23 backend=0 checksum=635920a0020c7922
+checked=3000 configs=32 block=512 checksum=f5109769f352891a
+checked=4000 configs=32 block=512 checksum=b5a9a36d8978ce54
+checked=5000 configs=32 block=512 checksum=030fcbab6af1477c
+checked=6000 configs=32 block=512 checksum=885b38be49f037c6
+checked=7000 configs=32 block=512 checksum=35d38d637eedc454
+checked=8000 configs=32 block=512 checksum=d04b4ada8cbc9eeb
+checked=9000 configs=32 block=512 checksum=f13146644017eb99
+checked=10000 configs=32 block=512 checksum=ab1079b625f33162
+checked=11000 configs=32 block=512 checksum=e93c4f70ea94a9c3
+checked=12000 configs=32 block=512 checksum=676472b21cd6f04c
+checked=13000 configs=32 block=512 checksum=043f3cd26aa366de
+checked=14000 configs=32 block=512 checksum=00b288ddeb79633a
+checked=15000 configs=32 block=512 checksum=c60f8659b9244ef4
+checked=16000 configs=32 block=512 checksum=dfe41e0174006072
+checked=17000 configs=32 block=512 checksum=31b2f864a0dff407
+checked=18000 configs=32 block=512 checksum=6deede7c74503b88
+checked=19000 configs=32 block=512 checksum=4c3d9951c8f4f053
+PASS inputs=20000 configs=32 block=512 oracle=bit_serial streaming=all two_threads=all checksum=11b7726e88284e6d
+./build/v3-128-property-portable 20000
+checked=0 configs=16 block=512 checksum=a657d87da6c263c0
+checked=1000 configs=16 block=512 checksum=2627d11c22788a14
+checked=2000 configs=16 block=512 checksum=f9104a32ae1c7905
+checked=3000 configs=16 block=512 checksum=f5109769f352891a
+checked=4000 configs=16 block=512 checksum=b5a9a36d8978ce54
+checked=5000 configs=16 block=512 checksum=030fcbab6af1477c
+checked=6000 configs=16 block=512 checksum=885b38be49f037c6
+checked=7000 configs=16 block=512 checksum=35d38d637eedc454
+checked=8000 configs=16 block=512 checksum=d04b4ada8cbc9eeb
+checked=9000 configs=16 block=512 checksum=f13146644017eb99
+checked=10000 configs=16 block=512 checksum=ab1079b625f33162
+checked=11000 configs=16 block=512 checksum=e93c4f70ea94a9c3
+checked=12000 configs=16 block=512 checksum=676472b21cd6f04c
+checked=13000 configs=16 block=512 checksum=043f3cd26aa366de
+checked=14000 configs=16 block=512 checksum=00b288ddeb79633a
+checked=15000 configs=16 block=512 checksum=c60f8659b9244ef4
+checked=16000 configs=16 block=512 checksum=dfe41e0174006072
+checked=17000 configs=16 block=512 checksum=31b2f864a0dff407
+checked=18000 configs=16 block=512 checksum=6deede7c74503b88
+checked=19000 configs=16 block=512 checksum=4c3d9951c8f4f053
+PASS inputs=20000 configs=16 block=512 oracle=bit_serial streaming=all two_threads=all checksum=11b7726e88284e6d
+./build/selftest
+PASS 21479 differential cases; 92 frozen vectors; backend=pmull; verification=0xAA4E2A3B
+PASS 12000 randomized messages/keys/lengths; 11248 bulk inputs
+./build/portable
+PASS 21479 differential cases; 92 frozen vectors; backend=portable; verification=0xAA4E2A3B
+PASS 12000 randomized messages/keys/lengths; 11248 bulk inputs
+./build/c99
+PASS C99 API
+./build/c99-portable
+PASS C99 API
+./build/key-schedule vectors > build/key-schedule-vectors.txt
+python3 test/check_key_vectors.py
+PASS: 10000 field products; six edge seeds; 744 hash comparisons; backend=pmull
+PASS: archived seeded key and hash vectors match
+./build/key-schedule-portable
+PASS: 10000 field products; six edge seeds; 744 hash comparisons; backend=portable
+./build/key-schedule-c99
+./build/key-schedule-c99-portable
+TEST_EXIT=0

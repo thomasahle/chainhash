@@ -1,0 +1,30 @@
+{
+  "name": "rapidhash",
+  "run": 2,
+  "before": {
+    "utc": "2026-09-19T08:18:07.777532+00:00",
+    "load": [
+      21.92,
+      24.36,
+      19.48
+    ],
+    "smhasher_pids": [
+      "3467803",
+      "3514752"
+    ],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:19:08.726893+00:00",
+    "load": [
+      29.85,
+      25.89,
+      20.29
+    ]
+  },
+  "elapsed_seconds": 60.892895195051096,
+  "returncode": 0,
+  "raw_file": "rapidhash.run2.txt",
+  "raw_sha256": "33fe4da37e977399c3f435086adbaacc5257613c5ca66258c205d35cea146cc2",
+  "binary_sha256": "d8df2fbcf18e4e56ec2c6a96242ef47b10935cd20d05f0b249e6fdecae92846a"
+}

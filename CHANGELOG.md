@@ -1,5 +1,38 @@
 # Changelog
 
+## 2026-09-19 — ChainHash-128 v3
+
+- Add `include/chainhash128_v3.h`: ChainHash-Horner v3 over the GCM field
+  `GF(2^128)` with a 128-bit result. 512-byte logical CLNH blocks of 128-bit
+  words, comb pairs eight words apart, schoolbook 128×128 products on XMM,
+  ZMM and NEON (Karatsuba on YMM and portable), Horner in an independent y
+  with the byte length leading, k lazy chains, and the 128-bit integer twist
+  and quintic. Model A takes 128 random bytes; ideal keys take 624. The
+  256-byte block remains a separately defined comparison family.
+- This is a new digest family. It is not compatible with the 64-bit
+  functions, nor with the earlier strided ChainHash-128 (verification
+  `0x742DE5A5`), which was never a public header here and is archived as a
+  timing control under `results/v3-128/`. ChainHash-128 v3 verifies as
+  `0x1FCA728C`. Version persisted hashes and rehash when migrating.
+- Ship the portable reference, runtime x86 XMM/YMM/ZMM dispatch, pinned
+  NEON kernels, a shared short kernel through 128 bytes, streaming,
+  region-aligned partial joins, and a callable self-test; the shipped header
+  is byte-identical to the measured source.
+- Publish `docs/SPEC_v3_128.md` and `docs/THEOREM_v3_128.md`: paper-model
+  bound `(p+1)/2^128` and model-A bounds `(p+32)/2^128` and `E_A(L)/2^128`,
+  both scoring 127 bits with the short-length refinement (122.96 for the
+  coarse envelope alone), by transfer from the Lean-proved 64-bit theorem.
+  The Lean port of the 128-bit function is in progress; no 128-bit theorem
+  is machine-checked in this repository.
+- Retain the two-host measurements: 14.43 B/TSC on the Xeon and 10.26
+  B/calibrated cycle on the M2 Pro for the selected schoolbook dispatch,
+  with controls, raw Speed outputs, gates, provenance, validation logs and
+  NEON disassembly under `results/v3-128/`. Short inputs remain slow; no
+  full SMHasher3 quality suite is claimed.
+- Wire `test/v3-128` into `make test` and `make sanitize`: bit-serial oracle
+  matrix, nine archived vectors, raw products, exact-count schedule, edge
+  keys, short kernel, guarded tails, C99/C++11/portable/256-byte builds.
+
 ## 2026-09-19 — Machine-checked v3 proofs
 
 - Integrate 89 V3 theorems in ten modules: the 39-word paper bound, exactly

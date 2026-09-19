@@ -1,0 +1,27 @@
+{
+  "name": "chainhash128-v3",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:03:37.346027+00:00",
+    "load": [
+      3.64892578125,
+      4.99755859375,
+      5.26904296875
+    ],
+    "smhasher_pids": [],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:04:47.332072+00:00",
+    "load": [
+      4.01806640625,
+      4.77099609375,
+      5.15625
+    ]
+  },
+  "elapsed_seconds": 69.9671535,
+  "returncode": 0,
+  "raw_file": "chainhash128-v3.run1.txt",
+  "raw_sha256": "4d8bfa897344c8d649f4d04b3001da3bc4926d1f6b44e1ce18e5c789682ccfa9",
+  "binary_sha256": "f132b3b7e6e8dd1451f72797b7af5829829f2dab69336947e8ebd48370dd9cf4"
+}

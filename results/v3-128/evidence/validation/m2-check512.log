@@ -1,0 +1,42 @@
+cc -O3 -std=c99 -DCHAINHASH128_V3_BLOCK_BYTES=512 -march=native+crypto -pthread smoke.c -o smoke
+cc -O3 -std=c99 -DCHAINHASH128_V3_BLOCK_BYTES=512 -march=native+crypto -pthread property.c -o property
+cc -O3 -std=c99 -DCHAINHASH128_V3_BLOCK_BYTES=512 -march=native+crypto -pthread schedule.c -o schedule
+cc -O3 -std=c99 -DCHAINHASH128_V3_BLOCK_BYTES=512 -march=native+crypto -pthread guard.c -o guard
+cc -O3 -std=c99 -DCHAINHASH128_V3_BLOCK_BYTES=512 -march=native+crypto -pthread arithmetic.c -o arithmetic
+cc -O3 -std=c99 -DCHAINHASH128_V3_BLOCK_BYTES=512 -march=native+crypto -pthread edges.c -o edges
+cc -O3 -std=c99 -DCHAINHASH128_V3_BLOCK_BYTES=512 -march=native+crypto -pthread short.c -o short
+./smoke
+backend=4 selftest=1 block=512
+./short
+PASS 20000 short factorizations checksum=3362e55d538e8995
+./arithmetic
+PASS 10000 raw products, field division, integer carry
+./edges
+PASS zero/one/all-ones/high-bit keys, tails, and all evaluation choices
+./schedule
+PASS exact-count schedule: 5140 cases, all residues, p<k, y=0/1
+./guard
+PASS protected-page tails and NULL empty
+./property 20000
+checked=0 configs=32 block=512 checksum=a657d87da6c263c0
+checked=1000 configs=32 block=512 checksum=2627d11c22788a14
+checked=2000 configs=32 block=512 checksum=f9104a32ae1c7905
+checked=3000 configs=32 block=512 checksum=f5109769f352891a
+checked=4000 configs=32 block=512 checksum=b5a9a36d8978ce54
+checked=5000 configs=32 block=512 checksum=030fcbab6af1477c
+checked=6000 configs=32 block=512 checksum=885b38be49f037c6
+checked=7000 configs=32 block=512 checksum=35d38d637eedc454
+checked=8000 configs=32 block=512 checksum=d04b4ada8cbc9eeb
+checked=9000 configs=32 block=512 checksum=f13146644017eb99
+checked=10000 configs=32 block=512 checksum=ab1079b625f33162
+checked=11000 configs=32 block=512 checksum=e93c4f70ea94a9c3
+checked=12000 configs=32 block=512 checksum=676472b21cd6f04c
+checked=13000 configs=32 block=512 checksum=043f3cd26aa366de
+checked=14000 configs=32 block=512 checksum=00b288ddeb79633a
+checked=15000 configs=32 block=512 checksum=c60f8659b9244ef4
+checked=16000 configs=32 block=512 checksum=dfe41e0174006072
+checked=17000 configs=32 block=512 checksum=31b2f864a0dff407
+checked=18000 configs=32 block=512 checksum=6deede7c74503b88
+checked=19000 configs=32 block=512 checksum=4c3d9951c8f4f053
+PASS inputs=20000 configs=32 block=512 oracle=bit_serial streaming=all two_threads=all checksum=11b7726e88284e6d
+EXIT=0

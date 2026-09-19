@@ -1,0 +1,31 @@
+{
+  "name": "chainhash-v3",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:09:49.453356+00:00",
+    "load": [
+      25.42,
+      22.13,
+      15.15
+    ],
+    "smhasher_pids": [
+      "3199590",
+      "3399226",
+      "3399533"
+    ],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:10:33.807303+00:00",
+    "load": [
+      26.03,
+      22.7,
+      15.67
+    ]
+  },
+  "elapsed_seconds": 44.29890641698148,
+  "returncode": 0,
+  "raw_file": "chainhash-v3.run1.txt",
+  "raw_sha256": "69c64b0ba94c23b16f8574362af139b72751d7ca27cdbb0e60cfc878ade07b83",
+  "binary_sha256": "d8df2fbcf18e4e56ec2c6a96242ef47b10935cd20d05f0b249e6fdecae92846a"
+}

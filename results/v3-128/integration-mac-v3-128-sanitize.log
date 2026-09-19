@@ -1,0 +1,11 @@
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/v3-128/guard.c -o build/v3-128-guard-sanitize
+./build/v3-128-guard-sanitize
+PASS protected-page tails and NULL empty
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/v3-128/short.c -o build/v3-128-short-sanitize
+./build/v3-128-short-sanitize
+PASS 20000 short factorizations checksum=3362e55d538e8995
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer -pthread test/v3-128/property.c -o build/v3-128-property-sanitize
+./build/v3-128-property-sanitize 1000
+checked=0 configs=32 block=512 checksum=a657d87da6c263c0
+PASS inputs=1000 configs=32 block=512 oracle=bit_serial streaming=all two_threads=all checksum=2e2adcfd84153631
+SANITIZE_V3_128_EXIT=0

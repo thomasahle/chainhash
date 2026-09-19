@@ -1,0 +1,32 @@
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/v3/guard.c -o build/v3-guard-sanitize
+./build/v3-guard-sanitize
+PASS guarded tails 0..4096; NULL empty
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/v3/key_alignment.c -o build/v3-key-alignment-sanitize
+./build/v3-key-alignment-sanitize
+PASS key with only 8-byte alignment
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer -pthread test/v3/property.c -o build/v3-property-sanitize
+./build/v3-property-sanitize 0 123456789
+progress 0 n=0
+progress 1000 n=1000
+progress 2000 n=2000
+progress 3000 n=3000
+progress 4000 n=4000
+PASS random=0 exhaustive=4097 long/boundary=23 backend=4 checksum=55136583e511d53d
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/v3-128/guard.c -o build/v3-128-guard-sanitize
+./build/v3-128-guard-sanitize
+PASS protected-page tails and NULL empty
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/v3-128/short.c -o build/v3-128-short-sanitize
+./build/v3-128-short-sanitize
+PASS 20000 short factorizations checksum=3362e55d538e8995
+/opt/homebrew/opt/llvm/bin/clang -Iinclude -std=c99 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer -pthread test/v3-128/property.c -o build/v3-128-property-sanitize
+./build/v3-128-property-sanitize 1000
+checked=0 configs=32 block=512 checksum=a657d87da6c263c0
+PASS inputs=1000 configs=32 block=512 oracle=bit_serial streaming=all two_threads=all checksum=2e2adcfd84153631
+/opt/homebrew/opt/llvm/bin/clang++ -Iinclude -std=c++11 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/selftest.cpp -o build/sanitize
+./build/sanitize
+PASS 21479 differential cases; 92 frozen vectors; backend=pmull; verification=0xAA4E2A3B
+PASS 12000 randomized messages/keys/lengths; 11248 bulk inputs
+/opt/homebrew/opt/llvm/bin/clang++ -Iinclude -std=c++11 -O1 -g -march=native+crypto -fsanitize=address,undefined -fno-omit-frame-pointer test/key_schedule.cpp -o build/key-schedule-sanitize
+./build/key-schedule-sanitize
+PASS: 10000 field products; six edge seeds; 744 hash comparisons; backend=pmull
+SANITIZE_EXIT=0

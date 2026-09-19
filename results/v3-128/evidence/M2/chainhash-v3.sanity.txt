@@ -1,0 +1,20 @@
+WARNING: Hash with verification code 1fca728c was already registered: chainhash128-v3
+         Are you certain chainhash128-v3.512 is a unique implementation?
+WARNING: Hash with verification code 1fca728c was already registered: chainhash128-v3
+         Are you certain chainhash128-v3.512school is a unique implementation?
+WARNING: Hash with verification code 0f709cad was already registered: chainhash128-v3.256
+         Are you certain chainhash128-v3.school is a unique implementation?
+--- Testing chainhash-v3 "ChainHash v3 Horner, comb 256-byte blocks" [lazy-k4]
+
+[[[ Sanity Tests ]]]
+
+Verification value LE 0x66672BD6 ...... PASS
+Running sanity check 1       .......... PASS
+Running sanity check 2       .......... PASS
+Running append zeroes test   .......... PASS
+Running prepend zeroes test  .......... PASS
+Running thread-safety test 1 .......... PASS
+Running thread-safety test 2 .......... PASS
+
+Verification value is 0x00000001 - Testing took 0.310607 seconds
+

@@ -1,0 +1,27 @@
+{
+  "name": "komihash",
+  "run": 1,
+  "before": {
+    "utc": "2026-09-19T08:52:55.677437+00:00",
+    "load": [
+      52.26,
+      52.53,
+      52.46
+    ],
+    "smhasher_pids": [],
+    "passed": true
+  },
+  "after": {
+    "utc": "2026-09-19T08:54:17.922143+00:00",
+    "load": [
+      47.99,
+      51.21,
+      52.01
+    ]
+  },
+  "elapsed_seconds": 82.18928625900298,
+  "returncode": 0,
+  "raw_file": "komihash.run1.txt",
+  "raw_sha256": "76fbfafe7fd4f1248f4fce68ebfadb491a81f6f8555fc6b8dfe59fd0e4319b42",
+  "binary_sha256": "46f9c41d928df259f8d4ec14ac3b31c4265333fb312d617925d1456ad0d7a276"
+}

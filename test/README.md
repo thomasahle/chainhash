@@ -94,3 +94,10 @@ See [the pairing audit](../lean/PAIRING_AUDIT.md) for exact coverage and scope.
 `make test` also runs the separately versioned [v3 suite](v3/README.md).
 `make sanitize` includes its guards, alignment and property checks.
 The v1 reference, frozen vectors and tests above retain their original scope.
+
+## ChainHash-128 v3
+
+`make test` also runs the [128-bit v3 suite](v3-128/README.md), built
+natively and with `CHAINHASH128_V3_PORTABLE`, and `make sanitize` includes
+its guard, short-kernel and property checks. Its oracle, vectors and
+checksum are separate from the 64-bit suites above.
