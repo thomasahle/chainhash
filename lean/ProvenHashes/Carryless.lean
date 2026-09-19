@@ -111,4 +111,17 @@ theorem clnh_natDegree_le {I : Type*} [DecidableEq I]
     (Polynomial.ofFn 64 (m (i, true) + k (i, true))).natDegree ≤ 126
   omega
 
+/-- Width-generic form of `clnh_natDegree_le`: each factor has degree below `w`.
+`ChainHash128.clnh_natDegree_le` is its 128-bit instance. -/
+theorem clnh_natDegree_le_width {I : Type*} [DecidableEq I] {w : ℕ} (hw : 1 ≤ w)
+    (s : Finset I) (m k : I × Bool → Word w) : (clnh s m k).natDegree ≤ 2 * w - 2 := by
+  apply Polynomial.natDegree_sum_le_of_forall_le
+  intro i hi
+  have h₁ := Polynomial.ofFn_natDegree_lt (R := ZMod 2) hw (m (i, false) + k (i, false))
+  have h₂ := Polynomial.ofFn_natDegree_lt (R := ZMod 2) hw (m (i, true) + k (i, true))
+  apply Polynomial.natDegree_mul_le.trans
+  change (Polynomial.ofFn w (m (i, false) + k (i, false))).natDegree +
+    (Polynomial.ofFn w (m (i, true) + k (i, true))).natDegree ≤ 2 * w - 2
+  omega
+
 end ProvenHashes.ChainHash

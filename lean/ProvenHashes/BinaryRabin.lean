@@ -51,4 +51,27 @@ theorem binary_rabin64 (p : BitsPolynomial) (hp : p.Monic) (hdeg : p.natDegree =
     rw [hdeg, hgdeg, hk6]; norm_num)
   exact hgeq.symm ▸ hg
 
+set_option maxRecDepth 4096 in
+/-- Rabin's criterion specialized to degree 128 = 2^7. Only the halfway
+Frobenius gcd is needed because 2 is the only prime divisor of 128. -/
+theorem binary_rabin128 (p : BitsPolynomial) (hp : p.Monic) (hdeg : p.natDegree = 128)
+    (h128 : p ∣ X ^ (2 ^ 128) - X) (h64 : IsCoprime p (X ^ (2 ^ 64) - X)) :
+    Irreducible p := by
+  have hunit : ¬ IsUnit p := not_isUnit_of_natDegree_pos p (by omega)
+  obtain ⟨g, hgmon, hg, hgp⟩ := Polynomial.exists_monic_irreducible_factor p hunit
+  have hd : g.natDegree ∣ 128 := (irreducible_dvd_frobenius_iff g hg 128).mp (hgp.trans h128)
+  have hd' : g.natDegree ∣ 2 ^ 7 := by norm_num at hd ⊢; exact hd
+  obtain ⟨k, hk, hgdeg⟩ := (Nat.dvd_prime_pow Nat.prime_two).mp hd'
+  have hk7 : k = 7 := by
+    by_contra hk7
+    have hk6 : k ≤ 6 := by omega
+    have hd64 : g.natDegree ∣ 64 := by
+      rw [hgdeg]
+      exact (pow_dvd_pow 2 hk6 : 2 ^ k ∣ 2 ^ 6)
+    exact hg.not_isUnit (h64.isUnit_of_dvd' hgp
+      ((irreducible_dvd_frobenius_iff g hg 64).mpr hd64))
+  have hgeq : p = g := Polynomial.eq_of_monic_of_dvd_of_natDegree_le hgmon hp hgp (by
+    rw [hdeg, hgdeg, hk7]; norm_num)
+  exact hgeq.symm ▸ hg
+
 end ProvenHashes.ChainHash

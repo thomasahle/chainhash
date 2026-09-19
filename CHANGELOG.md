@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-09-19 — Machine-checked ChainHash-128 v3 proofs
+
+- Integrate 116 V3_128 theorems in ten modules (`ProvenHashes.ChainHash.V3_128`):
+  the 39-word paper bound `min 1 ((p_B(L)+1)/2^128)`, the exactly 128-byte
+  model-A bound `min 1 (E_A(L)/2^128)` with the coarse `(p+32)/2^128` envelope
+  and both SPEC block forms, evaluation independence for every positive stride
+  including the lazy 256-bit raw state (`X^128 = 0x87`), and the exact score
+  minima 127, 127 and `128 - log2 33`, all over the GCM field
+  `GF(2)[X]/(X^128+X^7+X^2+X+1)`.
+- Ship the 128-bit base the port stands on under `lean/ProvenHashes/ChainHash128/`
+  (namespace `ProvenHashes.ChainHash128`): the GCM modulus with its Rabin
+  irreducibility certificate (128 squaring steps and a Bézout identity), the
+  16-byte word encoding, 512-byte blocks, reference operations, model A, and the
+  earlier strided ChainHash-128 theorems as `ProvenHashes.ChainHash128.Strided`.
+  Width-generic statements stay shared: the integer twist is now stated over any
+  `ZMod N`, and Carryless and BinaryRabin gain width-128 lemmas.
+- Audit all 1096 exported theorems/lemmas across 236 modules with only the
+  standard Lean axioms; guard the generated audit against missing V3_128
+  endpoints, modules and base certificates. Run the integrated verification on
+  the Xeon (32 threads, CPUs 0–31, nice) and retain the transcript.
+- Add the 625-vector C/Lean corpus for the public `chainhash128_v3.h`, covering
+  both key models, every available backend, strides 1–8, eager/lazy state,
+  schoolbook/Karatsuba products, the dispatched one-shot, the self-test and the
+  header's three hard-coded vectors.
+
 ## 2026-09-19 — ChainHash-128 v3
 
 - Add `include/chainhash128_v3.h`: ChainHash-Horner v3 over the GCM field
@@ -22,8 +47,7 @@
   bound `(p+1)/2^128` and model-A bounds `(p+32)/2^128` and `E_A(L)/2^128`,
   both scoring 127 bits with the short-length refinement (122.96 for the
   coarse envelope alone), by transfer from the Lean-proved 64-bit theorem.
-  The Lean port of the 128-bit function is in progress; no 128-bit theorem
-  is machine-checked in this repository.
+  The subsequent Lean integration is recorded above.
 - Retain the two-host measurements: 14.43 B/TSC on the Xeon and 10.26
   B/calibrated cycle on the M2 Pro for the selected schoolbook dispatch,
   with controls, raw Speed outputs, gates, provenance, validation logs and

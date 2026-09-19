@@ -29,6 +29,17 @@ to the measured header), with docs/SPEC_v3_128.md, docs/THEOREM_v3_128.md,
 test/v3-128 wired into make test and make sanitize, and the retained
 two-host evidence under results/v3-128. Fresh make test passed on this Mac
 (NEON) and on the Xeon (XMM/YMM/ZMM), reproducing the lane's corpus
-checksum 11b7726e88284e6d. The 128-bit Lean port is in progress.
+checksum 11b7726e88284e6d.
+
+The ChainHash-128 v3 Lean integration is complete: 116 theorems in ten
+modules (`ProvenHashes.ChainHash.V3_128`) covering the 39-word paper bound,
+exactly 128 random key bytes for model A (refined and coarse envelopes),
+evaluation independence for every positive stride and the lazy state, and
+the exact score minima 127, 127 and 128 - log2 33, on a shipped 128-bit base
+(`ProvenHashes.ChainHash128`, GCM modulus certificate, strided theorems).
+The Xeon verify.sh run passed with both v3 families included: 1096 exported
+theorem/lemma axiom audits (only propext, Classical.choice and Quot.sound),
+forbidden-token checks, 464 and 625 C/Lean vectors against the two public
+headers. See lean/VERIFICATION.txt and lean/V3_128_INTEGRATION.md.
 
 Local commit only. No push performed; the lead handles publication.

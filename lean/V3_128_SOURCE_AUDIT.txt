@@ -1,0 +1,537 @@
+ProvenHashes.ChainHash.V3_128.coefficientsAt_collision (m m' : ProvenHashes.ChainHash.Message)
+  (hlen : List.length m = List.length m') (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.coefficientsAt m (ProvenHashes.ChainHash.V3_128.blocks (List.length m)) k =
+        ProvenHashes.ChainHash.V3_128.coefficientsAt m' (ProvenHashes.ChainHash.V3_128.blocks (List.length m)) k) ≤
+    1 / ↑(Fintype.card ProvenHashes.ChainHash.V3_128.F)
+'ProvenHashes.ChainHash.V3_128.coefficientsAt_collision' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_collision_equal_length (m m' : ProvenHashes.ChainHash.Message)
+  (hlen : List.length m = List.length m') (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k => ProvenHashes.ChainHash.V3_128.hash k m = ProvenHashes.ChainHash.V3_128.hash k m') ≤
+    ↑(ProvenHashes.ChainHash.V3_128.blocks (List.length m) + 1) / 2 ^ 128
+'ProvenHashes.ChainHash.V3_128.paper_collision_equal_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lengthField_zero : ProvenHashes.ChainHash.V3_128.lengthField 0 = 0
+'ProvenHashes.ChainHash.V3_128.lengthField_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lengthField_ne_zero {n : ℕ} (hn : n < 2 ^ 128) (hpos : 0 < n) :
+  ProvenHashes.ChainHash.V3_128.lengthField n ≠ 0
+'ProvenHashes.ChainHash.V3_128.lengthField_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.byte_polynomial_ne (m m' : ProvenHashes.ChainHash.Message) (hm : List.length m < 2 ^ 128)
+  (hm' : List.length m' < 2 ^ 128) (hne : List.length m ≠ List.length m')
+  (k : ProvenHashes.ChainHash.V3_128.Slot → ProvenHashes.ChainHash.V3_128.F) :
+  ProvenHashes.ChainHash.V3_128.hornerPoly (ProvenHashes.ChainHash.V3_128.lengthField (List.length m))
+        (ProvenHashes.ChainHash.V3_128.coefficients m k) -
+      ProvenHashes.ChainHash.V3_128.hornerPoly (ProvenHashes.ChainHash.V3_128.lengthField (List.length m'))
+        (ProvenHashes.ChainHash.V3_128.coefficients m' k) ≠
+    0
+'ProvenHashes.ChainHash.V3_128.byte_polynomial_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.horner_collision_of_nonzero.{u_1} {K : Type u_1} [Field K] [Fintype K] {p q : ℕ}
+  (ell ell' : K) (c : Fin p → K) (d : Fin q → K)
+  (hne : ProvenHashes.ChainHash.V3_128.hornerPoly ell c - ProvenHashes.ChainHash.V3_128.hornerPoly ell' d ≠ 0) :
+  (ProvenHashes.uniformProb fun y =>
+      ProvenHashes.ChainHash.V3_128.hornerValue ell c y = ProvenHashes.ChainHash.V3_128.hornerValue ell' d y) ≤
+    ↑(max p q) / ↑(Fintype.card K)
+'ProvenHashes.ChainHash.V3_128.horner_collision_of_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.family_collision_unequal_length.{u_1} {A : Type u_1} [Fintype A] [Nonempty A]
+  (expand : A → ProvenHashes.ChainHash.V3_128.Slot → ProvenHashes.ChainHash.V3_128.F)
+  (m m' : ProvenHashes.ChainHash.Message) (hm : List.length m < 2 ^ 128) (hm' : List.length m' < 2 ^ 128)
+  (hne : List.length m ≠ List.length m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.hash ((expand k.1.1, k.1.2), k.2) m =
+        ProvenHashes.ChainHash.V3_128.hash ((expand k.1.1, k.1.2), k.2) m') ≤
+    ↑(max (ProvenHashes.ChainHash.V3_128.blocks (List.length m))
+            (ProvenHashes.ChainHash.V3_128.blocks (List.length m')) +
+          1) /
+      2 ^ 128
+'ProvenHashes.ChainHash.V3_128.family_collision_unequal_length' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.chainHashHorner_collision_bound (L : ℕ) (hL : 8 * L < 2 ^ 128)
+  (m m' : ProvenHashes.ChainHash.Message) (hm : List.length m ≤ 8 * L) (hm' : List.length m' ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k => ProvenHashes.ChainHash.V3_128.hash k m = ProvenHashes.ChainHash.V3_128.hash k m') ≤
+    ProvenHashes.ChainHash.V3_128.paperEpsilon L
+'ProvenHashes.ChainHash.V3_128.chainHashHorner_collision_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.chainHashHorner_collision_bound_blocks (p : ℕ) (m m' : ProvenHashes.ChainHash.Message)
+  (hm : List.length m < 2 ^ 128) (hm' : List.length m' < 2 ^ 128) (hne : m ≠ m')
+  (hp : ProvenHashes.ChainHash.V3_128.blocks (List.length m) ≤ p)
+  (hp' : ProvenHashes.ChainHash.V3_128.blocks (List.length m') ≤ p) :
+  (ProvenHashes.uniformProb fun k => ProvenHashes.ChainHash.V3_128.hash k m = ProvenHashes.ChainHash.V3_128.hash k m') ≤
+    min 1 (↑(p + 1) / 2 ^ 128)
+'ProvenHashes.ChainHash.V3_128.chainHashHorner_collision_bound_blocks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.partnerExponent_injective :
+  Function.Injective fun j => ProvenHashes.ChainHash.V3_128.exponent (ProvenHashes.ChainHash.V3_128.partner j)
+'ProvenHashes.ChainHash.V3_128.partnerExponent_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.wordIndex_decode (i : ℕ) :
+  ProvenHashes.ChainHash.V3_128.wordIndex (ProvenHashes.ChainHash.V3_128.blockOf i)
+      (ProvenHashes.ChainHash.V3_128.slotOf i) =
+    i
+'ProvenHashes.ChainHash.V3_128.wordIndex_decode' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.blockOf_lt (i n : ℕ) (hi : 16 * i < n) :
+  ProvenHashes.ChainHash.V3_128.blockOf i < ProvenHashes.ChainHash.V3_128.blocks n
+'ProvenHashes.ChainHash.V3_128.blockOf_lt' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.slotOf_active (m : ProvenHashes.ChainHash.Message) (i : ℕ) (hi : 16 * i < List.length m) :
+  (ProvenHashes.ChainHash.V3_128.slotOf i).1 ∈
+    ProvenHashes.ChainHash.V3_128.active m (ProvenHashes.ChainHash.V3_128.blockOf i)
+'ProvenHashes.ChainHash.V3_128.slotOf_active' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.comb_encoding_injective (m m' : ProvenHashes.ChainHash.Message)
+  (hlen : List.length m = List.length m')
+  (h :
+    ∀ t < ProvenHashes.ChainHash.V3_128.blocks (List.length m),
+      ∀ (j : ProvenHashes.ChainHash.V3_128.Slot),
+        j.1 ∈ ProvenHashes.ChainHash.V3_128.active m t →
+          ProvenHashes.ChainHash.V3_128.data m t j = ProvenHashes.ChainHash.V3_128.data m' t j) :
+  m = m'
+'ProvenHashes.ChainHash.V3_128.comb_encoding_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.blocks_pos (n : ℕ) : 0 < ProvenHashes.ChainHash.V3_128.blocks n
+'ProvenHashes.ChainHash.V3_128.blocks_pos' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.blocks_mono {n m : ℕ} (h : n ≤ m) :
+  ProvenHashes.ChainHash.V3_128.blocks n ≤ ProvenHashes.ChainHash.V3_128.blocks m
+'ProvenHashes.ChainHash.V3_128.blocks_mono' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.blocks_examples :
+  List.map ProvenHashes.ChainHash.V3_128.blocks [0, 1, 17, 33, 113, 256, 2048, 2049, 4096, 4097] =
+    [1, 1, 2, 3, 8, 8, 8, 8, 8, 9]
+'ProvenHashes.ChainHash.V3_128.blocks_examples' does not depend on any axioms
+ProvenHashes.ChainHash.V3_128.square_injective.{u_1} {K : Type u_1} [Field K] [CharP K 2] :
+  Function.Injective fun x => x ^ 2
+'ProvenHashes.ChainHash.V3_128.square_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.frobenius_root_count.{u_1} {K : Type u_1} [Field K] [Fintype K] [CharP K 2]
+  [DecidableEq K] (h : Polynomial K) (hne : h ≠ 0) :
+  {x | Polynomial.eval x (h.comp (Polynomial.X ^ 2)) = 0}.card ≤ h.natDegree
+'ProvenHashes.ChainHash.V3_128.frobenius_root_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.serialHorner_expansion.{u_1} {K : Type u_1} [CommSemiring K] (ell y : K) (cs : List K) :
+  ProvenHashes.ChainHash.V3_128.serialHorner ell y cs =
+    ell * y ^ cs.length + ∑ i ∈ Finset.range cs.length, cs[i]?.getD 0 * y ^ i
+'ProvenHashes.ChainHash.V3_128.serialHorner_expansion' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.hornerValue_eq_serial.{u_1} {K : Type u_1} [CommRing K] {p : ℕ} (ell y : K)
+  (c : Fin p → K) :
+  ProvenHashes.ChainHash.V3_128.hornerValue ell c y = ProvenHashes.ChainHash.V3_128.serialHorner ell y (List.ofFn c)
+'ProvenHashes.ChainHash.V3_128.hornerValue_eq_serial' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.scheduledHorner_eq_serial.{u_1} {K : Type u_1} [CommSemiring K] (k : ℕ) (hk : 0 < k) :
+  ProvenHashes.ChainHash.V3_128.scheduledHorner k = ProvenHashes.ChainHash.V3_128.serialHorner
+'ProvenHashes.ChainHash.V3_128.scheduledHorner_eq_serial' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.map_serialHorner.{u_1, u_2} {R : Type u_1} {K : Type u_2} [CommSemiring R]
+  [CommSemiring K] (reduce : R →+* K) (ell y : R) (cs : List R) :
+  reduce (ProvenHashes.ChainHash.V3_128.serialHorner ell y cs) =
+    ProvenHashes.ChainHash.V3_128.serialHorner (reduce ell) (reduce y) (List.map (⇑reduce) cs)
+'ProvenHashes.ChainHash.V3_128.map_serialHorner' depends on axioms: [propext]
+ProvenHashes.ChainHash.V3_128.evaluation_independence (k : ℕ) (hk : 0 < k)
+  (ell y : ProvenHashes.ChainHash.BitsPolynomial) :
+  (fun cs => (AdjoinRoot.mk ProvenHashes.ChainHash.modulus) (ProvenHashes.ChainHash.V3_128.serialHorner ell y cs)) =
+    fun cs =>
+    ProvenHashes.ChainHash.V3_128.scheduledHorner k ((AdjoinRoot.mk ProvenHashes.ChainHash.modulus) ell)
+      ((AdjoinRoot.mk ProvenHashes.ChainHash.modulus) y) (List.map (⇑(AdjoinRoot.mk ProvenHashes.ChainHash.modulus)) cs)
+'ProvenHashes.ChainHash.V3_128.evaluation_independence' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.hash_evaluation_independence (stride : ℕ) (hstride : 0 < stride) :
+  ProvenHashes.ChainHash.V3_128.scheduledHash stride = ProvenHashes.ChainHash.V3_128.hash
+'ProvenHashes.ChainHash.V3_128.hash_evaluation_independence' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.hornerPoly_top.{u_1} {K : Type u_1} [CommRing K] {p : ℕ} (ell : K) (c : Fin p → K) :
+  (ProvenHashes.ChainHash.V3_128.hornerPoly ell c).coeff p = ell
+'ProvenHashes.ChainHash.V3_128.hornerPoly_top' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.hornerPoly_degree.{u_1} {K : Type u_1} [CommRing K] {p : ℕ} (ell : K) (c : Fin p → K) :
+  (ProvenHashes.ChainHash.V3_128.hornerPoly ell c).natDegree ≤ p
+'ProvenHashes.ChainHash.V3_128.hornerPoly_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.hornerPoly_equal_length_difference.{u_1} {K : Type u_1} [Field K] {p : ℕ} (ell : K)
+  (c d : Fin p → K) (hne : c ≠ d) :
+  ProvenHashes.ChainHash.V3_128.hornerPoly ell c - ProvenHashes.ChainHash.V3_128.hornerPoly ell d ≠ 0 ∧
+    (ProvenHashes.ChainHash.V3_128.hornerPoly ell c - ProvenHashes.ChainHash.V3_128.hornerPoly ell d).natDegree ≤ p - 1
+'ProvenHashes.ChainHash.V3_128.hornerPoly_equal_length_difference' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.hornerPoly_distinct_length.{u_1} {K : Type u_1} [Field K] {p : ℕ} (ell ell' : K)
+  (c d : Fin p → K) (hne : ell ≠ ell') :
+  ProvenHashes.ChainHash.V3_128.hornerPoly ell c - ProvenHashes.ChainHash.V3_128.hornerPoly ell' d ≠ 0
+'ProvenHashes.ChainHash.V3_128.hornerPoly_distinct_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.hornerPoly_distinct_blocks.{u_1} {K : Type u_1} [Field K] {p q : ℕ} (ell ell' : K)
+  (c : Fin p → K) (d : Fin q → K) (hpq : q < p) (hne : ell ≠ 0) :
+  ProvenHashes.ChainHash.V3_128.hornerPoly ell c - ProvenHashes.ChainHash.V3_128.hornerPoly ell' d ≠ 0
+'ProvenHashes.ChainHash.V3_128.hornerPoly_distinct_blocks' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.hornerValue_expansion.{u_1} {K : Type u_1} [CommRing K] {p : ℕ} (ell : K) (c : Fin p → K)
+  (y : K) : ProvenHashes.ChainHash.V3_128.hornerValue ell c y = ell * y ^ p + ∑ i, c i * y ^ ↑i
+'ProvenHashes.ChainHash.V3_128.hornerValue_expansion' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.horner_equal_collision.{u_1} {K : Type u_1} [Field K] [Fintype K] {p : ℕ} (ell : K)
+  (c d : Fin p → K) (hne : c ≠ d) :
+  (ProvenHashes.uniformProb fun y =>
+      ProvenHashes.ChainHash.V3_128.hornerValue ell c y = ProvenHashes.ChainHash.V3_128.hornerValue ell d y) ≤
+    ↑(p - 1) / ↑(Fintype.card K)
+'ProvenHashes.ChainHash.V3_128.horner_equal_collision' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.horner_equal_from_stages.{u_1, u_2, u_3} {K : Type u_1} {A : Type u_2} {J : Type u_3}
+  [Field K] [Fintype K] [Fintype A] [Fintype J] [Nonempty A] [Nonempty J] (p D : ℕ) (hp : 0 < p) (ell : K)
+  (s s' : A → Fin p → K) (g : J → K → K) (hs : (ProvenHashes.uniformProb fun a => s a = s' a) ≤ ↑D / ↑(Fintype.card K))
+  (hg : ∀ (v w : K), v ≠ w → (ProvenHashes.uniformProb fun j => g j v = g j w) ≤ 1 / ↑(Fintype.card K)) :
+  (ProvenHashes.uniformProb fun k =>
+      g k.2 (ProvenHashes.ChainHash.V3_128.hornerValue ell (s k.1.1) k.1.2) =
+        g k.2 (ProvenHashes.ChainHash.V3_128.hornerValue ell (s' k.1.1) k.1.2)) ≤
+    ↑(D + p) / ↑(Fintype.card K)
+'ProvenHashes.ChainHash.V3_128.horner_equal_from_stages' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.unposition_position (j : ProvenHashes.ChainHash.V3_128.Slot) :
+  ProvenHashes.ChainHash.V3_128.unposition (ProvenHashes.ChainHash.V3_128.position j) = j
+'ProvenHashes.ChainHash.V3_128.unposition_position' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.position_unposition (i : Fin 32) :
+  ProvenHashes.ChainHash.V3_128.position (ProvenHashes.ChainHash.V3_128.unposition i) = i
+'ProvenHashes.ChainHash.V3_128.position_unposition' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.encode_decodeIdeal (k : ProvenHashes.ChainHash.V3_128.Key39) :
+  ProvenHashes.ChainHash.V3_128.encodeIdeal (ProvenHashes.ChainHash.V3_128.decodeIdeal k) = k
+'ProvenHashes.ChainHash.V3_128.encode_decodeIdeal' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.decode_encodeIdeal (k : ProvenHashes.ChainHash.V3_128.IdealKey) :
+  ProvenHashes.ChainHash.V3_128.decodeIdeal (ProvenHashes.ChainHash.V3_128.encodeIdeal k) = k
+'ProvenHashes.ChainHash.V3_128.decode_encodeIdeal' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.encode_decodeModelA (k : ProvenHashes.ChainHash.V3_128.Key8) :
+  ProvenHashes.ChainHash.V3_128.encodeModelA (ProvenHashes.ChainHash.V3_128.decodeModelA k) = k
+'ProvenHashes.ChainHash.V3_128.encode_decodeModelA' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.decode_encodeModelA (k : ProvenHashes.ChainHash.V3_128.ModelAKey) :
+  ProvenHashes.ChainHash.V3_128.decodeModelA (ProvenHashes.ChainHash.V3_128.encodeModelA k) = k
+'ProvenHashes.ChainHash.V3_128.decode_encodeModelA' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.expandedWords_power (k : ProvenHashes.ChainHash.V3_128.ModelAKey) (j : Fin 32) :
+  ProvenHashes.ChainHash.fieldRepr (ProvenHashes.ChainHash.V3_128.expandedWords k ⟨↑j, ⋯⟩) = k.1.1 ^ (↑j + 1)
+'ProvenHashes.ChainHash.V3_128.expandedWords_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.encode_decodeKeyBytes (n : ℕ) (b : Fin (16 * n) → ProvenHashes.ChainHash.Byte) :
+  ProvenHashes.ChainHash.V3_128.encodeKeyBytes n (ProvenHashes.ChainHash.V3_128.decodeKeyBytes n b) = b
+'ProvenHashes.ChainHash.V3_128.encode_decodeKeyBytes' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.decode_encodeKeyBytes (n : ℕ) (w : Fin n → ProvenHashes.ChainHash.Word 128) :
+  ProvenHashes.ChainHash.V3_128.decodeKeyBytes n (ProvenHashes.ChainHash.V3_128.encodeKeyBytes n w) = w
+'ProvenHashes.ChainHash.V3_128.decode_encodeKeyBytes' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.digestWord_injective : Function.Injective ProvenHashes.ChainHash.V3_128.digestWord
+'ProvenHashes.ChainHash.V3_128.digestWord_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.digestBytes_injective : Function.Injective ProvenHashes.ChainHash.V3_128.digestBytes
+'ProvenHashes.ChainHash.V3_128.digestBytes_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_collision_bound_bytes (L : ℕ) (hL : 8 * L < 2 ^ 128) (m m' : List UInt8)
+  (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.hashBytes k m = ProvenHashes.ChainHash.V3_128.hashBytes k m') ≤
+    ProvenHashes.ChainHash.V3_128.paperEpsilon L
+'ProvenHashes.ChainHash.V3_128.paper_collision_bound_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_collision_bound_key_bytes (L : ℕ) (hL : 8 * L < 2 ^ 128) (m m' : List UInt8)
+  (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.hashIdealKeyBytes k m = ProvenHashes.ChainHash.V3_128.hashIdealKeyBytes k m') ≤
+    ProvenHashes.ChainHash.V3_128.paperEpsilon L
+'ProvenHashes.ChainHash.V3_128.paper_collision_bound_key_bytes' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_collision_bound_output (L : ℕ) (hL : 8 * L < 2 ^ 128) (m m' : List UInt8)
+  (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.hashOutput k m = ProvenHashes.ChainHash.V3_128.hashOutput k m') ≤
+    ProvenHashes.ChainHash.V3_128.paperEpsilon L
+'ProvenHashes.ChainHash.V3_128.paper_collision_bound_output' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_collision_bound_bytes (L : ℕ) (hL : 0 < L) (hcap : 8 * L < 2 ^ 128)
+  (m m' : List UInt8) (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.modelAHashBytes k m = ProvenHashes.ChainHash.V3_128.modelAHashBytes k m') ≤
+    ProvenHashes.ChainHash.V3_128.modelAEpsilon L
+'ProvenHashes.ChainHash.V3_128.modelA_collision_bound_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_coarse_bound_bytes (L : ℕ) (hL : 0 < L) (hcap : 8 * L < 2 ^ 128)
+  (m m' : List UInt8) (hm : m.length ≤ 8 * L) (hm' : m'.length ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.modelAHashBytes k m = ProvenHashes.ChainHash.V3_128.modelAHashBytes k m') ≤
+    ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon L
+'ProvenHashes.ChainHash.V3_128.modelA_coarse_bound_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_collision_bound_bytes_blocks (p : ℕ) (m m' : List UInt8) (hm : m.length < 2 ^ 128)
+  (hm' : m'.length < 2 ^ 128) (hne : m ≠ m') (hp : ProvenHashes.ChainHash.V3_128.blocks m.length ≤ p)
+  (hp' : ProvenHashes.ChainHash.V3_128.blocks m'.length ≤ p) :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.hashBytes k m = ProvenHashes.ChainHash.V3_128.hashBytes k m') ≤
+    min 1 (↑(p + 1) / 2 ^ 128)
+'ProvenHashes.ChainHash.V3_128.paper_collision_bound_bytes_blocks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_coarse_bound_bytes_blocks (p : ℕ) (m m' : List UInt8) (hm : m.length < 2 ^ 128)
+  (hm' : m'.length < 2 ^ 128) (hne : m ≠ m') (hp : ProvenHashes.ChainHash.V3_128.blocks m.length ≤ p)
+  (hp' : ProvenHashes.ChainHash.V3_128.blocks m'.length ≤ p) :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.modelAHashBytes k m = ProvenHashes.ChainHash.V3_128.modelAHashBytes k m') ≤
+    min 1 (↑(p + 32) / 2 ^ 128)
+'ProvenHashes.ChainHash.V3_128.modelA_coarse_bound_bytes_blocks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.rawPolynomial_degree (u : ProvenHashes.ChainHash.V3_128.RawState) :
+  Polynomial.natDegree (ProvenHashes.ChainHash.V3_128.rawPolynomial u) < 256
+'ProvenHashes.ChainHash.V3_128.rawPolynomial_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.rawPolynomial_split (p : ProvenHashes.ChainHash.BitsPolynomial)
+  (hp : Polynomial.natDegree p < 256) :
+  ProvenHashes.ChainHash.V3_128.rawPolynomial (ProvenHashes.ChainHash.V3_128.splitRaw p) = p
+'ProvenHashes.ChainHash.V3_128.rawPolynomial_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.alpha_eq_tail :
+  ProvenHashes.ChainHash.V3_128.alpha =
+    (AdjoinRoot.mk ProvenHashes.ChainHash.modulus) (Polynomial.X ^ 7 + Polynomial.X ^ 2 + Polynomial.X + 1)
+'ProvenHashes.ChainHash.V3_128.alpha_eq_tail' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.testBit_135 (i : ℕ) (hi : 8 ≤ i) : Nat.testBit 135 i = false
+'ProvenHashes.ChainHash.V3_128.testBit_135' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.tail_word_135 :
+  (ProvenHashes.ChainHash.pack 128) (ProvenHashes.ChainHash.lengthWord 135) =
+    Polynomial.X ^ 7 + Polynomial.X ^ 2 + Polynomial.X + 1
+'ProvenHashes.ChainHash.V3_128.tail_word_135' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.alpha_eq_135 :
+  ProvenHashes.ChainHash.V3_128.alpha = ProvenHashes.ChainHash.fieldRepr (ProvenHashes.ChainHash.lengthWord 135)
+'ProvenHashes.ChainHash.V3_128.alpha_eq_135' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lazyRawStep_degree (y : ProvenHashes.ChainHash.Word 128)
+  (u c : ProvenHashes.ChainHash.V3_128.RawState) :
+  Polynomial.natDegree (ProvenHashes.ChainHash.V3_128.lazyRawStep y u c) < 256
+'ProvenHashes.ChainHash.V3_128.lazyRawStep_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lazyStep_reduce (y : ProvenHashes.ChainHash.Word 128)
+  (u c : ProvenHashes.ChainHash.V3_128.RawState) :
+  ProvenHashes.ChainHash.V3_128.rawReduce (ProvenHashes.ChainHash.V3_128.lazyStep y u c) =
+    ProvenHashes.ChainHash.fieldRepr y * ProvenHashes.ChainHash.V3_128.rawReduce u +
+      ProvenHashes.ChainHash.V3_128.rawReduce c
+'ProvenHashes.ChainHash.V3_128.lazyStep_reduce' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lazyHorner_eq_serial (ell : ProvenHashes.ChainHash.V3_128.RawState)
+  (y : ProvenHashes.ChainHash.Word 128) :
+  (fun cs => ProvenHashes.ChainHash.V3_128.rawReduce (ProvenHashes.ChainHash.V3_128.lazyHorner ell y cs)) = fun cs =>
+    ProvenHashes.ChainHash.V3_128.serialHorner (ProvenHashes.ChainHash.V3_128.rawReduce ell)
+      (ProvenHashes.ChainHash.fieldRepr y) (List.map ProvenHashes.ChainHash.V3_128.rawReduce cs)
+'ProvenHashes.ChainHash.V3_128.lazyHorner_eq_serial' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lazyHorner_eq_schedule (k : ℕ) (hk : 0 < k) (ell : ProvenHashes.ChainHash.V3_128.RawState)
+  (y : ProvenHashes.ChainHash.Word 128) :
+  (fun cs => ProvenHashes.ChainHash.V3_128.rawReduce (ProvenHashes.ChainHash.V3_128.lazyHorner ell y cs)) = fun cs =>
+    ProvenHashes.ChainHash.V3_128.scheduledHorner k (ProvenHashes.ChainHash.V3_128.rawReduce ell)
+      (ProvenHashes.ChainHash.fieldRepr y) (List.map ProvenHashes.ChainHash.V3_128.rawReduce cs)
+'ProvenHashes.ChainHash.V3_128.lazyHorner_eq_schedule' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.reduce_clnh (a : Finset (Fin 16))
+  (m k : ProvenHashes.ChainHash.V3_128.Slot → ProvenHashes.ChainHash.Word 128) :
+  (AdjoinRoot.mk ProvenHashes.ChainHash.modulus) (ProvenHashes.ChainHash.clnh a m k) =
+    ProvenHashes.ChainHash.V3_128.reducedPH a (fun j => ProvenHashes.ChainHash.fieldRepr (m j)) fun j =>
+      ProvenHashes.ChainHash.fieldRepr (k j)
+'ProvenHashes.ChainHash.V3_128.reduce_clnh' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.rawBlock_matches (m : ProvenHashes.ChainHash.Message)
+  (k : ProvenHashes.ChainHash.V3_128.Slot → ProvenHashes.ChainHash.V3_128.F) (t : ℕ) :
+  ProvenHashes.ChainHash.V3_128.rawReduce (ProvenHashes.ChainHash.V3_128.rawBlock m k t) =
+    ProvenHashes.ChainHash.V3_128.reducedPH (ProvenHashes.ChainHash.V3_128.active m t)
+      (ProvenHashes.ChainHash.V3_128.data m t) k
+'ProvenHashes.ChainHash.V3_128.rawBlock_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.rawCoefficients_matches (m : ProvenHashes.ChainHash.Message)
+  (k : ProvenHashes.ChainHash.V3_128.Slot → ProvenHashes.ChainHash.V3_128.F) :
+  List.map ProvenHashes.ChainHash.V3_128.rawReduce (ProvenHashes.ChainHash.V3_128.rawCoefficients m k) =
+    List.ofFn (ProvenHashes.ChainHash.V3_128.coefficients m k)
+'ProvenHashes.ChainHash.V3_128.rawCoefficients_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.rawLength_matches (n : ℕ) :
+  ProvenHashes.ChainHash.V3_128.rawReduce (ProvenHashes.ChainHash.lengthWord n, 0) =
+    ProvenHashes.ChainHash.V3_128.lengthField n
+'ProvenHashes.ChainHash.V3_128.rawLength_matches' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lazyHash_eq_hash :
+  ProvenHashes.ChainHash.V3_128.lazyHash = ProvenHashes.ChainHash.V3_128.hash
+'ProvenHashes.ChainHash.V3_128.lazyHash_eq_hash' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.complete_evaluation_independence (k : ℕ) (hk : 0 < k) :
+  ProvenHashes.ChainHash.V3_128.scheduledHash k = ProvenHashes.ChainHash.V3_128.hash ∧
+    ProvenHashes.ChainHash.V3_128.lazyHash = ProvenHashes.ChainHash.V3_128.hash
+'ProvenHashes.ChainHash.V3_128.complete_evaluation_independence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.idealKey_card : Fintype.card ProvenHashes.ChainHash.V3_128.IdealKey = (2 ^ 128) ^ 39
+'ProvenHashes.ChainHash.V3_128.idealKey_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelAKey_card : Fintype.card ProvenHashes.ChainHash.V3_128.ModelAKey = (2 ^ 128) ^ 8
+'ProvenHashes.ChainHash.V3_128.modelAKey_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.lengthField_injective {n m : ℕ} (hn : n < 2 ^ 128) (hm : m < 2 ^ 128)
+  (h : ProvenHashes.ChainHash.V3_128.lengthField n = ProvenHashes.ChainHash.V3_128.lengthField m) : n = m
+'ProvenHashes.ChainHash.V3_128.lengthField_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.blocks_le_words (L : ℕ) (hL : 0 < L) : ProvenHashes.ChainHash.V3_128.blocks (8 * L) ≤ L
+'ProvenHashes.ChainHash.V3_128.blocks_le_words' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.degreeBudget_pos (L : ℕ) : 1 ≤ ProvenHashes.ChainHash.V3_128.degreeBudget L
+'ProvenHashes.ChainHash.V3_128.degreeBudget_pos' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.degreeBudget_le (L : ℕ) : ProvenHashes.ChainHash.V3_128.degreeBudget L ≤ 32
+'ProvenHashes.ChainHash.V3_128.degreeBudget_le' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_envelope_arithmetic (L : ℕ) (hL : 0 < L) :
+  ProvenHashes.ChainHash.V3_128.paperNumerator L ≤ 2 * L
+'ProvenHashes.ChainHash.V3_128.paper_envelope_arithmetic' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_envelope_arithmetic (L : ℕ) (hL : 0 < L) :
+  ProvenHashes.ChainHash.V3_128.modelANumerator L ≤ 2 * L
+'ProvenHashes.ChainHash.V3_128.modelA_envelope_arithmetic' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.coarse_envelope_arithmetic (L : ℕ) (hL : 0 < L) :
+  ProvenHashes.ChainHash.V3_128.coarseNumerator L ≤ 33 * L
+'ProvenHashes.ChainHash.V3_128.coarse_envelope_arithmetic' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_le_coarse (L : ℕ) :
+  ProvenHashes.ChainHash.V3_128.modelAEpsilon L ≤ ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon L
+'ProvenHashes.ChainHash.V3_128.modelA_le_coarse' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_score_ratio (L : ℕ) (hL : 0 < L) :
+  ProvenHashes.ChainHash.V3_128.paperEpsilon L ≤ ↑L / 2 ^ 127
+'ProvenHashes.ChainHash.V3_128.paper_score_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_score_ratio (L : ℕ) (hL : 0 < L) :
+  ProvenHashes.ChainHash.V3_128.modelAEpsilon L ≤ ↑L / 2 ^ 127
+'ProvenHashes.ChainHash.V3_128.modelA_score_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.coarse_score_ratio (L : ℕ) (hL : 0 < L) :
+  ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon L ≤ 33 * ↑L / 2 ^ 128
+'ProvenHashes.ChainHash.V3_128.coarse_score_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.numerators_at_one :
+  ProvenHashes.ChainHash.V3_128.paperNumerator 1 = 2 ∧
+    ProvenHashes.ChainHash.V3_128.modelANumerator 1 = 2 ∧ ProvenHashes.ChainHash.V3_128.coarseNumerator 1 = 33
+'ProvenHashes.ChainHash.V3_128.numerators_at_one' does not depend on any axioms
+ProvenHashes.ChainHash.V3_128.score_attained :
+  ProvenHashes.ChainHash.V3_128.paperEpsilon 1 = 1 / 2 ^ 127 ∧
+    ProvenHashes.ChainHash.V3_128.modelAEpsilon 1 = 1 / 2 ^ 127 ∧
+      ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon 1 = 33 / 2 ^ 128
+'ProvenHashes.ChainHash.V3_128.score_attained' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paperEpsilon_pos (L : ℕ) : 0 < ProvenHashes.ChainHash.V3_128.paperEpsilon L
+'ProvenHashes.ChainHash.V3_128.paperEpsilon_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelAEpsilon_pos (L : ℕ) : 0 < ProvenHashes.ChainHash.V3_128.modelAEpsilon L
+'ProvenHashes.ChainHash.V3_128.modelAEpsilon_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.coarseEpsilon_pos (L : ℕ) : 0 < ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon L
+'ProvenHashes.ChainHash.V3_128.coarseEpsilon_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.eval_phPoly.{u_1} {F : Type u_1} [CommRing F] (a : Finset (Fin 16))
+  (m : ProvenHashes.ChainHash.V3_128.Slot → F) (s : F) :
+  Polynomial.eval s (ProvenHashes.ChainHash.V3_128.phPoly a m) = ProvenHashes.ChainHash.V3_128.ph a m s
+'ProvenHashes.ChainHash.V3_128.eval_phPoly' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.phPoly_difference.{u_1} {F : Type u_1} [CommRing F] (a : Finset (Fin 16))
+  (m m' : ProvenHashes.ChainHash.V3_128.Slot → F) (t : F) :
+  ProvenHashes.ChainHash.V3_128.phPoly a m - ProvenHashes.ChainHash.V3_128.phPoly a m' - Polynomial.C t =
+    ProvenHashes.ChainHash.V3_128.differencePoly a m m' t
+'ProvenHashes.ChainHash.V3_128.phPoly_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.differencePoly_coeff.{u_1} {F : Type u_1} [CommRing F] (a : Finset (Fin 16))
+  (m m' : ProvenHashes.ChainHash.V3_128.Slot → F) (t : F) (j : ProvenHashes.ChainHash.V3_128.Slot) (hj : j.1 ∈ a) :
+  (ProvenHashes.ChainHash.V3_128.differencePoly a m m' t).coeff
+      (ProvenHashes.ChainHash.V3_128.exponent (ProvenHashes.ChainHash.V3_128.partner j)) =
+    m j - m' j
+'ProvenHashes.ChainHash.V3_128.differencePoly_coeff' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.differencePoly_nonzero_degree.{u_1} {F : Type u_1} [Field F] (a : Finset (Fin 16))
+  (m m' : ProvenHashes.ChainHash.V3_128.Slot → F) (t : F) (D : ℕ) (hne : ∃ j, j.1 ∈ a ∧ m j ≠ m' j)
+  (hD :
+    ∀ (j : ProvenHashes.ChainHash.V3_128.Slot),
+      j.1 ∈ a → m j ≠ m' j → ProvenHashes.ChainHash.V3_128.exponent (ProvenHashes.ChainHash.V3_128.partner j) ≤ D) :
+  ProvenHashes.ChainHash.V3_128.differencePoly a m m' t ≠ 0 ∧
+    (ProvenHashes.ChainHash.V3_128.differencePoly a m m' t).natDegree ≤ D
+'ProvenHashes.ChainHash.V3_128.differencePoly_nonzero_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.polynomial_probability_le.{u_1} {F : Type u_1} [Field F] [Fintype F] (p : Polynomial F)
+  (hp : p ≠ 0) (D : ℕ) (hd : p.natDegree ≤ D) :
+  (ProvenHashes.uniformProb fun s => Polynomial.eval s p = 0) ≤ ↑D / ↑(Fintype.card F)
+'ProvenHashes.ChainHash.V3_128.polynomial_probability_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.ph_equal_groups_bound.{u_1} {F : Type u_1} [Field F] [Fintype F] (a : Finset (Fin 16))
+  (m m' : ProvenHashes.ChainHash.V3_128.Slot → F) (t : F) (D : ℕ) (hne : ∃ j, j.1 ∈ a ∧ m j ≠ m' j)
+  (hD :
+    ∀ (j : ProvenHashes.ChainHash.V3_128.Slot),
+      j.1 ∈ a → m j ≠ m' j → ProvenHashes.ChainHash.V3_128.exponent (ProvenHashes.ChainHash.V3_128.partner j) ≤ D) :
+  (ProvenHashes.uniformProb fun s =>
+      ProvenHashes.ChainHash.V3_128.ph a m s - ProvenHashes.ChainHash.V3_128.ph a m' s = t) ≤
+    ↑D / ↑(Fintype.card F)
+'ProvenHashes.ChainHash.V3_128.ph_equal_groups_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.reducedPH_difference.{u_1} {K : Type u_1} [Field K] (a : Finset (Fin 16))
+  (m m' k : ProvenHashes.ChainHash.V3_128.Slot → K) :
+  ProvenHashes.ChainHash.V3_128.reducedPH a m k - ProvenHashes.ChainHash.V3_128.reducedPH a m' k =
+    ProvenHashes.ChainHash.V3_128.constantDiff a m m' 0 +
+      ∑ j, ProvenHashes.ChainHash.V3_128.reducedCoefficient a m m' j * k j
+'ProvenHashes.ChainHash.V3_128.reducedPH_difference' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.reducedPH_difference_uniform.{u_1} {K : Type u_1} [Field K] [Fintype K]
+  (a : Finset (Fin 16)) (m m' : ProvenHashes.ChainHash.V3_128.Slot → K) (hne : ∃ j, j.1 ∈ a ∧ m j ≠ m' j) (z : K) :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.reducedPH a m k - ProvenHashes.ChainHash.V3_128.reducedPH a m' k = z) =
+    1 / ↑(Fintype.card K)
+'ProvenHashes.ChainHash.V3_128.reducedPH_difference_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.score_lower_bound (epsilon : ℕ → ℚ≥0) (L : ℕ) (hpos : 0 < epsilon L)
+  (hbound : epsilon L ≤ ↑L / 2 ^ 127) : 127 ≤ ProvenHashes.ChainHash.V3_128.score epsilon L
+'ProvenHashes.ChainHash.V3_128.score_lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.score_lower_bound_coarse (epsilon : ℕ → ℚ≥0) (L : ℕ) (hpos : 0 < epsilon L)
+  (hbound : epsilon L ≤ 33 * ↑L / 2 ^ 128) : 128 - Real.logb 2 33 ≤ ProvenHashes.ChainHash.V3_128.score epsilon L
+'ProvenHashes.ChainHash.V3_128.score_lower_bound_coarse' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_score (L : ℕ) (hL : 0 < L) :
+  127 ≤ ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.paperEpsilon L
+'ProvenHashes.ChainHash.V3_128.paper_score' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_score (L : ℕ) (hL : 0 < L) :
+  127 ≤ ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.modelAEpsilon L
+'ProvenHashes.ChainHash.V3_128.modelA_score' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.coarse_score (L : ℕ) (hL : 0 < L) :
+  128 - Real.logb 2 33 ≤ ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon L
+'ProvenHashes.ChainHash.V3_128.coarse_score' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.scores_at_one :
+  ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.paperEpsilon 1 = 127 ∧
+    ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.modelAEpsilon 1 = 127
+'ProvenHashes.ChainHash.V3_128.scores_at_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.coarse_score_at_one :
+  ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon 1 = 128 - Real.logb 2 33
+'ProvenHashes.ChainHash.V3_128.coarse_score_at_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.paper_score_minimum :
+  IsLeast (Set.range fun L => ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.paperEpsilon ↑L) 127
+'ProvenHashes.ChainHash.V3_128.paper_score_minimum' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_score_minimum :
+  IsLeast (Set.range fun L => ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.modelAEpsilon ↑L) 127
+'ProvenHashes.ChainHash.V3_128.modelA_score_minimum' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_coarse_score_minimum :
+  IsLeast (Set.range fun L => ProvenHashes.ChainHash.V3_128.score ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon ↑L)
+    (128 - Real.logb 2 33)
+'ProvenHashes.ChainHash.V3_128.modelA_coarse_score_minimum' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.envelope_table :
+  List.map ProvenHashes.ChainHash.V3_128.modelANumerator
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] =
+    [2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 10]
+'ProvenHashes.ChainHash.V3_128.envelope_table' does not depend on any axioms
+ProvenHashes.ChainHash.V3_128.envelope_large_examples :
+  List.map
+      (fun L =>
+        (ProvenHashes.ChainHash.V3_128.paperNumerator L, ProvenHashes.ChainHash.V3_128.coarseNumerator L,
+          ProvenHashes.ChainHash.V3_128.modelANumerator L))
+      [128, 131072] =
+    [(9, 40, 16), (2049, 2080, 2080)]
+'ProvenHashes.ChainHash.V3_128.envelope_large_examples' does not depend on any axioms
+ProvenHashes.ChainHash.V3_128.halfPoly_comp.{u_1} {K : Type u_1} [CommRing K] (a : Finset (Fin 16))
+  (m m' : ProvenHashes.ChainHash.V3_128.Slot → K) (hpad : ∀ (i : Fin 16), m (i, true) = 0 ∧ m' (i, true) = 0) :
+  (ProvenHashes.ChainHash.V3_128.halfPoly a m m').comp (Polynomial.X ^ 2) =
+    ProvenHashes.ChainHash.V3_128.differencePoly a m m' 0
+'ProvenHashes.ChainHash.V3_128.halfPoly_comp' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.ph_frobenius_bound.{u_1} {K : Type u_1} [Field K] [Fintype K] [CharP K 2]
+  (a : Finset (Fin 16)) (m m' : ProvenHashes.ChainHash.V3_128.Slot → K) (D : ℕ)
+  (hpad : ∀ (i : Fin 16), m (i, true) = 0 ∧ m' (i, true) = 0) (hne : ∃ j, j.1 ∈ a ∧ m j ≠ m' j)
+  (hD : ∀ i ∈ a, m (i, false) ≠ m' (i, false) → ↑i + 1 ≤ D) :
+  (ProvenHashes.uniformProb fun s => ProvenHashes.ChainHash.V3_128.ph a m s = ProvenHashes.ChainHash.V3_128.ph a m' s) ≤
+    ↑D / ↑(Fintype.card K)
+'ProvenHashes.ChainHash.V3_128.ph_frobenius_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.partner_exponent_budget (L t : ℕ) (hL : 17 ≤ L) (j : ProvenHashes.ChainHash.V3_128.Slot)
+  (hj : 2 * ProvenHashes.ChainHash.V3_128.wordIndex t j < L) :
+  ProvenHashes.ChainHash.V3_128.exponent (ProvenHashes.ChainHash.V3_128.partner j) ≤
+    ProvenHashes.ChainHash.V3_128.degreeBudget L
+'ProvenHashes.ChainHash.V3_128.partner_exponent_budget' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.field_char_two : CharP ProvenHashes.ChainHash.V3_128.F 2
+'ProvenHashes.ChainHash.V3_128.field_char_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.seeded_coefficients_collision (L : ℕ) (hL : 0 < L) (m m' : ProvenHashes.ChainHash.Message)
+  (hm : List.length m ≤ 8 * L) (hlen : List.length m = List.length m') (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun s =>
+      ProvenHashes.ChainHash.V3_128.coefficientsAt m (ProvenHashes.ChainHash.V3_128.blocks (List.length m))
+          (ProvenHashes.ChainHash.V3_128.powerKey s) =
+        ProvenHashes.ChainHash.V3_128.coefficientsAt m' (ProvenHashes.ChainHash.V3_128.blocks (List.length m))
+          (ProvenHashes.ChainHash.V3_128.powerKey s)) ≤
+    ↑(ProvenHashes.ChainHash.V3_128.degreeBudget L) / ↑(Fintype.card ProvenHashes.ChainHash.V3_128.F)
+'ProvenHashes.ChainHash.V3_128.seeded_coefficients_collision' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.modelA_collision_equal_length (L : ℕ) (hL : 0 < L) (m m' : ProvenHashes.ChainHash.Message)
+  (hm : List.length m ≤ 8 * L) (hlen : List.length m = List.length m') (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.modelAHash k m = ProvenHashes.ChainHash.V3_128.modelAHash k m') ≤
+    ProvenHashes.ChainHash.V3_128.modelAEpsilon L
+'ProvenHashes.ChainHash.V3_128.modelA_collision_equal_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.V3_128.chainHashHorner_modelA_collision_bound (L : ℕ) (hL : 0 < L) (hcap : 8 * L < 2 ^ 128)
+  (m m' : ProvenHashes.ChainHash.Message) (hm : List.length m ≤ 8 * L) (hm' : List.length m' ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.modelAHash k m = ProvenHashes.ChainHash.V3_128.modelAHash k m') ≤
+    ProvenHashes.ChainHash.V3_128.modelAEpsilon L
+'ProvenHashes.ChainHash.V3_128.chainHashHorner_modelA_collision_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.chainHashHorner_modelA_coarse_bound (L : ℕ) (hL : 0 < L) (hcap : 8 * L < 2 ^ 128)
+  (m m' : ProvenHashes.ChainHash.Message) (hm : List.length m ≤ 8 * L) (hm' : List.length m' ≤ 8 * L) (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.modelAHash k m = ProvenHashes.ChainHash.V3_128.modelAHash k m') ≤
+    ProvenHashes.ChainHash.V3_128.modelACoarseEpsilon L
+'ProvenHashes.ChainHash.V3_128.chainHashHorner_modelA_coarse_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.partner_exponent_le (j : ProvenHashes.ChainHash.V3_128.Slot) :
+  ProvenHashes.ChainHash.V3_128.exponent (ProvenHashes.ChainHash.V3_128.partner j) ≤ 32
+'ProvenHashes.ChainHash.V3_128.partner_exponent_le' depends on axioms: [propext, Quot.sound]
+ProvenHashes.ChainHash.V3_128.seeded_coefficients_collision_coarse (m m' : ProvenHashes.ChainHash.Message)
+  (hlen : List.length m = List.length m') (hne : m ≠ m') :
+  (ProvenHashes.uniformProb fun s =>
+      ProvenHashes.ChainHash.V3_128.coefficientsAt m (ProvenHashes.ChainHash.V3_128.blocks (List.length m))
+          (ProvenHashes.ChainHash.V3_128.powerKey s) =
+        ProvenHashes.ChainHash.V3_128.coefficientsAt m' (ProvenHashes.ChainHash.V3_128.blocks (List.length m))
+          (ProvenHashes.ChainHash.V3_128.powerKey s)) ≤
+    ↑32 / ↑(Fintype.card ProvenHashes.ChainHash.V3_128.F)
+'ProvenHashes.ChainHash.V3_128.seeded_coefficients_collision_coarse' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.V3_128.chainHashHorner_modelA_coarse_bound_blocks (p : ℕ) (m m' : ProvenHashes.ChainHash.Message)
+  (hm : List.length m < 2 ^ 128) (hm' : List.length m' < 2 ^ 128) (hne : m ≠ m')
+  (hp : ProvenHashes.ChainHash.V3_128.blocks (List.length m) ≤ p)
+  (hp' : ProvenHashes.ChainHash.V3_128.blocks (List.length m') ≤ p) :
+  (ProvenHashes.uniformProb fun k =>
+      ProvenHashes.ChainHash.V3_128.modelAHash k m = ProvenHashes.ChainHash.V3_128.modelAHash k m') ≤
+    min 1 (↑(p + 32) / 2 ^ 128)
+'ProvenHashes.ChainHash.V3_128.chainHashHorner_modelA_coarse_bound_blocks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

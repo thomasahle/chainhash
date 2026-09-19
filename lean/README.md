@@ -8,6 +8,18 @@ independence for every positive stride, and exact score minima of 63 are
 Lean-proved. See [the v3 statements](../docs/THEOREM_v3.md) and the
 [integration and reproduction record](V3_INTEGRATION.md).
 
+**ChainHash-128 v3** is proved in namespace `ProvenHashes.ChainHash.V3_128`
+(116 theorems) over the GCM field `GF(2)[X]/(X^128+X^7+X^2+X+1)`: the
+39-word paper bound, the exactly 128-byte model-A bound (refined and coarse
+envelopes), evaluation independence including the lazy 256-bit state, and
+the exact score minima 127, 127 and `128 - log2 33`. Its 128-bit base,
+namespace `ProvenHashes.ChainHash128` under
+[`ProvenHashes/ChainHash128/`](ProvenHashes/ChainHash128), carries the
+modulus irreducibility certificate, the 16-byte encoding, model A and the
+earlier strided ChainHash-128 theorems (`ProvenHashes.ChainHash128.Strided`).
+See [the 128-bit statements](../docs/THEOREM_v3_128.md) and the
+[128-bit integration record](V3_128_INTEGRATION.md).
+
 The following v1 results concern `include/chainhash.h`:
 
 This Lake project ships the shared ProvenHashes work and the complete
@@ -51,12 +63,12 @@ C/C++ tests, and final `verify.sh` audit. Incremental work uses CPUs 0–7 and
 eight Lean threads; only the final audit uses CPUs 0–31 and 32 threads.
 
 `verify.sh` runs cache retrieval, build, and the explicit axiom audit with
-`nice -n 10 taskset -c 0-31`; it records all output and the source grep
-results and the 464 v3 C/Lean vector comparison in
+`nice -n 10 taskset -c 0-31`; it records all output, the source grep
+results and the 464 v3 and 625 ChainHash-128 v3 C/Lean vector comparisons in
 [VERIFICATION.txt](VERIFICATION.txt). The integration build reuses a copy
 of the earlier integration's Mathlib and project cache; changed modules
 and their dependents are rebuilt.
-The recorded build passes all 672 exported theorem/lemma audits.
+The recorded build passes all 1096 exported theorem/lemma audits.
 The alternate field certificate can take several minutes on a shared host.
 The scripts reject unapproved axioms. Standard Lean axioms `propext`,
 `Classical.choice`, and `Quot.sound` are allowed.
@@ -117,6 +129,61 @@ schedule; `lazyHash` uses a bounded 128-bit raw polynomial state. Their
 function equalities include zero multipliers and strides above the block
 count. The score is `log₂(L/epsilon(L))` for the certified envelope, with
 minimum 63 attained at `L=1`, not an assertion of an attained collision rate.
+
+### ChainHash-128 v3 principal endpoints
+
+All six signatures below are in `ProvenHashes.ChainHash.V3_128`.
+`Key39 = Fin 39 → Word 128`; `Byte = Fin 8 → ZMod 2`. `hashBytes` and
+`modelAHashBytes` accept `List UInt8` and return `BitVec 128`.
+`paperEpsilon L = min 1 ((blocks (8*L)+1)/2^128)`,
+`modelAEpsilon L = min 1 ((blocks (8*L)+degreeBudget L)/2^128)` and
+`modelACoarseEpsilon L = min 1 ((blocks (8*L)+32)/2^128)` in `ℚ≥0`, with
+SPEC's `blocks` (`p(ell) = 8Q + min 8 ⌈r/16⌉`) and `degreeBudget`
+(`1` for `L ≤ 16`, else `min 32 (2⌈L/32⌉)`).
+
+```lean
+theorem paper_collision_bound_bytes (L : ℕ) (hL : 8*L < 2^128)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Key39 => hashBytes k m = hashBytes k m') ≤ paperEpsilon L
+```
+
+```lean
+theorem modelA_collision_bound_bytes (L : ℕ) (hL : 0 < L) (hcap : 8*L < 2^128)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Fin 128 → Byte => modelAHashBytes k m = modelAHashBytes k m') ≤
+      modelAEpsilon L
+```
+
+```lean
+theorem complete_evaluation_independence (k : ℕ) (hk : 0 < k) :
+    scheduledHash k = hash ∧ lazyHash = hash
+```
+
+```lean
+theorem paper_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score paperEpsilon L.val)) 127
+```
+
+```lean
+theorem modelA_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score modelAEpsilon L.val)) 127
+```
+
+```lean
+theorem modelA_coarse_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score modelACoarseEpsilon L.val))
+      (128 - Real.logb 2 33)
+```
+
+SPEC's block forms `min 1 ((p+1)/2^128)` and `min 1 ((p+32)/2^128)` are
+`paper_collision_bound_bytes_blocks` and `modelA_coarse_bound_bytes_blocks`;
+`paper_collision_bound_key_bytes` covers the 624-byte `key_from_ideal_bytes`
+layout and `paper_collision_bound_output` the 16 serialized output bytes.
+The length domain `8*L < 2^128` is the field's length word; the C API's
+`2^64` limit is a sub-case. `lazyHash` uses the 256-bit raw state with
+`X^128 = 0x87` (`alpha_eq_135`). The base theorem behind the field is
+`ProvenHashes.ChainHash128.modulus_irreducible`, a Rabin certificate with
+128 squaring steps (`ChainHash128/ModulusSteps*.lean`) and a Bézout identity.
 
 ### Retained v1 principal endpoints
 
@@ -259,8 +326,8 @@ pre-finalizer values. It is not unconditional five-wise independence.
 ## Modules and resolution of proof lanes
 
 [PROVENANCE.json](PROVENANCE.json) records source and integrated SHA256
-hashes for all 79 modules and the V3 vector sources. Sources were copied
-from the specified Xeon lanes; all source lanes remain untouched.
+hashes for all 236 modules and the V3 and V3_128 vector sources. Sources were
+copied from the specified Xeon lanes; all source lanes remain untouched.
 
 - Shared `Probability`, `Polynomial`, `NH`, `Tabulation`, `Decoder`,
   `Recurrence`, and `Composition` are present once. `MultiplyShift` preserves
@@ -301,13 +368,33 @@ from the specified Xeon lanes; all source lanes remain untouched.
   `cubic_linear_probability` now uses the source lane's explicit
   `DecidableEq F` instance instead of the earlier local classical instance.
 
+- The 128-bit lanes (`lean-chainhash128`, `lean-chainhash-v3-128`) forked the
+  width-specific modules of the same base (`Word 128`, the GCM modulus and its
+  128-step certificate, 16-byte `wordAt`, 512-byte blocks, the `2^128` twist)
+  under the *same* names as the 64-bit modules. They are shipped as
+  `ProvenHashes/ChainHash128/*.lean` in namespace `ProvenHashes.ChainHash128`
+  (`…ChainHash128.ModelA` for the seeded modules), the strided ChainHash-128
+  model as `ProvenHashes.ChainHash128.Strided`; only the namespace lines and
+  the imports changed. Width-generic statements stay shared: `integerTwist`
+  is stated over any `ZMod N`, `Carryless` gains `clnh_natDegree_le_width`
+  (instantiated by `ChainHash128.clnh_natDegree_le`), and `BinaryRabin` gains
+  `binary_rabin128`. `Probability`, `NH`, `Recurrence`, `Composition`,
+  `Counting`, `Carryless`, `CarrylessVariable`, `Finalizer` and
+  `FinalizerIndependence` are present once and serve both widths.
+- The ten `ChainHash128V3*` modules come from proof commit
+  `3698caae7c03cc359056a9cea08e9b2d6483f6a7`; each opens
+  `ProvenHashes.ChainHash128` after its namespace line, and two references
+  name `ChainHash128.Strided` and `ChainHash128.clnh_natDegree_le`
+  explicitly. Their 116 theorems keep the source lane's names.
+
 Different concrete encodings are retained as different verified interfaces;
 identical shared statements are not duplicated merely to preserve lane names.
 
 ## Precise remaining statements and scope
 
 Nothing remains to prove for the displayed **v3 paper/model-A collision bounds,
-evaluation equalities and score minima**, or the **v1 41-word/model-A bounds**.
+evaluation equalities and score minima** (64-bit and 128-bit), or the
+**v1 41-word/model-A bounds**.
 The following stronger or differently distributed claims are not established
 by the Lean files shipped here:
 

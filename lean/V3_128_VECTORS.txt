@@ -1,0 +1,3 @@
+625 C/Lean vectors PASS (including 9 seed-123 self-test inputs; the 3 hard-coded header vectors match both); C backends x strides 1..8 x eager/lazy x schoolbook/Karatsuba, dispatched one-shot, and selftest PASS
+SHA256 output d9fc195c93bd358b4b26293d8a3fa2a2cec85f7cda185c9f68d068846ee029b6
+SHA256 header 6c31b6f3638d545f3d95c95bd4edd7483a8964a429957fb1ab3111d9b107a455

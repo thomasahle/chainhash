@@ -1,0 +1,1 @@
+selftest PASS; checked C backends: 0 1 2 3; strides 1..8; eager and lazy; schoolbook and Karatsuba; dispatched one-shot

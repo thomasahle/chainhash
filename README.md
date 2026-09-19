@@ -6,7 +6,9 @@ bounds for messages chosen independently of a random key.
 portable C, x86 XMM/YMM/ZMM and ARM NEON compute identical digests.
 It is a C99/C++11 header with no allocation or library dependency.
 **[ChainHash-128 v3](#chainhash-128-v3)** ([`include/chainhash128_v3.h`](include/chainhash128_v3.h))
-is the same design over `GF(2^128)` with a 128-bit result and a 128-byte key.
+is the same design over `GF(2^128)` with a 128-bit result and a 128-byte key;
+its paper, model-A and evaluation-independence theorems are Lean-proved too,
+with exact 127-bit score minima ([statements](docs/THEOREM_v3_128.md)).
 
 Use [`include/chainhash3.h`](include/chainhash3.h) for v3. Its default key
 constructor takes **64 random bytes** and prepares a 448-byte key object.
@@ -58,8 +60,8 @@ published collision bounds in eight-byte word units, not measured attack work.
 | v1: paper, strided 256 B | 15.40 | 22.8 | 80 A / 328 ideal | 62.415 / 61 | 62.415 / 62.415 | ✓ paper + model A |
 | v2: adjacent 1 KiB | 24.86 | 17.45 | 1096 ideal | Not established here | 62.415 / 62.415 | Not established here |
 | **v3: ChainHash-Horner** | **28.31** | **26.26** | **64 A / 312 ideal** | **63 / 63** | **63 / 63** | **✓ paper + model A + evaluation independence** |
-| 128-bit, strided 512 B (previous; archived control, not a public header) | 8.14 | 10.07 | 160 A / 656 ideal | 126.415 / 125 | 126.415 / 126.415 | ✓ ideal + model A, in the paper repository's proof lane, not shipped here |
-| **128-bit v3: ChainHash-128 v3** | **14.43** | **10.26** | **128 A / 624 ideal** | **127 / 127 refined; 122.96 coarse envelope** | **127 / 127** | **Port in progress** |
+| 128-bit, strided 512 B (previous; archived control, not a public header) | 8.14 | 10.07 | 160 A / 656 ideal | 126.415 / 125 | 126.415 / 126.415 | ✓ ideal + model A, shipped here as `ProvenHashes.ChainHash128.Strided`, the base of the v3 port |
+| **128-bit v3: ChainHash-128 v3** | **14.43** | **10.26** | **128 A / 624 ideal** | **127 / 127 refined; 122.96 coarse envelope** | **127 / 127** | **✓ paper + model A + evaluation independence** |
 
 These are retained measurements from different runs, not a fresh paired
 benchmark. v1 uses the [previous integration's results](docs/V1.md#measured-performance).
@@ -192,9 +194,13 @@ the collision probability is at most `(p+1)/2^128` in the paper model and,
 in model A, at most `(p+32)/2^128` for any pair and `E_A(L)/2^128` for
 messages of at most 8L bytes, where p is the larger block count
 (`p = 8` through 4 KiB, 2048 at 1 MiB). [THEOREM_v3_128.md](docs/THEOREM_v3_128.md)
-states the certificates, their 127-bit scores and the transfer argument from
-the Lean-proved 64-bit theorem; **the Lean port for the 128-bit function is
-in progress** and no 128-bit theorem is machine-checked in this repository.
+states the certificates and their scores. **Lean ✓: paper + model A +
+evaluation independence** for ChainHash-128 v3: 116 theorems in
+`ProvenHashes.ChainHash.V3_128` prove both byte collision envelopes over the
+GCM field (with its irreducibility certificate), the equality of serial
+Horner, every positive-stride schedule and the lazy 256-bit state, and the
+exact score minima 127 (paper), 127 (refined model A) and `128 - log2 33`
+(coarse envelope alone). See the [integration record](lean/V3_128_INTEGRATION.md).
 
 **Digests differ** from the earlier strided ChainHash-128 (SMHasher3
 verification `0x742DE5A5`); ChainHash-128 v3 verifies as `0x1FCA728C`.
@@ -259,9 +265,11 @@ The historical v1 200/200 SMHasher3 result is **not** a v3 full-suite result.
 The retained v3 evidence covers Xeon Sanity/Zeroes and M2 Sanity, with
 verification LE `66672BD6`, BE `FA8A8D3B` (the BE adapter swaps output
 serialization, not input-word interpretation). The
-[V3 Lean audit](lean/VERIFICATION.txt) checks 89 V3 theorems within 672 exported
-theorems/lemmas. A separate [464-vector C/Lean comparison](lean/V3_VECTORS.txt)
-checks implementation agreement; it is not a formal C refinement proof.
+[Lean audit](lean/VERIFICATION.txt) checks the 89 V3 and 116 V3_128
+theorems within 1096 exported theorems/lemmas. Separate
+[464-vector](lean/V3_VECTORS.txt) and [625-vector](lean/V3_128_VECTORS.txt)
+C/Lean comparisons check implementation agreement for the two v3 headers;
+they are not formal C refinement proofs.
 
 ## Design record, attribution and license
 

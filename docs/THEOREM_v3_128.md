@@ -1,17 +1,18 @@
 # ChainHash-128 v3 collision guarantees
 
-**Lean status: port in progress.** No 128-bit collision theorem is shipped
-in this repository yet. The statements below are written proofs obtained
-by transferring the Lean-proved 64-bit [ChainHash-Horner v3 theorem](THEOREM_v3.md)
-(`ProvenHashes.ChainHash.V3`, 89 theorems) to the field `GF(2^128)`; the
-transfer argument is spelled out in the [proof section](#written-proof-transfer-from-the-64-bit-theorem).
-Two neighbouring formalizations exist: the 64-bit v3 proofs in
-[lean/](../lean/README.md), and a complete Lean proof of the *earlier,
-strided* ChainHash-128 (379 theorems, ideal-key and model-A byte bounds, GCM
-modulus irreducibility by Rabin certificate) in the paper repository's proof
-lane, which is not part of this repository. Neither is a proof of the v3
-128-bit function. The [test suite](../test/v3-128/README.md) supplies
-executable identity checks; they are evidence, not a theorem.
+**Lean status: Lean-proved.** The paper and model-A byte collision bounds,
+evaluation independence and the exact score minima are checked in
+`ProvenHashes.ChainHash.V3_128`: 116 theorems across ten modules, using only
+`propext`, `Classical.choice` and `Quot.sound`, on the shipped 128-bit base
+`ProvenHashes.ChainHash128` (the GCM field with its Rabin irreducibility
+certificate, the 16-byte word encoding and the earlier strided ChainHash-128
+theorems, now `ProvenHashes.ChainHash128.Strided`). The [full audit](../lean/VERIFICATION.txt)
+covers the 64-bit and 128-bit proofs together; see the
+[integration record](../lean/V3_128_INTEGRATION.md) and the
+[exact signatures](#formalization-and-limits) below. The
+[test suite](../test/v3-128/README.md) and the
+[625-vector C/Lean comparison](../lean/V3_128_VECTORS.txt) supply executable
+identity checks of the header; they are evidence, not a theorem.
 
 ## Statement, domain and key models
 
@@ -83,18 +84,20 @@ for B = 512**. Do not silently score the coarse envelope as 127; the
 short-length refinement is needed for that score. [`bounds.py`](../test/v3-128/bounds.py)
 checks the integer inequalities behind both scores.
 
-## Written proof: transfer from the 64-bit theorem
+## Proof outline
 
 Every step of the [64-bit v3 proof](THEOREM_v3.md#written-proof) is
 field-generic: it uses only that F is a finite field of characteristic two
 and that the message-to-word encoding is injective. The 128-bit function
 replaces `GF(2^64)` with `F = GF(2)[X]/(X^128+X^7+X^2+X+1)`, which is a
-field because the GCM polynomial is irreducible (the strided-128 Lean lane
-checks this with a Rabin certificate, `ChainHash128.modulus_irreducible`;
-it is also the standard GHASH modulus). The remaining changes are the
-constants of the comb: 128-bit words, `W = 32` words per logical block, eight
-comb lanes with one word per lane half instead of four lanes with two, and
-partner offset eight words. The proof then reads as follows.
+field because the GCM polynomial is irreducible
+(`ProvenHashes.ChainHash128.modulus_irreducible`, a Rabin certificate with
+128 squaring steps and a Bézout identity; it is also the standard GHASH
+modulus). The remaining changes are the constants of the comb: 128-bit
+words, `W = 32` words per logical block, eight comb lanes with one word per
+lane half instead of four lanes with two, and partner offset eight words.
+The Lean development formalizes exactly this argument over F; the following
+is its outline.
 
 **1. Equal-length level-1 differences.** Choose a block containing a changed
 word. Equal byte lengths give the same presence mask, so every key-only
@@ -181,6 +184,85 @@ Divide each numerator by `2^128`. The 256-byte comparison family has
 1 MiB, and the same 127-bit refined scores. The larger default block halves
 the asymptotic Horner degree and doubles the worst seeded CLNH degree; it
 does not lower the refined chart score.
+
+## Formalization and limits
+
+The following are verbatim source signatures in namespace
+`ProvenHashes.ChainHash.V3_128`; definitions and all exported statements are
+in [the catalogue](../lean/THEOREM_STATEMENTS.md).
+
+```lean
+theorem paper_collision_bound_bytes (L : ℕ) (hL : 8*L < 2^128)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Key39 => hashBytes k m = hashBytes k m') ≤ paperEpsilon L
+```
+
+```lean
+theorem modelA_collision_bound_bytes (L : ℕ) (hL : 0 < L) (hcap : 8*L < 2^128)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Fin 128 → Byte => modelAHashBytes k m = modelAHashBytes k m') ≤
+      modelAEpsilon L
+```
+
+```lean
+theorem complete_evaluation_independence (k : ℕ) (hk : 0 < k) :
+    scheduledHash k = hash ∧ lazyHash = hash
+```
+
+```lean
+theorem paper_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score paperEpsilon L.val)) 127
+```
+
+```lean
+theorem modelA_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score modelAEpsilon L.val)) 127
+```
+
+```lean
+theorem modelA_coarse_score_minimum :
+    IsLeast (Set.range (fun L : {L : ℕ // 0 < L} => score modelACoarseEpsilon L.val))
+      (128 - Real.logb 2 33)
+```
+
+`Key39 = Fin 39 → Word 128` supplies 4992 independent uniform key bits.
+`Fin 128 → Byte` supplies exactly 1024 independent uniform key bits, with
+`Byte = Fin 8 → ZMod 2`; both byte-message hashes return `BitVec 128`, and
+`paper_collision_bound_output` states the paper bound for the 16 serialized
+little-endian output bytes. `uniformProb` is the exact event/key-space
+cardinality ratio in `ℚ≥0` (`idealKey_card` gives `(2^128)^39`,
+`modelAKey_card` gives `(2^128)^8`). The envelopes are SPEC's, clipped at one:
+`paperEpsilon L = min 1 ((blocks (8*L)+1)/2^128)`,
+`modelAEpsilon L = min 1 ((blocks (8*L)+degreeBudget L)/2^128)` and
+`modelACoarseEpsilon L = min 1 ((blocks (8*L)+32)/2^128)`, with
+`p_B(L) = blocks (8*L)` and `d_B(L) = degreeBudget L` exactly as defined
+above. The SPEC block forms `min 1 ((p+1)/2^128)` and `min 1 ((p+32)/2^128)`
+for any `p` bounding both block counts are `paper_collision_bound_bytes_blocks`
+and `modelA_coarse_bound_bytes_blocks`; the 624-byte `key_from_ideal_bytes`
+layout is `paper_collision_bound_key_bytes`, and `expandedWords_power` proves
+`kappa[a] = s^(a+1)` in the shipped 128-byte layout.
+
+The length domain is `8*L < 2^128`, the field's length word; the C API's
+`2^64` limit and the chart's `L <= 2^61-1` are sub-cases. Empty messages,
+partial final words and unequal lengths are included; equal fixed lengths
+specialize the at-most bounds. The score theorems concern
+`log₂(L/epsilon(L))` over all positive natural L, with the three minima
+attained at L = 1. The schedule equality holds for every positive natural
+stride, including strides greater than the block count, and every
+multiplier, including zero; the lazy equality uses the bounded 256-bit raw
+state with `X^128 = X^7+X^2+X+1 = 0x87` (`alpha_eq_135`).
+
+There are no assumed probabilistic stage bounds in the endpoints. The proofs
+include the SPEC index maps, comb byte injectivity, reduced CLNH difference
+universality over F, the general characteristic-two Frobenius root bound,
+Horner leading coefficients, key encoding bijections, model-A composition,
+SPEC's numerator tables (`envelope_table`, `envelope_large_examples`) and the
+score arithmetic. The [625-vector comparison](../lean/V3_128_VECTORS.txt)
+checks the public C header against a separate executable Lean reference,
+across both key models, every available backend, strides 1–8, eager/lazy
+state, schoolbook/Karatsuba products, the dispatched one-shot and the
+header's own self-test vectors. These finite tests do not constitute a formal
+C/compiler/SIMD or memory-safety refinement proof.
 
 ## Scope and limits
 

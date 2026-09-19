@@ -81,11 +81,12 @@ theorem chain5_twisted_collision_exact {F : Type*} [Field F] [Fintype F]
       1 / Fintype.card F :=
   chain5_collision_exact _ _ (fun h => hne (hψ h))
 
-/-- Integer addition modulo 2^64, transported by an explicit word representation. -/
-def integerTwist {F : Type*} (word : F ≃ ZMod (2 ^ 64)) (τ v : F) : F :=
+/-- Integer addition modulo `N` (`2^64` for the 64-bit functions, `2^128` for
+ChainHash-128), transported by an explicit word representation. -/
+def integerTwist {F : Type*} {N : ℕ} (word : F ≃ ZMod N) (τ v : F) : F :=
   word.symm (word v + word τ)
 
-theorem integerTwist_bijective {F : Type*} (word : F ≃ ZMod (2 ^ 64)) (τ : F) :
+theorem integerTwist_bijective {F : Type*} {N : ℕ} (word : F ≃ ZMod N) (τ : F) :
     Function.Bijective (integerTwist word τ) := by
   constructor
   · intro v w h
