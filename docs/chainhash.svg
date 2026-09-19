@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 600" width="1400" height="600" role="img" aria-label="How ChainHash works: 256-byte blocks are hashed with carry-less multiplication into 64-bit values, the block values are chained by Horner's rule in a key word with the message length as leading coefficient, and an integer twist followed by a three-multiplication quintic produces the 64-bit hash.">
+  <style>
+    text { font-family: Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #111827; }
+    .title { font-size: 34px; font-weight: 700; }
+    .sub { font-size: 17px; fill: #4b5563; }
+    .h { font-size: 18px; font-weight: 600; }
+    .t { font-size: 14px; }
+    .s { font-size: 12.5px; fill: #4b5563; }
+    .m { font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size: 13px; }
+    .ms { font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size: 11.5px; }
+    .panel { fill: #f3f4f6; stroke: none; }
+    .cell { fill: #ffffff; stroke: #6b7280; stroke-width: 1.2; }
+    .hlcell { fill: #dcfce7; stroke: #15803d; stroke-width: 1.4; }
+    .zoom { fill: none; stroke: #15803d; stroke-width: 1; stroke-dasharray: 3 3; }
+    .arc { fill: none; stroke: #1d4ed8; stroke-width: 1.6; }
+    .flow { fill: none; stroke: #6b7280; stroke-width: 2; marker-end: url(#arrow); }
+    .head { fill: #6b7280; }
+    .keybox { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 1.4; }
+    .keytext { fill: #1d4ed8; }
+    .outbox { fill: #fef3c7; stroke: #b45309; stroke-width: 1.6; }
+    .outtext { fill: #b45309; font-weight: 700; }
+    .step { fill: #ffffff; stroke: #6b7280; stroke-width: 1.4; }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #e5e7eb; }
+      .sub, .s { fill: #9ca3af; }
+      .panel { fill: #1f2937; }
+      .cell, .step { fill: #111827; stroke: #9ca3af; }
+      .hlcell { fill: #14532d; stroke: #4ade80; }
+      .zoom { stroke: #4ade80; }
+      .arc { stroke: #93c5fd; }
+      .flow { stroke: #9ca3af; }
+      .head { fill: #9ca3af; }
+      .keybox { fill: #1e3a8a; stroke: #93c5fd; }
+      .keytext { fill: #93c5fd; }
+      .outbox { fill: #78350f; stroke: #fbbf24; }
+      .outtext { fill: #fbbf24; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" class="head"/>
+    </marker>
+  </defs>
+
+  <!-- title -->
+  <text x="40" y="52" class="title">ChainHash</text>
+  <text x="40" y="80" class="sub">A keyed 64-bit hash for long inputs with a proven collision bound: at least 63 bits from 64 random key bytes, machine-checked, at 28 bytes per cycle.</text>
+
+  <!-- ===== Panel 1: block hash ===== -->
+  <rect x="40" y="110" width="470" height="330" rx="14" class="panel"/>
+  <text x="60" y="140" class="h">1. Block hash: carry-less NH</text>
+
+  <!-- message bar -->
+  <text x="60" y="168" class="s">message, ℓ bytes, in 256-byte blocks</text>
+  <g>
+    <rect x="60" y="178" width="66" height="30" class="cell"/>
+    <rect x="128" y="178" width="66" height="30" class="hlcell"/>
+    <rect x="196" y="178" width="66" height="30" class="cell"/>
+    <rect x="264" y="178" width="66" height="30" class="cell"/>
+    <rect x="332" y="178" width="66" height="30" class="cell"/>
+    <rect x="400" y="178" width="40" height="30" class="cell" stroke-dasharray="4 3"/>
+    <text x="93" y="198" class="t" text-anchor="middle">B₁</text>
+    <text x="161" y="198" class="t" text-anchor="middle">B₂</text>
+    <text x="229" y="198" class="t" text-anchor="middle">B₃</text>
+    <text x="297" y="198" class="t" text-anchor="middle">…</text>
+    <text x="365" y="198" class="t" text-anchor="middle">B_p</text>
+    <text x="420" y="198" class="s" text-anchor="middle">tail</text>
+  </g>
+
+  <!-- one block: 32 words in two rows of 16; comb pairing w_i with w_{i+8} -->
+  <text x="60" y="232" class="s">block B₂, 32 words: word i pairs with word i+8 (comb pairing, no shuffles)</text>
+  <!-- top row cells -->
+  <g id="row1">
+    <rect x="68" y="272" width="24" height="24" class="cell"/><rect x="92" y="272" width="24" height="24" class="cell"/><rect x="116" y="272" width="24" height="24" class="cell"/><rect x="140" y="272" width="24" height="24" class="cell"/><rect x="164" y="272" width="24" height="24" class="cell"/><rect x="188" y="272" width="24" height="24" class="cell"/><rect x="212" y="272" width="24" height="24" class="cell"/><rect x="236" y="272" width="24" height="24" class="cell"/>
+    <rect x="260" y="272" width="24" height="24" class="cell"/><rect x="284" y="272" width="24" height="24" class="cell"/><rect x="308" y="272" width="24" height="24" class="cell"/><rect x="332" y="272" width="24" height="24" class="cell"/><rect x="356" y="272" width="24" height="24" class="cell"/><rect x="380" y="272" width="24" height="24" class="cell"/><rect x="404" y="272" width="24" height="24" class="cell"/><rect x="428" y="272" width="24" height="24" class="cell"/>
+    <text x="80" y="289" class="ms" text-anchor="middle">w0</text><text x="104" y="289" class="ms" text-anchor="middle">w1</text><text x="128" y="289" class="ms" text-anchor="middle">w2</text><text x="152" y="289" class="ms" text-anchor="middle">w3</text><text x="176" y="289" class="ms" text-anchor="middle">w4</text><text x="200" y="289" class="ms" text-anchor="middle">w5</text><text x="224" y="289" class="ms" text-anchor="middle">w6</text><text x="248" y="289" class="ms" text-anchor="middle">w7</text>
+    <text x="272" y="289" class="ms" text-anchor="middle">w8</text><text x="296" y="289" class="ms" text-anchor="middle">w9</text><text x="320" y="289" class="ms" text-anchor="middle">w10</text><text x="344" y="289" class="ms" text-anchor="middle">w11</text><text x="368" y="289" class="ms" text-anchor="middle">w12</text><text x="392" y="289" class="ms" text-anchor="middle">w13</text><text x="416" y="289" class="ms" text-anchor="middle">w14</text><text x="440" y="289" class="ms" text-anchor="middle">w15</text>
+  </g>
+  <!-- comb arcs above row 1: w_i to w_{i+8}, i=0..7 (192 px apart) -->
+  <path class="arc" d="M 80 270 C 80 244, 272 244, 272 270"/>
+  <path class="arc" d="M 104 270 C 104 247, 296 247, 296 270"/>
+  <path class="arc" d="M 128 270 C 128 250, 320 250, 320 270"/>
+  <path class="arc" d="M 152 270 C 152 253, 344 253, 344 270"/>
+  <path class="arc" d="M 176 270 C 176 253, 368 253, 368 270" opacity="0.55"/>
+  <path class="arc" d="M 200 270 C 200 250, 392 250, 392 270" opacity="0.55"/>
+  <path class="arc" d="M 224 270 C 224 247, 416 247, 416 270" opacity="0.55"/>
+  <path class="arc" d="M 248 270 C 248 244, 440 244, 440 270" opacity="0.55"/>
+  <!-- second row -->
+  <g id="row2">
+    <rect x="68" y="304" width="24" height="24" class="cell"/><rect x="92" y="304" width="24" height="24" class="cell"/><rect x="116" y="304" width="24" height="24" class="cell"/><rect x="140" y="304" width="24" height="24" class="cell"/><rect x="164" y="304" width="24" height="24" class="cell"/><rect x="188" y="304" width="24" height="24" class="cell"/><rect x="212" y="304" width="24" height="24" class="cell"/><rect x="236" y="304" width="24" height="24" class="cell"/>
+    <rect x="260" y="304" width="24" height="24" class="cell"/><rect x="284" y="304" width="24" height="24" class="cell"/><rect x="308" y="304" width="24" height="24" class="cell"/><rect x="332" y="304" width="24" height="24" class="cell"/><rect x="356" y="304" width="24" height="24" class="cell"/><rect x="380" y="304" width="24" height="24" class="cell"/><rect x="404" y="304" width="24" height="24" class="cell"/><rect x="428" y="304" width="24" height="24" class="cell"/>
+    <text x="80" y="321" class="ms" text-anchor="middle">w16</text><text x="164" y="321" class="ms" text-anchor="middle">…</text><text x="248" y="321" class="ms" text-anchor="middle">w23</text>
+    <text x="272" y="321" class="ms" text-anchor="middle">w24</text><text x="356" y="321" class="ms" text-anchor="middle">…</text><text x="440" y="321" class="ms" text-anchor="middle">w31</text>
+  </g>
+  <!-- comb arcs below row 2 -->
+  <path class="arc" d="M 80 330 C 80 354, 272 354, 272 330"/>
+  <path class="arc" d="M 104 330 C 104 350, 296 350, 296 330" opacity="0.55"/>
+  <path class="arc" d="M 248 330 C 248 354, 440 354, 440 330" opacity="0.55"/>
+
+  <!-- formula -->
+  <text x="60" y="382" class="m">c_j = Σ (w_i ⊕ k_i) ⊗ (w_i+8 ⊕ k_i+8)</text>
+  <text x="60" y="403" class="s">⊗ = carry-less multiply (PCLMULQDQ / PMULL), one per 16 bytes;</text>
+  <text x="60" y="419" class="s">summed unreduced, reduced once per block mod X^64+X^4+X^3+X+1;</text>
+  <text x="60" y="435" class="s">k_i are the block key words.</text>
+
+  <!-- arrow panel1 -> panel2 -->
+  <path class="flow" d="M 512 275 L 556 275"/>
+  <text x="534" y="262" class="s" text-anchor="middle">c_j</text>
+
+  <!-- ===== Panel 2: chain ===== -->
+  <rect x="560" y="110" width="400" height="330" rx="14" class="panel"/>
+  <text x="580" y="140" class="h">2. Chain: Horner's rule in a key word y</text>
+  <text x="580" y="166" class="s">start from the byte length, fold in one block value per step</text>
+
+  <!-- chain boxes -->
+  <rect x="580" y="232" width="52" height="40" rx="8" class="step"/>
+  <text x="606" y="257" class="m" text-anchor="middle">ℓ</text>
+  <path class="flow" d="M 634 252 L 660 252"/>
+  <rect x="662" y="232" width="78" height="40" rx="8" class="step"/>
+  <text x="701" y="257" class="m" text-anchor="middle">·y ⊕ c₁</text>
+  <path class="flow" d="M 742 252 L 768 252"/>
+  <rect x="770" y="232" width="78" height="40" rx="8" class="step"/>
+  <text x="809" y="257" class="m" text-anchor="middle">·y ⊕ c₂</text>
+  <path class="flow" d="M 850 252 L 870 252"/>
+  <text x="884" y="257" class="m" text-anchor="middle">…</text>
+  <path class="flow" d="M 898 252 L 916 252"/>
+  <rect x="918" y="232" width="30" height="40" rx="8" class="step"/>
+  <text x="933" y="257" class="m" text-anchor="middle">P</text>
+
+  <text x="580" y="312" class="m">P = ℓ·y^p ⊕ c₁·y^(p−1) ⊕ … ⊕ c_p   in GF(2^64)</text>
+  <text x="580" y="340" class="s">One polynomial with a key-only slope: whatever the chunking,</text>
+  <text x="580" y="358" class="s">thread split or streaming schedule, every evaluation order</text>
+  <text x="580" y="376" class="s">gives the same P. The length ℓ leads, so no padding ambiguity.</text>
+  <text x="580" y="404" class="s">Collision of two distinct messages ⇒ a root of a nonzero</text>
+  <text x="580" y="422" class="s">polynomial of degree ≤ p in y: probability ≤ p / 2^64.</text>
+
+  <!-- arrow panel2 -> panel3 -->
+  <path class="flow" d="M 962 275 L 1006 275"/>
+  <text x="984" y="262" class="s" text-anchor="middle">P</text>
+
+  <!-- ===== Panel 3: finalizer ===== -->
+  <rect x="1010" y="110" width="350" height="330" rx="14" class="panel"/>
+  <text x="1030" y="140" class="h">3. Twist and quintic finalizer</text>
+  <text x="1030" y="166" class="s">independent keys; three multiplications</text>
+
+  <rect x="1030" y="188" width="150" height="40" rx="8" class="step"/>
+  <text x="1105" y="213" class="m" text-anchor="middle">v = P ⊞ τ</text>
+  <text x="1194" y="213" class="s">integer add mod 2^64</text>
+  <path class="flow" d="M 1105 230 L 1105 254"/>
+  <rect x="1030" y="256" width="310" height="78" rx="8" class="step"/>
+  <text x="1046" y="280" class="m">q = v²</text>
+  <text x="1046" y="300" class="m">r = (q ⊕ c₀) ⊗ (v ⊕ q ⊕ c₁)</text>
+  <text x="1046" y="320" class="m">h = (v ⊕ c₂) ⊗ (r ⊕ c₃) ⊕ c₄</text>
+  <path class="flow" d="M 1105 336 L 1105 360"/>
+  <rect x="1030" y="362" width="150" height="40" rx="8" class="outbox"/>
+  <text x="1105" y="387" class="m outtext" text-anchor="middle">64-bit hash</text>
+  <text x="1030" y="416" class="s">integer add: breaks GF(2)-linearity before the polynomial</text>
+  <text x="1030" y="431" class="s">quintic: 5-wise independent over its keys c₀…c₄</text>
+
+  <!-- ===== bottom strip: key and guarantee ===== -->
+  <rect x="40" y="460" width="640" height="118" rx="14" class="keybox"/>
+  <text x="60" y="490" class="h keytext">Key: 64 uniformly random bytes</text>
+  <text x="60" y="516" class="m keytext">s, y, c₀, c₁, c₂, c₃, c₄, τ   (eight 64-bit words)</text>
+  <text x="60" y="540" class="s">block key words are powers of one word, k_m = s^(m+1); y drives the chain;</text>
+  <text x="60" y="558" class="s">c₀…c₄ and τ belong to the finalizer. Nothing else is secret.</text>
+
+  <rect x="700" y="460" width="660" height="118" rx="14" class="panel"/>
+  <text x="720" y="490" class="h">Guarantee and speed</text>
+  <text x="720" y="516" class="t">Two fixed messages of at most L bytes collide with probability ≤ (p(L) + d(L)) / 2^64, d ≤ 32.</text>
+  <text x="720" y="540" class="t">At least 63 bits at every length; 89 theorems machine-checked in Lean 4 (standard axioms).</text>
+  <text x="720" y="562" class="t">SMHasher3 bulk: 28.3 B/cycle on a Xeon 8375C, 26.3 on an Apple M2 Pro. ChainHash-128: 127 bits.</text>
+</svg>
