@@ -113,6 +113,14 @@ static inline chv3_raw chv3_prod(uint64_t a,uint64_t b,int backend) {
 static inline uint64_t chv3_fmul(uint64_t a,uint64_t b,int backend) { return chv3_reduce(chv3_prod(a,b,backend)); }
 static inline uint64_t chv3_pow(uint64_t a,uint64_t n,int backend) { uint64_t r=1; while(n) { if(n&1) r=chv3_fmul(r,a,backend); n>>=1; if(n) a=chv3_fmul(a,a,backend); } return r; }
 #ifdef CHV3_X86
+/* Low lane as an integer: _mm_cvtsi128_si64 is x86-64 only in GCC. */
+CHV3_T128 static inline uint64_t chv3_lane0(__m128i v) {
+#if defined(__x86_64__)
+    return (uint64_t)_mm_cvtsi128_si64(v);
+#else
+    chv3_raw r; _mm_storeu_si128((__m128i_u *)&r,v); return r.lo;
+#endif
+}
 CHV3_T128 static inline __m128i chv3_vreduce(__m128i a) {
     const __m128i r=_mm_set1_epi64x(27);
     __m128i t=_mm_clmulepi64_si128(a,r,0x11),u=_mm_clmulepi64_si128(t,r,0x11);
@@ -123,7 +131,7 @@ CHV3_T128 static uint64_t chv3_fastfinish(const chainhash_v3_key *k,uint64_t v) 
     __m128i a=_mm_xor_si128(q,_mm_set_epi64x(0,(long long)k->c[0])),b=_mm_xor_si128(_mm_xor_si128(x,q),_mm_set_epi64x(0,(long long)k->c[1]));
     __m128i r=chv3_vreduce(_mm_clmulepi64_si128(a,b,0));
     r=chv3_vreduce(_mm_clmulepi64_si128(_mm_xor_si128(x,_mm_set_epi64x(0,(long long)k->c[2])),_mm_xor_si128(r,_mm_set_epi64x(0,(long long)k->c[3])),0));
-    return (uint64_t)_mm_cvtsi128_si64(r)^k->c[4];
+    return chv3_lane0(r)^k->c[4];
 }
 #elif defined(CHV3_ARM)
 static inline uint64x2_t chv3_vreduce(uint64x2_t a) { const uint64x2_t r=vdupq_n_u64(27); uint64x2_t t=chv3_hh(a,r); return chv3_xor3(a,t,chv3_hh(t,r)); }
@@ -311,7 +319,7 @@ CHV3_T128 static uint64_t chv3_bulk128(const chainhash_v3_key *k,const uint8_t *
     pw=_mm_set_epi64x((long long)k->yh[0],(long long)k->yp[0]);
     acc=_mm_xor_si128(acc,_mm_xor_si128(_mm_clmulepi64_si128(s3,pw,0),_mm_clmulepi64_si128(s3,pw,0x11)));
     __m128i a=acc;
-    return (uint64_t)_mm_cvtsi128_si64(chv3_vreduce(a));
+    return chv3_lane0(chv3_vreduce(a));
 }
 CHV3_T256 static uint64_t chv3_bulk256(const chainhash_v3_key *k,const uint8_t *p,size_t regions,size_t len) {
     __m256i s0=_mm256_setzero_si256();
@@ -362,7 +370,7 @@ CHV3_T256 static uint64_t chv3_bulk256(const chainhash_v3_key *k,const uint8_t *
     pw=_mm256_set_epi64x((long long)k->yh[0],(long long)k->yp[0],(long long)k->yh[1],(long long)k->yp[1]);
     acc=_mm256_xor_si256(acc,_mm256_xor_si256(_mm256_clmulepi64_epi128(s1,pw,0),_mm256_clmulepi64_epi128(s1,pw,0x11)));
     __m128i a=_mm_xor_si128(_mm256_castsi256_si128(acc),_mm256_extracti128_si256(acc,1));
-    return (uint64_t)_mm_cvtsi128_si64(chv3_vreduce(a));
+    return chv3_lane0(chv3_vreduce(a));
 }
 /* The only cross-lane fold is AFTER all complete regions. */
 CHV3_T512 static inline uint64_t chv3_fold512(__m512i s,const chainhash_v3_key *k) {
@@ -394,7 +402,7 @@ CHV3_T512 static uint64_t chv3_tail512(const chainhash_v3_key *k,const uint8_t *
     __m256i h=_mm256_xor_si256(_mm512_castsi512_si256(acc),_mm512_extracti64x4_epi64(acc,1));
     __m128i v=_mm_xor_si128(_mm256_castsi256_si128(h),_mm256_extracti128_si256(h,1));
     v=_mm_xor_si128(v,_mm_clmulepi64_si128(_mm_set_epi64x(0,(long long)leading),_mm_set_epi64x(0,(long long)k->yp[lanes]),0));
-    return (uint64_t)_mm_cvtsi128_si64(chv3_vreduce(v));
+    return chv3_lane0(chv3_vreduce(v));
 }
 CHV3_T512 static uint64_t chv3_bulk512(const chainhash_v3_key *k,const uint8_t *p,size_t regions,size_t len) {
     __m512i s=_mm512_set_epi64(0,(long long)len,0,0,0,0,0,0);
