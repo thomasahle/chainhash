@@ -1645,6 +1645,42 @@ static inline ch128_word chainhash128_portable(const chainhash128_key *k,const v
         n-=take; if(!n) break; p+=take;
     } while(1); return ch128_finish(k,v,0);
 }
+#ifdef CH128_X86
+/* One tail kernel for all x86 widths. Pad only the last chunk and key only
+ * present pairs. Fold raw lanes with y^e and X^128*y^e, then reduce once. */
+#define CH128_XTAIL(P,T,N) \
+T static inline ch128_word P##_tail(const chainhash128_key *k,const uint8_t *p,size_t n,ch128_word v,int school) { \
+    ch128_word tail[16]={{0,0}},yp[8]={{0,0}},yh[8]={{0,0}},lo[N],hi[N]; \
+    size_t chunks=n/256,rem=n%256; unsigned j,c,count=ch128_lanes(n); \
+    P##_acc sum=P##_azero(); P##_raw r; \
+    ch128_128_raw total=ch128_128_prod(ch128_128_load(&v),ch128_128_load(k->yp+count),0); \
+    if(rem) { \
+        memcpy(tail,p+256*chunks,rem); \
+        for(j=0;j<8 && 16*j<rem;j++) { \
+            tail[j]=ch128_xor(tail[j],k->ph[2*chunks]); \
+            tail[j+8]=ch128_xor(tail[j+8],k->ph[2*chunks+1]); \
+        } \
+    } \
+    for(j=0;j<count;j++) { yp[j]=k->yp[count-1-j]; yh[j]=k->yh[count-1-j]; } \
+    for(j=0;j<8;j+=N) { \
+        P##_acc a=P##_azero(); \
+        for(c=0;c<chunks;c++) \
+            a=P##_accum(a,P##_xor(P##_load(p+256*c+16*j),P##_bc(k->ph+2*c)), \
+                           P##_xor(P##_load(p+256*c+16*j+128),P##_bc(k->ph+2*c+1)),school); \
+        if(rem) a=P##_accum(a,P##_load(tail+j),P##_load(tail+j+8),school); \
+        r=P##_pack(a,school); \
+        sum=P##_accum(sum,r.lo,P##_load(yp+j),0); \
+        sum=P##_accum(sum,r.hi,P##_load(yh+j),0); \
+    } \
+    r=P##_pack(sum,0); P##_store(lo,r.lo); P##_store(hi,r.hi); \
+    for(j=0;j<N;j++) { total.lo=ch128_128_xor(total.lo,ch128_128_load(lo+j)); total.hi=ch128_128_xor(total.hi,ch128_128_load(hi+j)); } \
+    ch128_128_store(&v,ch128_128_reduce(total)); return v; \
+}
+CH128_XTAIL(ch128_128,CH128_T128,1)
+CH128_XTAIL(ch128_256,CH128_T256,2)
+CH128_XTAIL(ch128_512,CH128_T512,4)
+#undef CH128_XTAIL
+#endif
 #ifdef CH128_ARM
 /* Evaluate a partial comb region in vector registers. Only the final 256-byte
  * chunk needs padding; skip absent first words so no key-only pairs are added.
@@ -1695,7 +1731,14 @@ static inline ch128_word chainhash128_with_backend(const chainhash128_key *k,con
 #endif
         p+=full*CH128_REGION;
     }
-#ifdef CH128_ARM
+#ifdef CH128_X86
+    if(n && b) {
+        if(b==3) v=ch128_512_tail(k,p,n,v,school);
+        else if(b==2) v=ch128_256_tail(k,p,n,v,school);
+        else v=ch128_128_tail(k,p,n,v,school);
+        return ch128_finish(k,v,b);
+    }
+#elif defined(CH128_ARM)
     if(b==4 && n) return ch128_finish(k,ch128_n_tail(k,p,n,v,school),b);
 #endif
     if(n || !full) { ch128_raw c[8]; unsigned j; ch128_region_scalar(k,p,n,c,b,school); for(j=0;j<ch128_lanes(n);j++) v=ch128_xor(ch128_mul(v,k->yp[1],b),ch128_reduce(c[j])); }
