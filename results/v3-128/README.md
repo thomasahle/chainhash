@@ -4,13 +4,22 @@
 [speeds_chainhash128_v3.json](speeds_chainhash128_v3.json) its machine-readable
 aggregation of every retained SMHasher3 run on both hosts, in the layout of
 the [64-bit v3 aggregation](../v3/speeds_chainhash_v3.json). The shipped
-header [include/chainhash128_v3.h](../../include/chainhash128_v3.h) is
-**byte-identical** to the measured final header, SHA-256
+header [include/chainhash128_v3.h](../../include/chainhash128_v3.h) was
+shipped **byte-identical** to the measured final header, SHA-256
 `6c31b6f3638d545f3d95c95bd4edd7483a8964a429957fb1ab3111d9b107a455`, which
 is the `header_sha256` recorded in the aggregation and in the M2 default
 build provenance. Its two comment pointers, `SPEC.md` and `tests/vectors.c`,
 mean [docs/SPEC_v3_128.md](../../docs/SPEC_v3_128.md) and
 [test/v3-128/vectors.c](../../test/v3-128/vectors.c) in this repository.
+
+After those measurements, the robustness audit of 2026-09-19 changed nine
+lines of the header: the x86 load/store helpers now name their unaligned
+vector pointer types (`__m128i_u`, `__m256i_u`; the 512-bit intrinsics take
+`void *`). The generated code is identical (the disassembly of gcc 11 `-O3`
+and clang 21 `-O3` builds does not change), every digest, frozen vector and
+checksum in this directory is unchanged, and the shipped header's SHA-256 is
+now `4e3edbfb4bbfdeb729178c9ab97bbf1ddb90c27b27360e72ebf89667a4f65194`; the
+measured header remains the `6c31b6f3…` recorded in the aggregation.
 
 ## Selected function and headline measurements
 

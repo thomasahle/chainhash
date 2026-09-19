@@ -110,13 +110,13 @@ CH128V3_T128 static inline __m128i ch128v3_128_hh(__m128i a,__m128i b) { return 
 CH128V3_T128 static inline __m128i ch128v3_128_lh(__m128i a,__m128i b) { return _mm_clmulepi64_si128(a,b,0x10); }
 CH128V3_T128 static inline __m128i ch128v3_128_hl(__m128i a,__m128i b) { return _mm_clmulepi64_si128(a,b,0x01); }
 CH128V3_T128 static inline __m128i ch128v3_128_zero(void) { return _mm_setzero_si128(); }
-CH128V3_T128 static inline __m128i ch128v3_128_load(const void *p) { return _mm_loadu_si128((const __m128i *)p); }
+CH128V3_T128 static inline __m128i ch128v3_128_load(const void *p) { return _mm_loadu_si128((const __m128i_u *)p); }
 CH128V3_T128 static inline __m128i ch128v3_128_xor(__m128i a,__m128i b) { return _mm_xor_si128(a,b); }
 CH128V3_T128 static inline __m128i ch128v3_128_swap(__m128i a) { return _mm_shuffle_epi32(a,0x4e); }
 CH128V3_T128 static inline __m128i ch128v3_128_left(__m128i a) { return _mm_slli_si128(a,8); }
 CH128V3_T128 static inline __m128i ch128v3_128_right(__m128i a) { return _mm_srli_si128(a,8); }
-CH128V3_T128 static inline void ch128v3_128_store(void *p,__m128i a) { _mm_storeu_si128((__m128i *)p,a); }
-CH128V3_T128 static inline __m128i ch128v3_128_bc(const void *p) { return _mm_loadu_si128((const __m128i *)p); }
+CH128V3_T128 static inline void ch128v3_128_store(void *p,__m128i a) { _mm_storeu_si128((__m128i_u *)p,a); }
+CH128V3_T128 static inline __m128i ch128v3_128_bc(const void *p) { return _mm_loadu_si128((const __m128i_u *)p); }
 typedef struct { __m128i l,h,m; } ch128v3_128_acc;
 typedef struct { __m128i lo,hi; } ch128v3_128_raw;
 CH128V3_T128 static inline ch128v3_128_acc ch128v3_128_azero(void) { ch128v3_128_acc r; r.l=r.h=r.m=ch128v3_128_zero(); return r; }
@@ -142,13 +142,13 @@ CH128V3_T256 static inline __m256i ch128v3_256_hh(__m256i a,__m256i b) { return 
 CH128V3_T256 static inline __m256i ch128v3_256_lh(__m256i a,__m256i b) { return _mm256_clmulepi64_epi128(a,b,0x10); }
 CH128V3_T256 static inline __m256i ch128v3_256_hl(__m256i a,__m256i b) { return _mm256_clmulepi64_epi128(a,b,0x01); }
 CH128V3_T256 static inline __m256i ch128v3_256_zero(void) { return _mm256_setzero_si256(); }
-CH128V3_T256 static inline __m256i ch128v3_256_load(const void *p) { return _mm256_loadu_si256((const __m256i *)p); }
+CH128V3_T256 static inline __m256i ch128v3_256_load(const void *p) { return _mm256_loadu_si256((const __m256i_u *)p); }
 CH128V3_T256 static inline __m256i ch128v3_256_xor(__m256i a,__m256i b) { return _mm256_xor_si256(a,b); }
 CH128V3_T256 static inline __m256i ch128v3_256_swap(__m256i a) { return _mm256_shuffle_epi32(a,0x4e); }
 CH128V3_T256 static inline __m256i ch128v3_256_left(__m256i a) { return _mm256_bslli_epi128(a,8); }
 CH128V3_T256 static inline __m256i ch128v3_256_right(__m256i a) { return _mm256_bsrli_epi128(a,8); }
-CH128V3_T256 static inline void ch128v3_256_store(void *p,__m256i a) { _mm256_storeu_si256((__m256i *)p,a); }
-CH128V3_T256 static inline __m256i ch128v3_256_bc(const void *p) { return _mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i *)p)); }
+CH128V3_T256 static inline void ch128v3_256_store(void *p,__m256i a) { _mm256_storeu_si256((__m256i_u *)p,a); }
+CH128V3_T256 static inline __m256i ch128v3_256_bc(const void *p) { return _mm256_broadcastsi128_si256(_mm_loadu_si128((const __m128i_u *)p)); }
 typedef struct { __m256i l,h,m; } ch128v3_256_acc;
 typedef struct { __m256i lo,hi; } ch128v3_256_raw;
 CH128V3_T256 static inline ch128v3_256_acc ch128v3_256_azero(void) { ch128v3_256_acc r; r.l=r.h=r.m=ch128v3_256_zero(); return r; }
@@ -171,13 +171,13 @@ CH128V3_T512 static inline __m512i ch128v3_512_hh(__m512i a,__m512i b) { return 
 CH128V3_T512 static inline __m512i ch128v3_512_lh(__m512i a,__m512i b) { return _mm512_clmulepi64_epi128(a,b,0x10); }
 CH128V3_T512 static inline __m512i ch128v3_512_hl(__m512i a,__m512i b) { return _mm512_clmulepi64_epi128(a,b,0x01); }
 CH128V3_T512 static inline __m512i ch128v3_512_zero(void) { return _mm512_setzero_si512(); }
-CH128V3_T512 static inline __m512i ch128v3_512_load(const void *p) { return _mm512_loadu_si512((const __m512i *)p); }
+CH128V3_T512 static inline __m512i ch128v3_512_load(const void *p) { return _mm512_loadu_si512(p); }
 CH128V3_T512 static inline __m512i ch128v3_512_xor(__m512i a,__m512i b) { return _mm512_xor_si512(a,b); }
 CH128V3_T512 static inline __m512i ch128v3_512_swap(__m512i a) { return _mm512_shuffle_epi32(a,(_MM_PERM_ENUM)0x4e); }
 CH128V3_T512 static inline __m512i ch128v3_512_left(__m512i a) { return _mm512_maskz_shuffle_epi32(0xcccc, a, (_MM_PERM_ENUM)0x4e); }
 CH128V3_T512 static inline __m512i ch128v3_512_right(__m512i a) { return _mm512_maskz_shuffle_epi32(0x3333, a, (_MM_PERM_ENUM)0x4e); }
-CH128V3_T512 static inline void ch128v3_512_store(void *p,__m512i a) { _mm512_storeu_si512((__m512i *)p,a); }
-CH128V3_T512 static inline __m512i ch128v3_512_bc(const void *p) { return _mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i *)p)); }
+CH128V3_T512 static inline void ch128v3_512_store(void *p,__m512i a) { _mm512_storeu_si512(p,a); }
+CH128V3_T512 static inline __m512i ch128v3_512_bc(const void *p) { return _mm512_broadcast_i32x4(_mm_loadu_si128((const __m128i_u *)p)); }
 typedef struct { __m512i l,h,m; } ch128v3_512_acc;
 typedef struct { __m512i lo,hi; } ch128v3_512_raw;
 CH128V3_T512 static inline ch128v3_512_acc ch128v3_512_azero(void) { ch128v3_512_acc r; r.l=r.h=r.m=ch128v3_512_zero(); return r; }
