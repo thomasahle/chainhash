@@ -38,6 +38,8 @@ The registration's `initfn` runs each header's self-test before any test.
 
 ## Validation
 
+ChainHash-128 (`chainhash-128`, 0x1FCA728C): all 188 SMHasher3 tests pass on the Xeon; record in [results/128/suite/](../results/128/suite/README.md).
+
 `chainhash` passes the complete suite (`--test=All`, 200 tests: upstream's
 188 plus a 12-case SeedDifferential family) on an Intel Xeon 8375C and an
 Apple M2 Pro with identical diagnostics; the logs, run metadata and the

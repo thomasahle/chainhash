@@ -130,3 +130,7 @@ Correctness: `make test-128 sanitize-128` from the repository root (see
 [test/128/README.md](../../test/128/README.md)). Timing: register the
 header with SMHasher3 as in [smhasher3/README.md](../../smhasher3/README.md)
 and run `SMHasher3 chainhash-128 --test=Speed`.
+
+## Full SMHasher3 suite
+
+The registration `chainhash-128` passes all 188 tests of SMHasher3's `--test=All` run on the Xeon; see [suite/README.md](suite/README.md) and the verbatim log there.
