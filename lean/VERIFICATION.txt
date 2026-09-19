@@ -1,4 +1,4 @@
-Verification UTC: 2026-09-19T16:09:43Z
+Verification UTC: 2026-09-19T16:54:57Z
 Base commit (source manifest identifies the verified working tree):
 6e35e462fefc2fbbada45780d1d304d513bde8c6
 $ python3 generate_verification.py
@@ -205,7 +205,7 @@ e63ffa7c497edc9ae771cce8b957b9d890f95316796b1f2c0443b745e3eee142  PROVENANCE.jso
 f42d3a6040b510b0d91a4217b20017bf4c1a4a2507ffa9236f65d9067527c6c0  SOURCE_HEADS.txt
 a5730797bc9aafbf8ff11f6a2c4919d2f1622c55a3a40d439f50242d4b10ee6e  ../include/chainhash.h
 51db4d4233090864ef22da45acbe7fd196ec09d1b7e62a25c4d8eacf3542bfec  ../test/lean_vectors.c
-3f8dea22e4f366158ae128681e138069cf84bbc2a5362bace3a99f9b061d3421  ../include/chainhash128.h
+889b4bc0beac87ab7b4bc40e107d73d56233b1689fe6a673f21d1b24595a34ab  ../include/chainhash128.h
 559e1c1da17e2f71b6a2c8ee919ae0a576bef9d7f8ada38374846940e657a53d  ../test/128/lean_vectors.c
 bc32a9fc2b6e224643b1a6de450921e0447d965387b00b84454a8d40549a0f99  lakefile.toml
 e452769f4d8283eec8b263b2d82a157cb48baa2b23a49a6fe56c14dd21c096ba  lake-manifest.json
@@ -218,10 +218,10 @@ Current branch: HEAD
 Using cache (Azure) from origin: leanprover-community/mathlib4
 No files to download
 Decompressing 7335 file(s)
-Unpacked in 79 ms
+Unpacked in 585 ms
 Completed successfully!
 $ lake build
-⚠ [7376/7542] Replayed ProvenHashes.ChainHash.PH
+⚠ [7459/7542] Replayed ProvenHashes.ChainHash.PH
 warning: ProvenHashes/ChainHash/PH.lean:49:50: This simp argument is unused:
   map_sub
 
@@ -252,7 +252,7 @@ Hint: Omit it from the simp argument list.
 Note: Simp arguments with `←` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `←` with `-` to only get that effect and silence this warning.
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-⚠ [7381/7542] Replayed ProvenHashes.ChainHash.Evaluation
+⚠ [7463/7542] Replayed ProvenHashes.ChainHash.Evaluation
 warning: ProvenHashes/ChainHash/Evaluation.lean:50:8: This simp argument is unused:
   List.getElem?_ofFn
 
@@ -260,7 +260,7 @@ Hint: Omit it from the simp argument list.
   simp [̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵?̵_̵o̵f̵F̵n̵,̵ ̵i̵.̵i̵s̵L̵t̵]̵[̲i̲.̲i̲s̲L̲t̲]̲
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-⚠ [7382/7542] Replayed ProvenHashes.ChainHash.Seeded
+⚠ [7464/7542] Replayed ProvenHashes.ChainHash.Seeded
 warning: ProvenHashes/ChainHash/Seeded.lean:16:37: This simp argument is unused:
   sub_zero
 
@@ -296,7 +296,7 @@ Note: This linter can be disabled with `set_option linter.unreachableTactic fals
 warning: ProvenHashes/ChainHash/Seeded.lean:25:14: 'omega' tactic does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
-⚠ [7383/7542] Replayed ProvenHashes.ChainHash.Keys
+⚠ [7465/7542] Replayed ProvenHashes.ChainHash.Keys
 warning: ProvenHashes/ChainHash/Keys.lean:15:48: this tactic is never executed
 
 Note: This linter can be disabled with `set_option linter.unreachableTactic false`
@@ -327,7 +327,7 @@ Hint: Omit it from the simp argument list.
   simp only ̵[̵F̵i̵n̵.̵e̵x̵t̵_̵i̵f̵f̵]̵
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-⚠ [7384/7542] Replayed ProvenHashes.ChainHash.Lazy
+⚠ [7466/7542] Replayed ProvenHashes.ChainHash.Lazy
 warning: ProvenHashes/ChainHash/Lazy.lean:46:91: this tactic is never executed
 
 Note: This linter can be disabled with `set_option linter.unreachableTactic false`
@@ -358,7 +358,7 @@ Hint: Omit it from the simp argument list.
   simp only [rawCoefficients, List.map_ofFn, coefficients, c̵o̵e̵f̵f̵i̵c̵i̵e̵n̵t̵s̵A̵t̵,̵ ̵Function.comp_def, rawBlock_matches]
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-⚠ [7524/7542] Replayed ProvenHashes.ChainHash128.PH
+⚠ [7529/7542] Replayed ProvenHashes.ChainHash128.PH
 warning: ProvenHashes/ChainHash128/PH.lean:50:50: This simp argument is unused:
   map_sub
 
@@ -389,7 +389,7 @@ Hint: Omit it from the simp argument list.
 Note: Simp arguments with `←` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `←` with `-` to only get that effect and silence this warning.
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-⚠ [7528/7542] Replayed ProvenHashes.ChainHash128.Evaluation
+⚠ [7533/7542] Replayed ProvenHashes.ChainHash128.Evaluation
 warning: ProvenHashes/ChainHash128/Evaluation.lean:51:8: This simp argument is unused:
   List.getElem?_ofFn
 
@@ -397,7 +397,7 @@ Hint: Omit it from the simp argument list.
   simp [̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵?̵_̵o̵f̵F̵n̵,̵ ̵i̵.̵i̵s̵L̵t̵]̵[̲i̲.̲i̲s̲L̲t̲]̲
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-⚠ [7529/7542] Replayed ProvenHashes.ChainHash128.Seeded
+⚠ [7534/7542] Replayed ProvenHashes.ChainHash128.Seeded
 warning: ProvenHashes/ChainHash128/Seeded.lean:20:37: This simp argument is unused:
   sub_zero
 
@@ -433,7 +433,7 @@ Note: This linter can be disabled with `set_option linter.unreachableTactic fals
 warning: ProvenHashes/ChainHash128/Seeded.lean:29:14: 'omega' tactic does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
-⚠ [7530/7542] Replayed ProvenHashes.ChainHash128.Keys
+⚠ [7535/7542] Replayed ProvenHashes.ChainHash128.Keys
 warning: ProvenHashes/ChainHash128/Keys.lean:21:48: this tactic is never executed
 
 Note: This linter can be disabled with `set_option linter.unreachableTactic false`
@@ -464,7 +464,7 @@ Hint: Omit it from the simp argument list.
   simp only ̵[̵F̵i̵n̵.̵e̵x̵t̵_̵i̵f̵f̵]̵
 
 Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-⚠ [7531/7542] Replayed ProvenHashes.ChainHash128.Lazy
+⚠ [7536/7542] Replayed ProvenHashes.ChainHash128.Lazy
 warning: ProvenHashes/ChainHash128/Lazy.lean:51:91: this tactic is never executed
 
 Note: This linter can be disabled with `set_option linter.unreachableTactic false`
@@ -1842,7 +1842,7 @@ Checked C backends: 0 1 2 3; strides 1..8; eager and lazy; dispatched one-shot
 $ python3 check_vectors_128.py
 625 C/Lean vectors PASS (including 9 seed-123 self-test inputs; the 3 hard-coded header vectors match both); C backends x strides 1..8 x eager/lazy x schoolbook/Karatsuba, dispatched one-shot, and selftest PASS
 SHA256 output d9fc195c93bd358b4b26293d8a3fa2a2cec85f7cda185c9f68d068846ee029b6
-SHA256 header 3f8dea22e4f366158ae128681e138069cf84bbc2a5362bace3a99f9b061d3421
+SHA256 header 889b4bc0beac87ab7b4bc40e107d73d56233b1689fe6a673f21d1b24595a34ab
 selftest PASS; checked C backends: 0 1 2 3; strides 1..8; eager and lazy; schoolbook and Karatsuba; dispatched one-shot
 
 PASS: 650 exported theorem/lemma declarations; only propext, Classical.choice, Quot.sound.
