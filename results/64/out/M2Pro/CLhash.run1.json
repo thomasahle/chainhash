@@ -1,0 +1,29 @@
+{
+  "host": "M2Pro",
+  "name": "CLhash",
+  "test": "Speed",
+  "run": 1,
+  "command": [
+    "<reproduction>/.work/build/SMHasher3",
+    "CLhash",
+    "--test=Speed"
+  ],
+  "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+  "started": "2026-09-19T16:31:25.021638+00:00",
+  "load_before": [
+    4.2705078125,
+    5.212890625,
+    5.30126953125
+  ],
+  "returncode": 0,
+  "finished": "2026-09-19T16:32:01.153958+00:00",
+  "elapsed_seconds": 36.132282972335815,
+  "load_after": [
+    3.99560546875,
+    5.04443359375,
+    5.2353515625
+  ],
+  "raw_sha256": "efe5b158b726fede83144f6ff0290817c01042a66b1dbb8b1ba44fb9166c04ef",
+  "raw_file": "out/M2Pro/CLhash.run1.txt",
+  "binary_build": "<reproduction>/.work/build.json"
+}

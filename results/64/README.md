@@ -6,7 +6,7 @@ Clang 17). [speeds.json](speeds.json) aggregates every retained SMHasher3
 run; [out/Xeon](out/Xeon/) and [out/M2Pro](out/M2Pro/) hold the raw Speed,
 Sanity, property, guard, sanitizer and environment records;
 [audit/](audit/) the disassembly and instruction inventories; [bench/](bench/README.md)
-the harnesses and scripts that produced them. Every one of the 26 raw Speed
+the harnesses and scripts that produced them. Every one of the 35 raw Speed
 files is listed with its SHA-256 in [integration-provenance.json](integration-provenance.json).
 Raw logs keep the registration name the
 binaries used at the time; the `.json` records beside them carry the
@@ -29,13 +29,22 @@ from its median.
 | **chainhash** | **28.31** (28.30, 28.31) | **26.26** (26.26, 26.23, 26.27) | 155.14 / 87.49 |
 | XXH3-64 | 19.90 | 13.04 | 29.44 / 25.05 |
 | rapidhash | 10.71 | 16.01 | 27.38 / 20.40 |
-| komihash | 7.35 | not run | 26.43 / not run |
-| UMASH-64 | 11.33 | not run | 36.42 / not run |
-| CLhash | 11.86 | not run | 42.06 / not run |
+| komihash | 7.35 | 8.39 (8.39, 8.61, 8.35) | 26.43 / 24.11 |
+| UMASH-64 | 11.33 | 14.43 (14.43, 14.05, 14.48) | 36.42 / 33.49 |
+| CLhash | 11.86 | 15.49 (15.82, 15.03, 15.49) | 42.06 / 39.19 |
 | control-256 | 14.80 | 22.44 | 103.00 / 72.57 |
 
 `control-256` is a different 64-bit CLMUL construction timed in the same
-binaries as a control; it is not part of this repository. Short inputs are slow: the
+binaries as a control; it is not part of this repository. The M2 cells for komihash, UMASH-64 and CLhash were filled on
+2026-09-19 with the reproduction repository's SMHasher3 build of that day
+(SMHasher3 3de870c7 plus its patch series 0001–0009, Apple Clang 17, SHA-256
+`52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391`), three passes each with
+the same gating and medians as above, in one session with a ChainHash
+control in the same binary: `chainhash-v3` (digest-identical to `chainhash`)
+gave 26.41 B/cycle (26.69, 26.23, 26.41) and XXH3-64 13.29
+(13.08, 13.32, 13.29), against the 26.26 and 13.04 of the table; their raw
+outputs stay in that session's scratch records and only the three new rows
+were retained in `out/M2Pro/` and `speeds.json`. Short inputs are slow: the
 vector tail setup, the weighted lane combination and the finalizer are not
 amortized below a few hundred bytes, so ChainHash is a bulk hash and no
 small-key speed is claimed.

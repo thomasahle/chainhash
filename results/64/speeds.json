@@ -129,6 +129,195 @@
       "small_selected_run": 1,
       "bulk_run_spread_percent": 1.9582801191996477,
       "aggregation": "higher bulk of two passes; independently lower small average"
+    },
+    "M2Pro": {
+      "status": "complete",
+      "runs": [
+        {
+          "host": "M2Pro",
+          "name": "CLhash",
+          "test": "Speed",
+          "run": 1,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "CLhash",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/CLhash.run1.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:31:25.021638+00:00",
+          "load_before": {
+            "load1": 4.2705078125,
+            "load5": 5.212890625,
+            "load15": 5.30126953125
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:32:01.153958+00:00",
+          "elapsed_seconds": 36.132282972335815,
+          "load_after": {
+            "load1": 3.99560546875,
+            "load5": 5.04443359375,
+            "load15": 5.2353515625
+          },
+          "raw_sha256": "efe5b158b726fede83144f6ff0290817c01042a66b1dbb8b1ba44fb9166c04ef",
+          "bulk_bytes_per_cycle": 15.82,
+          "bulk_gib_s": 51.55,
+          "small_cycles": 39.19,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 15.82,
+              "bulk_gib_s": 51.55,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 14.72,
+              "bulk_gib_s": 47.97,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": 2.130406714009039,
+          "outlier": false,
+          "small_deviation_from_median_percent": 0.0,
+          "small_outlier": false
+        },
+        {
+          "host": "M2Pro",
+          "name": "CLhash",
+          "test": "Speed",
+          "run": 2,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "CLhash",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/CLhash.run2.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:41:30.696084+00:00",
+          "load_before": {
+            "load1": 3.66845703125,
+            "load5": 3.94873046875,
+            "load15": 4.482421875
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:42:07.279993+00:00",
+          "elapsed_seconds": 36.58285880088806,
+          "load_after": {
+            "load1": 4.078125,
+            "load5": 4.0419921875,
+            "load15": 4.49462890625
+          },
+          "raw_sha256": "fc0358e2b1fe5abc3c51d7de7f05ab55a7f2581f58b47c39a954fbc06062e10b",
+          "bulk_bytes_per_cycle": 15.03,
+          "bulk_gib_s": 49.0,
+          "small_cycles": 38.91,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 15.03,
+              "bulk_gib_s": 49.0,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 14.57,
+              "bulk_gib_s": 47.49,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": -2.9696578437701797,
+          "outlier": false,
+          "small_deviation_from_median_percent": -0.7144679765246266,
+          "small_outlier": false
+        },
+        {
+          "host": "M2Pro",
+          "name": "CLhash",
+          "test": "Speed",
+          "run": 3,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "CLhash",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/CLhash.run3.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:53:10.161775+00:00",
+          "load_before": {
+            "load1": 4.15576171875,
+            "load5": 4.26513671875,
+            "load15": 4.33740234375
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:53:46.368587+00:00",
+          "elapsed_seconds": 36.20675325393677,
+          "load_after": {
+            "load1": 5.2646484375,
+            "load5": 4.5068359375,
+            "load15": 4.419921875
+          },
+          "raw_sha256": "5ddbda982d9b7fdfb0232878b2230873ba8299f864bf65569f85287ab0613af6",
+          "bulk_bytes_per_cycle": 15.49,
+          "bulk_gib_s": 50.51,
+          "small_cycles": 39.32,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 15.49,
+              "bulk_gib_s": 50.51,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 14.5,
+              "bulk_gib_s": 47.25,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": 0.0,
+          "outlier": false,
+          "small_deviation_from_median_percent": 0.33171727481501034,
+          "small_outlier": false
+        }
+      ],
+      "bulk_bytes_per_cycle": 15.49,
+      "bulk_gib_s": 50.51,
+      "small_cycles": 39.19,
+      "bulk_selected_run": 3,
+      "small_selected_run": 1,
+      "bulk_run_spread_percent": 5.100064557779219,
+      "aggregation": "median of three; >15% deviations flagged, not discarded",
+      "binary": {
+        "sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+        "build": "hash-benchmark-reproduction .work/build.json, 2026-09-19: SMHasher3 3de870c7 + patches 0001-0009, Apple clang 17.0.0, -O3 -march=native",
+        "session_controls": {
+          "chainhash-v3": 26.41,
+          "XXH3-64": 13.29
+        },
+        "session_controls_note": "chainhash-v3 (digest-identical to chainhash) and XXH3-64 re-timed in the same binary and session; see meta.M2_comparison_session"
+      }
     }
   },
   "UMASH-64": {
@@ -261,6 +450,195 @@
       "small_selected_run": 1,
       "bulk_run_spread_percent": 0.0,
       "aggregation": "higher bulk of two passes; independently lower small average"
+    },
+    "M2Pro": {
+      "status": "complete",
+      "runs": [
+        {
+          "host": "M2Pro",
+          "name": "UMASH-64",
+          "test": "Speed",
+          "run": 1,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "UMASH-64",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/UMASH-64.run1.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:28:42.572223+00:00",
+          "load_before": {
+            "load1": 4.28857421875,
+            "load5": 5.7158203125,
+            "load15": 5.466796875
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:29:22.792165+00:00",
+          "elapsed_seconds": 40.220008850097656,
+          "load_after": {
+            "load1": 4.6494140625,
+            "load5": 5.62548828125,
+            "load15": 5.443359375
+          },
+          "raw_sha256": "33fec2669860a2e774a243078b70c5bc2a3e568949d0f52bcde90425bdfb4a69",
+          "bulk_bytes_per_cycle": 14.43,
+          "bulk_gib_s": 47.04,
+          "small_cycles": 33.37,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 14.43,
+              "bulk_gib_s": 47.04,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 13.36,
+              "bulk_gib_s": 43.56,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": 0.0,
+          "outlier": false,
+          "small_deviation_from_median_percent": -0.3583159151985803,
+          "small_outlier": false
+        },
+        {
+          "host": "M2Pro",
+          "name": "UMASH-64",
+          "test": "Speed",
+          "run": 2,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "UMASH-64",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/UMASH-64.run2.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:38:50.097098+00:00",
+          "load_before": {
+            "load1": 3.11572265625,
+            "load5": 3.77978515625,
+            "load15": 4.5205078125
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:39:29.700134+00:00",
+          "elapsed_seconds": 39.60305428504944,
+          "load_after": {
+            "load1": 4.76513671875,
+            "load5": 4.1806640625,
+            "load15": 4.63671875
+          },
+          "raw_sha256": "560f0356f95402830fbd6ee390fcb866a4278a151901f7eeafe0bf118c88f38b",
+          "bulk_bytes_per_cycle": 14.05,
+          "bulk_gib_s": 45.8,
+          "small_cycles": 34.21,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 14.05,
+              "bulk_gib_s": 45.8,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 13.18,
+              "bulk_gib_s": 42.96,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": -2.6334026334026266,
+          "outlier": false,
+          "small_deviation_from_median_percent": 2.149895491191397,
+          "small_outlier": false
+        },
+        {
+          "host": "M2Pro",
+          "name": "UMASH-64",
+          "test": "Speed",
+          "run": 3,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "UMASH-64",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/UMASH-64.run3.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:49:59.332268+00:00",
+          "load_before": {
+            "load1": 4.0986328125,
+            "load5": 4.078125,
+            "load15": 4.29541015625
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:50:38.750363+00:00",
+          "elapsed_seconds": 39.417622804641724,
+          "load_after": {
+            "load1": 4.56591796875,
+            "load5": 4.20654296875,
+            "load15": 4.33154296875
+          },
+          "raw_sha256": "320463ca153329d0c8c3fe3e4caad3f296b728bca41feab3a99fc6440fc58410",
+          "bulk_bytes_per_cycle": 14.48,
+          "bulk_gib_s": 47.21,
+          "small_cycles": 33.49,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 14.48,
+              "bulk_gib_s": 47.21,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 13.33,
+              "bulk_gib_s": 43.44,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": 0.34650034650035144,
+          "outlier": false,
+          "small_deviation_from_median_percent": 0.0,
+          "small_outlier": false
+        }
+      ],
+      "bulk_bytes_per_cycle": 14.43,
+      "bulk_gib_s": 47.04,
+      "small_cycles": 33.49,
+      "bulk_selected_run": 1,
+      "small_selected_run": 3,
+      "bulk_run_spread_percent": 2.979902979902978,
+      "aggregation": "median of three; >15% deviations flagged, not discarded",
+      "binary": {
+        "sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+        "build": "hash-benchmark-reproduction .work/build.json, 2026-09-19: SMHasher3 3de870c7 + patches 0001-0009, Apple clang 17.0.0, -O3 -march=native",
+        "session_controls": {
+          "chainhash-v3": 26.41,
+          "XXH3-64": 13.29
+        },
+        "session_controls_note": "chainhash-v3 (digest-identical to chainhash) and XXH3-64 re-timed in the same binary and session; see meta.M2_comparison_session"
+      }
     }
   },
   "XXH3-64": {
@@ -1343,6 +1721,195 @@
       "small_selected_run": 2,
       "bulk_run_spread_percent": 0.13614703880190315,
       "aggregation": "higher bulk of two passes; independently lower small average"
+    },
+    "M2Pro": {
+      "status": "complete",
+      "runs": [
+        {
+          "host": "M2Pro",
+          "name": "komihash",
+          "test": "Speed",
+          "run": 1,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "komihash",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/komihash.run1.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:29:52.885646+00:00",
+          "load_before": {
+            "load1": 4.255859375,
+            "load5": 5.4365234375,
+            "load15": 5.3798828125
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:30:54.940138+00:00",
+          "elapsed_seconds": 62.05446910858154,
+          "load_after": {
+            "load1": 4.80322265625,
+            "load5": 5.38330078125,
+            "load15": 5.3623046875
+          },
+          "raw_sha256": "847bf82bbc7f21d5cd53fff3b365318ff184bd9e4fbfae2b2dde6d1c21df67e7",
+          "bulk_bytes_per_cycle": 8.39,
+          "bulk_gib_s": 27.36,
+          "small_cycles": 24.17,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 8.39,
+              "bulk_gib_s": 27.36,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 8.06,
+              "bulk_gib_s": 26.26,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": 0.0,
+          "outlier": false,
+          "small_deviation_from_median_percent": 0.2488593944421496,
+          "small_outlier": false
+        },
+        {
+          "host": "M2Pro",
+          "name": "komihash",
+          "test": "Speed",
+          "run": 2,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "komihash",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/komihash.run2.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:39:59.792606+00:00",
+          "load_before": {
+            "load1": 4.14501953125,
+            "load5": 4.095703125,
+            "load15": 4.58984375
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:41:00.549792+00:00",
+          "elapsed_seconds": 60.75718092918396,
+          "load_after": {
+            "load1": 3.80419921875,
+            "load5": 4.0126953125,
+            "load15": 4.5244140625
+          },
+          "raw_sha256": "03bf96e78b4675b0002171b7ad79cf7fecba8bbebff4406c833726c6deceb2e9",
+          "bulk_bytes_per_cycle": 8.61,
+          "bulk_gib_s": 28.06,
+          "small_cycles": 23.23,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 8.61,
+              "bulk_gib_s": 28.06,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 8.34,
+              "bulk_gib_s": 27.18,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": 2.6221692491060646,
+          "outlier": false,
+          "small_deviation_from_median_percent": -3.6499377851513852,
+          "small_outlier": false
+        },
+        {
+          "host": "M2Pro",
+          "name": "komihash",
+          "test": "Speed",
+          "run": 3,
+          "command": [
+            "<reproduction>/.work/build/SMHasher3",
+            "komihash",
+            "--test=Speed"
+          ],
+          "raw_file": "out/M2Pro/komihash.run3.txt",
+          "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+          "started": "2026-09-19T16:51:38.899687+00:00",
+          "load_before": {
+            "load1": 4.23681640625,
+            "load5": 4.21630859375,
+            "load15": 4.328125
+          },
+          "returncode": 0,
+          "finished": "2026-09-19T16:52:40.073180+00:00",
+          "elapsed_seconds": 61.17298913002014,
+          "load_after": {
+            "load1": 4.53759765625,
+            "load5": 4.33203125,
+            "load15": 4.36376953125
+          },
+          "raw_sha256": "3e85125e414409793fc7aa655950ca874f3d567d9acb1d61e015b370ad548c22",
+          "bulk_bytes_per_cycle": 8.35,
+          "bulk_gib_s": 27.23,
+          "small_cycles": 24.11,
+          "sha256_verified": true,
+          "valid": true,
+          "clock_assumption": "3.5 GHz printed GiB/s; calibrated monotonic estimate",
+          "bulk_sections": [
+            {
+              "header": "Bulk speed test - 262144-byte keys",
+              "bulk_bytes_per_cycle": 8.35,
+              "bulk_gib_s": 27.23,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            },
+            {
+              "header": "Bulk speed test - [262017, 262144]-byte keys",
+              "bulk_bytes_per_cycle": 8.16,
+              "bulk_gib_s": 26.59,
+              "clock_assumption": "3.5 ghz",
+              "clock_ghz": 3.5
+            }
+          ],
+          "small_header": "Small key speed test - [1, 31]-byte keys",
+          "clock_ghz": 3.5,
+          "deviation_from_median_percent": -0.4767580452920253,
+          "outlier": false,
+          "small_deviation_from_median_percent": 0.0,
+          "small_outlier": false
+        }
+      ],
+      "bulk_bytes_per_cycle": 8.39,
+      "bulk_gib_s": 27.36,
+      "small_cycles": 24.11,
+      "bulk_selected_run": 1,
+      "small_selected_run": 3,
+      "bulk_run_spread_percent": 3.09892729439809,
+      "aggregation": "median of three; >15% deviations flagged, not discarded",
+      "binary": {
+        "sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+        "build": "hash-benchmark-reproduction .work/build.json, 2026-09-19: SMHasher3 3de870c7 + patches 0001-0009, Apple clang 17.0.0, -O3 -march=native",
+        "session_controls": {
+          "chainhash-v3": 26.41,
+          "XXH3-64": 13.29
+        },
+        "session_controls_note": "chainhash-v3 (digest-identical to chainhash) and XXH3-64 re-timed in the same binary and session; see meta.M2_comparison_session"
+      }
     }
   },
   "rapidhash": {
@@ -1761,6 +2328,169 @@
       "pmull": 0.37340575,
       "eor3": 0.250261312,
       "eor": 0.249006875
+    },
+    "M2_comparison_session": {
+      "date": "2026-09-19",
+      "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+      "purpose": "fill the M2 cells for UMASH-64, komihash and CLhash with the same binary as a ChainHash control",
+      "medians": {
+        "chainhash-v3": {
+          "bulk_bytes_per_cycle": 26.41,
+          "small_cycles": 84.35,
+          "bulk_runs": [
+            26.69,
+            26.23,
+            26.41
+          ],
+          "small_runs": [
+            83.07,
+            85.48,
+            84.35
+          ],
+          "bulk_run_spread_percent": 1.7417644831503252
+        },
+        "UMASH-64": {
+          "bulk_bytes_per_cycle": 14.43,
+          "small_cycles": 33.49,
+          "bulk_runs": [
+            14.43,
+            14.05,
+            14.48
+          ],
+          "small_runs": [
+            33.37,
+            34.21,
+            33.49
+          ],
+          "bulk_run_spread_percent": 2.979902979902978
+        },
+        "komihash": {
+          "bulk_bytes_per_cycle": 8.39,
+          "small_cycles": 24.11,
+          "bulk_runs": [
+            8.39,
+            8.61,
+            8.35
+          ],
+          "small_runs": [
+            24.17,
+            23.23,
+            24.11
+          ],
+          "bulk_run_spread_percent": 3.09892729439809
+        },
+        "CLhash": {
+          "bulk_bytes_per_cycle": 15.49,
+          "small_cycles": 39.19,
+          "bulk_runs": [
+            15.82,
+            15.03,
+            15.49
+          ],
+          "small_runs": [
+            39.19,
+            38.91,
+            39.32
+          ],
+          "bulk_run_spread_percent": 5.100064557779219
+        },
+        "XXH3-64": {
+          "bulk_bytes_per_cycle": 13.29,
+          "small_cycles": 24.36,
+          "bulk_runs": [
+            13.08,
+            13.32,
+            13.29
+          ],
+          "small_runs": [
+            24.5,
+            24.36,
+            23.86
+          ],
+          "bulk_run_spread_percent": 1.8058690744921009
+        },
+        "chainhash-128.schoolbook": {
+          "bulk_bytes_per_cycle": 11.2,
+          "small_cycles": 146.71,
+          "bulk_runs": [
+            11.2,
+            11.36,
+            11.2
+          ],
+          "small_runs": [
+            147.23,
+            145.82,
+            146.71
+          ],
+          "bulk_run_spread_percent": 1.42857142857143
+        },
+        "UMASH-128": {
+          "bulk_bytes_per_cycle": 7.98,
+          "small_cycles": 40.87,
+          "bulk_runs": [
+            7.87,
+            7.98,
+            8.03
+          ],
+          "small_runs": [
+            41.67,
+            40.87,
+            40.37
+          ],
+          "bulk_run_spread_percent": 2.0050125313283114
+        },
+        "XXH3-128": {
+          "bulk_bytes_per_cycle": 13.21,
+          "small_cycles": 29.73,
+          "bulk_runs": [
+            13.08,
+            13.29,
+            13.21
+          ],
+          "small_runs": [
+            30.12,
+            29.51,
+            29.73
+          ],
+          "bulk_run_spread_percent": 1.5897047691143
+        }
+      },
+      "controls_vs_existing_M2": {
+        "chainhash-v3": {
+          "today": 26.41,
+          "existing": 26.26,
+          "ratio": 1.0057121096725057
+        },
+        "XXH3-64": {
+          "today": 13.29,
+          "existing": 13.04,
+          "ratio": 1.0191717791411044
+        }
+      },
+      "load_gate": {
+        "no_process": "SMHasher3",
+        "load1_less_than": 4.5,
+        "poll_seconds": 15,
+        "load_cap_seconds": 600
+      },
+      "raw_files_retained": [
+        "out/M2Pro/UMASH-64.run1.txt",
+        "out/M2Pro/UMASH-64.run2.txt",
+        "out/M2Pro/UMASH-64.run3.txt",
+        "out/M2Pro/komihash.run1.txt",
+        "out/M2Pro/komihash.run2.txt",
+        "out/M2Pro/komihash.run3.txt",
+        "out/M2Pro/CLhash.run1.txt",
+        "out/M2Pro/CLhash.run2.txt",
+        "out/M2Pro/CLhash.run3.txt"
+      ],
+      "raw_files_scratch_only": [
+        "chainhash-v3",
+        "XXH3-64",
+        "chainhash-128.schoolbook",
+        "UMASH-128",
+        "XXH3-128"
+      ]
     }
   }
 }

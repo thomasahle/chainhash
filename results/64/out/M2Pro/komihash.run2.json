@@ -1,0 +1,29 @@
+{
+  "host": "M2Pro",
+  "name": "komihash",
+  "test": "Speed",
+  "run": 2,
+  "command": [
+    "<reproduction>/.work/build/SMHasher3",
+    "komihash",
+    "--test=Speed"
+  ],
+  "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+  "started": "2026-09-19T16:39:59.792606+00:00",
+  "load_before": [
+    4.14501953125,
+    4.095703125,
+    4.58984375
+  ],
+  "returncode": 0,
+  "finished": "2026-09-19T16:41:00.549792+00:00",
+  "elapsed_seconds": 60.75718092918396,
+  "load_after": [
+    3.80419921875,
+    4.0126953125,
+    4.5244140625
+  ],
+  "raw_sha256": "03bf96e78b4675b0002171b7ad79cf7fecba8bbebff4406c833726c6deceb2e9",
+  "raw_file": "out/M2Pro/komihash.run2.txt",
+  "binary_build": "<reproduction>/.work/build.json"
+}

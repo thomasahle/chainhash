@@ -106,6 +106,42 @@
     {
       "file": "out/M2Pro/rapidhash.run3.txt",
       "sha256": "7433e0c954879228d88e1bd268b216a38a0b2523e1529d0749aefa391d757f23"
+    },
+    {
+      "file": "out/M2Pro/UMASH-64.run1.txt",
+      "sha256": "33fec2669860a2e774a243078b70c5bc2a3e568949d0f52bcde90425bdfb4a69"
+    },
+    {
+      "file": "out/M2Pro/UMASH-64.run2.txt",
+      "sha256": "560f0356f95402830fbd6ee390fcb866a4278a151901f7eeafe0bf118c88f38b"
+    },
+    {
+      "file": "out/M2Pro/UMASH-64.run3.txt",
+      "sha256": "320463ca153329d0c8c3fe3e4caad3f296b728bca41feab3a99fc6440fc58410"
+    },
+    {
+      "file": "out/M2Pro/komihash.run1.txt",
+      "sha256": "847bf82bbc7f21d5cd53fff3b365318ff184bd9e4fbfae2b2dde6d1c21df67e7"
+    },
+    {
+      "file": "out/M2Pro/komihash.run2.txt",
+      "sha256": "03bf96e78b4675b0002171b7ad79cf7fecba8bbebff4406c833726c6deceb2e9"
+    },
+    {
+      "file": "out/M2Pro/komihash.run3.txt",
+      "sha256": "3e85125e414409793fc7aa655950ca874f3d567d9acb1d61e015b370ad548c22"
+    },
+    {
+      "file": "out/M2Pro/CLhash.run1.txt",
+      "sha256": "efe5b158b726fede83144f6ff0290817c01042a66b1dbb8b1ba44fb9166c04ef"
+    },
+    {
+      "file": "out/M2Pro/CLhash.run2.txt",
+      "sha256": "fc0358e2b1fe5abc3c51d7de7f05ab55a7f2581f58b47c39a954fbc06062e10b"
+    },
+    {
+      "file": "out/M2Pro/CLhash.run3.txt",
+      "sha256": "5ddbda982d9b7fdfb0232878b2230873ba8299f864bf65569f85287ab0613af6"
     }
   ]
 }

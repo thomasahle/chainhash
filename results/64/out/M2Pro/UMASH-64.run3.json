@@ -1,0 +1,29 @@
+{
+  "host": "M2Pro",
+  "name": "UMASH-64",
+  "test": "Speed",
+  "run": 3,
+  "command": [
+    "<reproduction>/.work/build/SMHasher3",
+    "UMASH-64",
+    "--test=Speed"
+  ],
+  "binary_sha256": "52c54407205727175eb0034f030a7956f187f99dd98131fe9dae45f237947391",
+  "started": "2026-09-19T16:49:59.332268+00:00",
+  "load_before": [
+    4.0986328125,
+    4.078125,
+    4.29541015625
+  ],
+  "returncode": 0,
+  "finished": "2026-09-19T16:50:38.750363+00:00",
+  "elapsed_seconds": 39.417622804641724,
+  "load_after": [
+    4.56591796875,
+    4.20654296875,
+    4.33154296875
+  ],
+  "raw_sha256": "320463ca153329d0c8c3fe3e4caad3f296b728bca41feab3a99fc6440fc58410",
+  "raw_file": "out/M2Pro/UMASH-64.run3.txt",
+  "binary_build": "<reproduction>/.work/build.json"
+}
