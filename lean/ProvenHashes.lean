@@ -9,8 +9,10 @@ import ProvenHashes.ChainHash.Evaluation
 import ProvenHashes.ChainHash.Horner
 import ProvenHashes.ChainHash.Keys
 import ProvenHashes.ChainHash.Lazy
+import ProvenHashes.ChainHash.MixedDifferential
 import ProvenHashes.ChainHash.Model
 import ProvenHashes.ChainHash.PH
+import ProvenHashes.ChainHash.Projection
 import ProvenHashes.ChainHash.Scores
 import ProvenHashes.ChainHash.Seeded
 import ProvenHashes.ChainHash128.BinaryField

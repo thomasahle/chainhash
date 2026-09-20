@@ -1,0 +1,513 @@
+ProvenHashes.ChainHash.projection_uniform.{u_1, u_2} {A : Type u_1} {B : Type u_2} [AddCommGroup.{u_1} A]
+  [AddCommGroup.{u_2} B] [Fintype.{u_1} A] [Fintype.{u_2} B] (π : AddMonoidHom.{u_1, u_2} A B)
+  (hπ : Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π) (b : B) :
+  Eq.{1} (ProvenHashes.uniformProb.{u_1} fun a => Eq.{u_2 + 1} (π a) b) (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_2} B))
+theorem ProvenHashes.ChainHash.projection_uniform.{u_1, u_2} : ∀ {A : Type u_1} {B : Type u_2}
+  [inst : AddCommGroup.{u_1} A] [inst_1 : AddCommGroup.{u_2} B] [inst_2 : Fintype.{u_1} A] [inst_3 : Fintype.{u_2} B]
+  (π : AddMonoidHom.{u_1, u_2} A B),
+  Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π →
+    ∀ (b : B),
+      Eq.{1} (ProvenHashes.uniformProb.{u_1} fun a => Eq.{u_2 + 1} (π a) b)
+        (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_2} B)) :=
+⋯
+'ProvenHashes.ChainHash.projection_uniform' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.uniformProb_event_update.{u_1, u_2} {I : Type u_1} {V : Type u_2} [Fintype.{u_1} I]
+  [Fintype.{u_2} V] [Nonempty.{u_2 + 1} V] [DecidableEq.{u_1 + 1} I] (f : (I → V) → V) (i : I)
+  (h : ∀ (k : I → V), Function.Bijective.{u_2 + 1, u_2 + 1} fun v => f (Function.update.{u_1 + 1, u_2 + 1} k i v))
+  (E : V → Prop) : Eq.{1} (ProvenHashes.uniformProb.{max u_1 u_2} fun k => E (f k)) (ProvenHashes.uniformProb.{u_2} E)
+theorem ProvenHashes.ChainHash.uniformProb_event_update.{u_1, u_2} : ∀ {I : Type u_1} {V : Type u_2}
+  [inst : Fintype.{u_1} I] [inst_1 : Fintype.{u_2} V] [Nonempty.{u_2 + 1} V] [inst_3 : DecidableEq.{u_1 + 1} I]
+  (f : (I → V) → V) (i : I),
+  (∀ (k : I → V), Function.Bijective.{u_2 + 1, u_2 + 1} fun v => f (Function.update.{u_1 + 1, u_2 + 1} k i v)) →
+    ∀ (E : V → Prop),
+      Eq.{1} (ProvenHashes.uniformProb.{max u_1 u_2} fun k => E (f k)) (ProvenHashes.uniformProb.{u_2} E) :=
+⋯
+'ProvenHashes.ChainHash.uniformProb_event_update' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.chain5_difference_event.{u_1} {K : Type u_1} [Field.{u_1} K] [Fintype.{u_1} K] (v w : K)
+  (hne : Ne.{u_1 + 1} v w) (E : K → Prop) :
+  Eq.{1}
+    (ProvenHashes.uniformProb.{u_1} fun c =>
+      E (HSub.hSub.{u_1, u_1, u_1} (ProvenHashes.ChainHash.chain5.{u_1} c v) (ProvenHashes.ChainHash.chain5.{u_1} c w)))
+    (ProvenHashes.uniformProb.{u_1} E)
+theorem ProvenHashes.ChainHash.chain5_difference_event.{u_1} : ∀ {K : Type u_1} [inst : Field.{u_1} K]
+  [inst_1 : Fintype.{u_1} K] (v w : K),
+  Ne.{u_1 + 1} v w →
+    ∀ (E : K → Prop),
+      Eq.{1}
+        (ProvenHashes.uniformProb.{u_1} fun c =>
+          E
+            (HSub.hSub.{u_1, u_1, u_1} (ProvenHashes.ChainHash.chain5.{u_1} c v)
+              (ProvenHashes.ChainHash.chain5.{u_1} c w)))
+        (ProvenHashes.uniformProb.{u_1} E) :=
+⋯
+'ProvenHashes.ChainHash.chain5_difference_event' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.chain5_projection_exact.{u_1, u_2} {K : Type u_1} {B : Type u_2} [Field.{u_1} K]
+  [Fintype.{u_1} K] [AddCommGroup.{u_2} B] [Fintype.{u_2} B] (π : AddMonoidHom.{u_1, u_2} K B)
+  (hπ : Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π) (v w : K) (hne : Ne.{u_1 + 1} v w) :
+  Eq.{1}
+    (ProvenHashes.uniformProb.{u_1} fun c =>
+      Eq.{u_2 + 1} (π (ProvenHashes.ChainHash.chain5.{u_1} c v)) (π (ProvenHashes.ChainHash.chain5.{u_1} c w)))
+    (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_2} B))
+theorem ProvenHashes.ChainHash.chain5_projection_exact.{u_1, u_2} : ∀ {K : Type u_1} {B : Type u_2}
+  [inst : Field.{u_1} K] [inst_1 : Fintype.{u_1} K] [inst_2 : AddCommGroup.{u_2} B] [inst_3 : Fintype.{u_2} B]
+  (π : AddMonoidHom.{u_1, u_2} K B),
+  Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π →
+    ∀ (v w : K),
+      Ne.{u_1 + 1} v w →
+        Eq.{1}
+          (ProvenHashes.uniformProb.{u_1} fun c =>
+            Eq.{u_2 + 1} (π (ProvenHashes.ChainHash.chain5.{u_1} c v)) (π (ProvenHashes.ChainHash.chain5.{u_1} c w)))
+          (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_2} B)) :=
+⋯
+'ProvenHashes.ChainHash.chain5_projection_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.uniformProb_prod_compare.{u_1, u_2} {K : Type u_1} {J : Type u_2} [Fintype.{u_1} K]
+  [Fintype.{u_2} J] [Nonempty.{u_1 + 1} K] (E D : Prod.{u_1, u_2} K J → Prop) (b : NNRat)
+  (h :
+    ∀ (k : K),
+      LE.le.{0} (ProvenHashes.uniformProb.{u_2} fun j => E (Prod.mk.{u_1, u_2} k j))
+        (HAdd.hAdd.{0, 0, 0} (ProvenHashes.uniformProb.{u_2} fun j => D (Prod.mk.{u_1, u_2} k j)) b)) :
+  LE.le.{0} (ProvenHashes.uniformProb.{max u_1 u_2} E)
+    (HAdd.hAdd.{0, 0, 0} (ProvenHashes.uniformProb.{max u_1 u_2} D) b)
+theorem ProvenHashes.ChainHash.uniformProb_prod_compare.{u_1, u_2} : ∀ {K : Type u_1} {J : Type u_2}
+  [inst : Fintype.{u_1} K] [inst_1 : Fintype.{u_2} J] [Nonempty.{u_1 + 1} K] (E D : Prod.{u_1, u_2} K J → Prop)
+  (b : NNRat),
+  (∀ (k : K),
+      LE.le.{0} (ProvenHashes.uniformProb.{u_2} fun j => E (Prod.mk.{u_1, u_2} k j))
+        (HAdd.hAdd.{0, 0, 0} (ProvenHashes.uniformProb.{u_2} fun j => D (Prod.mk.{u_1, u_2} k j)) b)) →
+    LE.le.{0} (ProvenHashes.uniformProb.{max u_1 u_2} E)
+      (HAdd.hAdd.{0, 0, 0} (ProvenHashes.uniformProb.{max u_1 u_2} D) b) :=
+⋯
+'ProvenHashes.ChainHash.uniformProb_prod_compare' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.chain5_projection_compare.{u_1, u_2} {K : Type u_1} {B : Type u_2} [Field.{u_1} K]
+  [Fintype.{u_1} K] [AddCommGroup.{u_2} B] [Fintype.{u_2} B] (π : AddMonoidHom.{u_1, u_2} K B)
+  (hπ : Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π) (v w : K) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{u_1} fun c =>
+      Eq.{u_2 + 1} (π (ProvenHashes.ChainHash.chain5.{u_1} c v)) (π (ProvenHashes.ChainHash.chain5.{u_1} c w)))
+    (HAdd.hAdd.{0, 0, 0}
+      (ProvenHashes.uniformProb.{u_1} fun c =>
+        Eq.{u_1 + 1} (ProvenHashes.ChainHash.chain5.{u_1} c v) (ProvenHashes.ChainHash.chain5.{u_1} c w))
+      (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_2} B)))
+theorem ProvenHashes.ChainHash.chain5_projection_compare.{u_1, u_2} : ∀ {K : Type u_1} {B : Type u_2}
+  [inst : Field.{u_1} K] [inst_1 : Fintype.{u_1} K] [inst_2 : AddCommGroup.{u_2} B] [inst_3 : Fintype.{u_2} B]
+  (π : AddMonoidHom.{u_1, u_2} K B),
+  Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π →
+    ∀ (v w : K),
+      LE.le.{0}
+        (ProvenHashes.uniformProb.{u_1} fun c =>
+          Eq.{u_2 + 1} (π (ProvenHashes.ChainHash.chain5.{u_1} c v)) (π (ProvenHashes.ChainHash.chain5.{u_1} c w)))
+        (HAdd.hAdd.{0, 0, 0}
+          (ProvenHashes.uniformProb.{u_1} fun c =>
+            Eq.{u_1 + 1} (ProvenHashes.ChainHash.chain5.{u_1} c v) (ProvenHashes.ChainHash.chain5.{u_1} c w))
+          (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_2} B))) :=
+⋯
+'ProvenHashes.ChainHash.chain5_projection_compare' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.projection_compare_message.{u_1} {B : Type u_1} [AddCommGroup.{u_1} B] [Fintype.{u_1} B]
+  (π : AddMonoidHom.{0, u_1} ProvenHashes.ChainHash.F B) (hπ : Function.Surjective.{1, u_1 + 1} ⇑π)
+  (m m' : ProvenHashes.ChainHash.Message) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{0} fun k =>
+      Eq.{u_1 + 1} (π (ProvenHashes.ChainHash.chainHash k m)) (π (ProvenHashes.ChainHash.chainHash k m')))
+    (HAdd.hAdd.{0, 0, 0}
+      (ProvenHashes.uniformProb.{0} fun k =>
+        Eq.{1} (ProvenHashes.ChainHash.chainHash k m) (ProvenHashes.ChainHash.chainHash k m'))
+      (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_1} B)))
+theorem ProvenHashes.ChainHash.projection_compare_message.{u_1} : ∀ {B : Type u_1} [inst : AddCommGroup.{u_1} B]
+  [inst_1 : Fintype.{u_1} B] (π : AddMonoidHom.{0, u_1} ProvenHashes.ChainHash.F B),
+  Function.Surjective.{1, u_1 + 1} ⇑π →
+    ∀ (m m' : ProvenHashes.ChainHash.Message),
+      LE.le.{0}
+        (ProvenHashes.uniformProb.{0} fun k =>
+          Eq.{u_1 + 1} (π (ProvenHashes.ChainHash.chainHash k m)) (π (ProvenHashes.ChainHash.chainHash k m')))
+        (HAdd.hAdd.{0, 0, 0}
+          (ProvenHashes.uniformProb.{0} fun k =>
+            Eq.{1} (ProvenHashes.ChainHash.chainHash k m) (ProvenHashes.ChainHash.chainHash k m'))
+          (HDiv.hDiv.{0, 0, 0} 1 ↑(Fintype.card.{u_1} B))) :=
+⋯
+'ProvenHashes.ChainHash.projection_compare_message' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.projection_collision_bound (s L : Nat)
+  (π : LinearMap.{0, 0, 0, 0} (RingHom.id.{0} (ZMod 2)) ProvenHashes.ChainHash.F (ProvenHashes.ChainHash.Word s))
+  (hπ : Function.Surjective.{1, 1} ⇑π) (hL : LT.lt.{0} 0 L)
+  (hcap : LT.lt.{0} (HMul.hMul.{0, 0, 0} 8 L) (HPow.hPow.{0, 0, 0} 2 64)) (m m' : List.{0} UInt8)
+  (hm : LE.le.{0} (List.length.{0} m) (HMul.hMul.{0, 0, 0} 8 L))
+  (hm' : LE.le.{0} (List.length.{0} m') (HMul.hMul.{0, 0, 0} 8 L)) (hne : Ne.{1} m m') :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{0} fun k =>
+      Eq.{1}
+        (π
+          (ProvenHashes.ChainHash.chainHash
+            (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+            (ProvenHashes.ChainHash.bytesToMessage m)))
+        (π
+          (ProvenHashes.ChainHash.chainHash
+            (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+            (ProvenHashes.ChainHash.bytesToMessage m'))))
+    (HAdd.hAdd.{0, 0, 0} (ProvenHashes.ChainHash.epsilon L) (HDiv.hDiv.{0, 0, 0} 1 (HPow.hPow.{0, 0, 0} 2 s)))
+theorem ProvenHashes.ChainHash.projection_collision_bound : ∀ (s L : Nat)
+  (π : LinearMap.{0, 0, 0, 0} (RingHom.id.{0} (ZMod 2)) ProvenHashes.ChainHash.F (ProvenHashes.ChainHash.Word s)),
+  Function.Surjective.{1, 1} ⇑π →
+    LT.lt.{0} 0 L →
+      LT.lt.{0} (HMul.hMul.{0, 0, 0} 8 L) (HPow.hPow.{0, 0, 0} 2 64) →
+        ∀ (m m' : List.{0} UInt8),
+          LE.le.{0} (List.length.{0} m) (HMul.hMul.{0, 0, 0} 8 L) →
+            LE.le.{0} (List.length.{0} m') (HMul.hMul.{0, 0, 0} 8 L) →
+              Ne.{1} m m' →
+                LE.le.{0}
+                  (ProvenHashes.uniformProb.{0} fun k =>
+                    Eq.{1}
+                      (π
+                        (ProvenHashes.ChainHash.chainHash
+                          (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+                          (ProvenHashes.ChainHash.bytesToMessage m)))
+                      (π
+                        (ProvenHashes.ChainHash.chainHash
+                          (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+                          (ProvenHashes.ChainHash.bytesToMessage m'))))
+                  (HAdd.hAdd.{0, 0, 0} (ProvenHashes.ChainHash.epsilon L)
+                    (HDiv.hDiv.{0, 0, 0} 1 (HPow.hPow.{0, 0, 0} 2 s))) :=
+⋯
+'ProvenHashes.ChainHash.projection_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.bitProjection_surjective {s : Nat} (positions : Function.Embedding.{1, 1} (Fin s) (Fin 64)) :
+  Function.Surjective.{1, 1} ⇑(ProvenHashes.ChainHash.bitProjection positions)
+theorem ProvenHashes.ChainHash.bitProjection_surjective : ∀ {s : Nat}
+  (positions : Function.Embedding.{1, 1} (Fin s) (Fin 64)),
+  Function.Surjective.{1, 1} ⇑(ProvenHashes.ChainHash.bitProjection positions) :=
+⋯
+'ProvenHashes.ChainHash.bitProjection_surjective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.bit_subset_collision_bound {s : Nat} (positions : Function.Embedding.{1, 1} (Fin s) (Fin 64))
+  (L : Nat) (hL : LT.lt.{0} 0 L) (hcap : LT.lt.{0} (HMul.hMul.{0, 0, 0} 8 L) (HPow.hPow.{0, 0, 0} 2 64))
+  (m m' : List.{0} UInt8) (hm : LE.le.{0} (List.length.{0} m) (HMul.hMul.{0, 0, 0} 8 L))
+  (hm' : LE.le.{0} (List.length.{0} m') (HMul.hMul.{0, 0, 0} 8 L)) (hne : Ne.{1} m m') :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{0} fun k =>
+      Eq.{1}
+        ((ProvenHashes.ChainHash.bitProjection positions)
+          (ProvenHashes.ChainHash.chainHash
+            (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+            (ProvenHashes.ChainHash.bytesToMessage m)))
+        ((ProvenHashes.ChainHash.bitProjection positions)
+          (ProvenHashes.ChainHash.chainHash
+            (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+            (ProvenHashes.ChainHash.bytesToMessage m'))))
+    (HAdd.hAdd.{0, 0, 0} (ProvenHashes.ChainHash.epsilon L) (HDiv.hDiv.{0, 0, 0} 1 (HPow.hPow.{0, 0, 0} 2 s)))
+theorem ProvenHashes.ChainHash.bit_subset_collision_bound : ∀ {s : Nat}
+  (positions : Function.Embedding.{1, 1} (Fin s) (Fin 64)) (L : Nat),
+  LT.lt.{0} 0 L →
+    LT.lt.{0} (HMul.hMul.{0, 0, 0} 8 L) (HPow.hPow.{0, 0, 0} 2 64) →
+      ∀ (m m' : List.{0} UInt8),
+        LE.le.{0} (List.length.{0} m) (HMul.hMul.{0, 0, 0} 8 L) →
+          LE.le.{0} (List.length.{0} m') (HMul.hMul.{0, 0, 0} 8 L) →
+            Ne.{1} m m' →
+              LE.le.{0}
+                (ProvenHashes.uniformProb.{0} fun k =>
+                  Eq.{1}
+                    ((ProvenHashes.ChainHash.bitProjection positions)
+                      (ProvenHashes.ChainHash.chainHash
+                        (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+                        (ProvenHashes.ChainHash.bytesToMessage m)))
+                    ((ProvenHashes.ChainHash.bitProjection positions)
+                      (ProvenHashes.ChainHash.chainHash
+                        (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+                        (ProvenHashes.ChainHash.bytesToMessage m'))))
+                (HAdd.hAdd.{0, 0, 0} (ProvenHashes.ChainHash.epsilon L)
+                  (HDiv.hDiv.{0, 0, 0} 1 (HPow.hPow.{0, 0, 0} 2 s))) :=
+⋯
+'ProvenHashes.ChainHash.bit_subset_collision_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.chain5_zero_not_injective.{u_1} {K : Type u_1} [Field.{u_1} K] [CharP.{u_1} K 2] :
+  Not (Function.Injective.{u_1 + 1, u_1 + 1} (ProvenHashes.ChainHash.chain5.{u_1} fun x => 0))
+theorem ProvenHashes.ChainHash.chain5_zero_not_injective.{u_1} : ∀ {K : Type u_1} [inst : Field.{u_1} K]
+  [CharP.{u_1} K 2], Not (Function.Injective.{u_1 + 1, u_1 + 1} (ProvenHashes.ChainHash.chain5.{u_1} fun x => 0)) :=
+⋯
+'ProvenHashes.ChainHash.chain5_zero_not_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.mixedDifferentialCount_le_delta.{u_1} {F : Type u_1} [AddGroup.{u_1} F] [Fintype.{u_1} F]
+  {N : Nat} [NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F) (D : ZMod N) (hD : Ne.{1} D 0) (c : F) :
+  LE.le.{0} (ProvenHashes.ChainHash.mixedDifferentialCount.{u_1} word f D c)
+    (ProvenHashes.ChainHash.mixedDelta.{u_1} word f)
+theorem ProvenHashes.ChainHash.mixedDifferentialCount_le_delta.{u_1} : ∀ {F : Type u_1} [inst : AddGroup.{u_1} F]
+  [inst_1 : Fintype.{u_1} F] {N : Nat} [inst_2 : NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F)
+  (D : ZMod N),
+  Ne.{1} D 0 →
+    ∀ (c : F),
+      LE.le.{0} (ProvenHashes.ChainHash.mixedDifferentialCount.{u_1} word f D c)
+        (ProvenHashes.ChainHash.mixedDelta.{u_1} word f) :=
+⋯
+'ProvenHashes.ChainHash.mixedDifferentialCount_le_delta' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.mixed_projection_count_bound.{u_1, u_2} {F : Type u_1} {A : Type u_2} [AddCommGroup.{u_1} F]
+  [Fintype.{u_1} F] [AddCommGroup.{u_2} A] {N : Nat} [NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F)
+  (π : AddMonoidHom.{u_1, u_2} F A) (D : ZMod N) (hD : Ne.{1} D 0) :
+  LE.le.{0}
+    (Finset.card.{u_1}
+      {v | Eq.{u_2 + 1} (π (f v)) (π (f ((Equiv.symm.{u_1 + 1, 1} word) (HAdd.hAdd.{0, 0, 0} (word v) D))))})
+    (HMul.hMul.{0, 0, 0} (Finset.card.{u_1} {c | Eq.{u_2 + 1} (π c) 0})
+      (ProvenHashes.ChainHash.mixedDelta.{u_1} word f))
+theorem ProvenHashes.ChainHash.mixed_projection_count_bound.{u_1, u_2} : ∀ {F : Type u_1} {A : Type u_2}
+  [inst : AddCommGroup.{u_1} F] [inst_1 : Fintype.{u_1} F] [inst_2 : AddCommGroup.{u_2} A] {N : Nat}
+  [inst_3 : NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_1, u_2} F A)
+  (D : ZMod N),
+  Ne.{1} D 0 →
+    LE.le.{0}
+      (Finset.card.{u_1}
+        {v | Eq.{u_2 + 1} (π (f v)) (π (f ((Equiv.symm.{u_1 + 1, 1} word) (HAdd.hAdd.{0, 0, 0} (word v) D))))})
+      (HMul.hMul.{0, 0, 0} (Finset.card.{u_1} {c | Eq.{u_2 + 1} (π c) 0})
+        (ProvenHashes.ChainHash.mixedDelta.{u_1} word f)) :=
+⋯
+'ProvenHashes.ChainHash.mixed_projection_count_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.mixed_projection_uniform_bound.{u_1, u_2} {F : Type u_1} {A : Type u_2} [AddCommGroup.{u_1} F]
+  [Fintype.{u_1} F] [AddCommGroup.{u_2} A] {N : Nat} [NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F)
+  (π : AddMonoidHom.{u_1, u_2} F A) (D : ZMod N) (hD : Ne.{1} D 0) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{u_1} fun v =>
+      Eq.{u_2 + 1} (π (f v)) (π (f ((Equiv.symm.{u_1 + 1, 1} word) (HAdd.hAdd.{0, 0, 0} (word v) D)))))
+    (HDiv.hDiv.{0, 0, 0}
+      (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_1} word f)
+        ↑(Finset.card.{u_1} {c | Eq.{u_2 + 1} (π c) 0}))
+      ↑(Fintype.card.{u_1} F))
+theorem ProvenHashes.ChainHash.mixed_projection_uniform_bound.{u_1, u_2} : ∀ {F : Type u_1} {A : Type u_2}
+  [inst : AddCommGroup.{u_1} F] [inst_1 : Fintype.{u_1} F] [inst_2 : AddCommGroup.{u_2} A] {N : Nat}
+  [inst_3 : NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_1, u_2} F A)
+  (D : ZMod N),
+  Ne.{1} D 0 →
+    LE.le.{0}
+      (ProvenHashes.uniformProb.{u_1} fun v =>
+        Eq.{u_2 + 1} (π (f v)) (π (f ((Equiv.symm.{u_1 + 1, 1} word) (HAdd.hAdd.{0, 0, 0} (word v) D)))))
+      (HDiv.hDiv.{0, 0, 0}
+        (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_1} word f)
+          ↑(Finset.card.{u_1} {c | Eq.{u_2 + 1} (π c) 0}))
+        ↑(Fintype.card.{u_1} F)) :=
+⋯
+'ProvenHashes.ChainHash.mixed_projection_uniform_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.fixedFinalizer_projection_twist_bound.{u_1, u_2} {F : Type u_1} {A : Type u_2}
+  [AddCommGroup.{u_1} F] [Fintype.{u_1} F] [AddCommGroup.{u_2} A] {N : Nat} [NeZero.{0} N]
+  (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_1, u_2} F A) (v w : F)
+  (hne : Ne.{u_1 + 1} v w) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{u_1} fun τ =>
+      Eq.{u_2 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ v)))
+        (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ w))))
+    (HDiv.hDiv.{0, 0, 0}
+      (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_1} word f)
+        ↑(Finset.card.{u_1} {c | Eq.{u_2 + 1} (π c) 0}))
+      ↑(Fintype.card.{u_1} F))
+theorem ProvenHashes.ChainHash.fixedFinalizer_projection_twist_bound.{u_1, u_2} : ∀ {F : Type u_1} {A : Type u_2}
+  [inst : AddCommGroup.{u_1} F] [inst_1 : Fintype.{u_1} F] [inst_2 : AddCommGroup.{u_2} A] {N : Nat}
+  [inst_3 : NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_1, u_2} F A)
+  (v w : F),
+  Ne.{u_1 + 1} v w →
+    LE.le.{0}
+      (ProvenHashes.uniformProb.{u_1} fun τ =>
+        Eq.{u_2 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ v)))
+          (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ w))))
+      (HDiv.hDiv.{0, 0, 0}
+        (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_1} word f)
+          ↑(Finset.card.{u_1} {c | Eq.{u_2 + 1} (π c) 0}))
+        ↑(Fintype.card.{u_1} F)) :=
+⋯
+'ProvenHashes.ChainHash.fixedFinalizer_projection_twist_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.fixedFinalizer_projection_composition_bound.{u_1, u_2, u_3} {K : Type u_1} {F : Type u_2}
+  {A : Type u_3} [Fintype.{u_1} K] [Nonempty.{u_1 + 1} K] [AddCommGroup.{u_2} F] [Fintype.{u_2} F]
+  [AddCommGroup.{u_3} A] {N : Nat} [NeZero.{0} N] (word : Equiv.{u_2 + 1, 1} F (ZMod N)) (f : F → F)
+  (π : AddMonoidHom.{u_2, u_3} F A) (s t : K → F) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+      Eq.{u_3 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1))))
+        (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1)))))
+    (HAdd.hAdd.{0, 0, 0} (ProvenHashes.uniformProb.{u_1} fun k => Eq.{u_2 + 1} (s k) (t k))
+      (HDiv.hDiv.{0, 0, 0}
+        (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_2} word f)
+          ↑(Finset.card.{u_2} {c | Eq.{u_3 + 1} (π c) 0}))
+        ↑(Fintype.card.{u_2} F)))
+theorem ProvenHashes.ChainHash.fixedFinalizer_projection_composition_bound.{u_1, u_2, u_3} : ∀ {K : Type u_1}
+  {F : Type u_2} {A : Type u_3} [inst : Fintype.{u_1} K] [Nonempty.{u_1 + 1} K] [inst_2 : AddCommGroup.{u_2} F]
+  [inst_3 : Fintype.{u_2} F] [inst_4 : AddCommGroup.{u_3} A] {N : Nat} [inst_5 : NeZero.{0} N]
+  (word : Equiv.{u_2 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_2, u_3} F A) (s t : K → F),
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+      Eq.{u_3 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1))))
+        (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1)))))
+    (HAdd.hAdd.{0, 0, 0} (ProvenHashes.uniformProb.{u_1} fun k => Eq.{u_2 + 1} (s k) (t k))
+      (HDiv.hDiv.{0, 0, 0}
+        (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_2} word f)
+          ↑(Finset.card.{u_2} {c | Eq.{u_3 + 1} (π c) 0}))
+        ↑(Fintype.card.{u_2} F))) :=
+⋯
+'ProvenHashes.ChainHash.fixedFinalizer_projection_composition_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.fixedFinalizer_projection_full_bound.{u_1, u_2, u_3} {K : Type u_1} {F : Type u_2} {A : Type u_3}
+  [Fintype.{u_1} K] [Nonempty.{u_1 + 1} K] [AddCommGroup.{u_2} F] [Fintype.{u_2} F] [AddCommGroup.{u_3} A] {N : Nat}
+  [NeZero.{0} N] (word : Equiv.{u_2 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_2, u_3} F A) (s t : K → F) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+      Eq.{u_3 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1))))
+        (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1)))))
+    (HAdd.hAdd.{0, 0, 0}
+      (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+        Eq.{u_2 + 1} (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1)))
+          (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1))))
+      (HDiv.hDiv.{0, 0, 0}
+        (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_2} word f)
+          ↑(Finset.card.{u_2} {c | Eq.{u_3 + 1} (π c) 0}))
+        ↑(Fintype.card.{u_2} F)))
+theorem ProvenHashes.ChainHash.fixedFinalizer_projection_full_bound.{u_1, u_2, u_3} : ∀ {K : Type u_1} {F : Type u_2}
+  {A : Type u_3} [inst : Fintype.{u_1} K] [Nonempty.{u_1 + 1} K] [inst_2 : AddCommGroup.{u_2} F]
+  [inst_3 : Fintype.{u_2} F] [inst_4 : AddCommGroup.{u_3} A] {N : Nat} [inst_5 : NeZero.{0} N]
+  (word : Equiv.{u_2 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_2, u_3} F A) (s t : K → F),
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+      Eq.{u_3 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1))))
+        (π (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1)))))
+    (HAdd.hAdd.{0, 0, 0}
+      (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+        Eq.{u_2 + 1} (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1)))
+          (f (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1))))
+      (HDiv.hDiv.{0, 0, 0}
+        (HMul.hMul.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_2} word f)
+          ↑(Finset.card.{u_2} {c | Eq.{u_3 + 1} (π c) 0}))
+        ↑(Fintype.card.{u_2} F))) :=
+⋯
+'ProvenHashes.ChainHash.fixedFinalizer_projection_full_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.fixedFinalizer_projection_twist_surjective_bound.{u_1, u_2} {F : Type u_1} {A : Type u_2}
+  [AddCommGroup.{u_1} F] [Fintype.{u_1} F] [AddCommGroup.{u_2} A] [Fintype.{u_2} A] {N : Nat} [NeZero.{0} N]
+  (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F) (π : AddMonoidHom.{u_1, u_2} F A)
+  (hπ : Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π) (v w : F) (hne : Ne.{u_1 + 1} v w) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{u_1} fun τ =>
+      Eq.{u_2 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ v)))
+        (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ w))))
+    (HDiv.hDiv.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_1} word f) ↑(Fintype.card.{u_2} A))
+theorem ProvenHashes.ChainHash.fixedFinalizer_projection_twist_surjective_bound.{u_1, u_2} : ∀ {F : Type u_1}
+  {A : Type u_2} [inst : AddCommGroup.{u_1} F] [inst_1 : Fintype.{u_1} F] [inst_2 : AddCommGroup.{u_2} A]
+  [inst_3 : Fintype.{u_2} A] {N : Nat} [inst_4 : NeZero.{0} N] (word : Equiv.{u_1 + 1, 1} F (ZMod N)) (f : F → F)
+  (π : AddMonoidHom.{u_1, u_2} F A),
+  Function.Surjective.{u_1 + 1, u_2 + 1} ⇑π →
+    ∀ (v w : F),
+      Ne.{u_1 + 1} v w →
+        LE.le.{0}
+          (ProvenHashes.uniformProb.{u_1} fun τ =>
+            Eq.{u_2 + 1} (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ v)))
+              (π (f (ProvenHashes.ChainHash.integerTwist.{u_1} word τ w))))
+          (HDiv.hDiv.{0, 0, 0} ↑(ProvenHashes.ChainHash.mixedDelta.{u_1} word f) ↑(Fintype.card.{u_2} A)) :=
+⋯
+'ProvenHashes.ChainHash.fixedFinalizer_projection_twist_surjective_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ProvenHashes.ChainHash.keyedFinalizer_projection_full_bound.{u_1, u_2, u_3} {K : Type u_1} {F : Type u_2} {A : Type u_3}
+  [Fintype.{u_1} K] [Nonempty.{u_1 + 1} K] [AddCommGroup.{u_2} F] [Fintype.{u_2} F] [AddCommGroup.{u_3} A]
+  [Fintype.{u_3} A] {N : Nat} [NeZero.{0} N] (word : Equiv.{u_2 + 1, 1} F (ZMod N)) (f : K → F → F)
+  (π : AddMonoidHom.{u_2, u_3} F A) (hπ : Function.Surjective.{u_2 + 1, u_3 + 1} ⇑π) (s t : K → F) (M : Nat)
+  (hM : ∀ (k : K), LE.le.{0} (ProvenHashes.ChainHash.mixedDelta.{u_2} word (f k)) M) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+      Eq.{u_3 + 1} (π (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1))))
+        (π (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1)))))
+    (HAdd.hAdd.{0, 0, 0}
+      (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+        Eq.{u_2 + 1} (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1)))
+          (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1))))
+      (HDiv.hDiv.{0, 0, 0} ↑M ↑(Fintype.card.{u_3} A)))
+theorem ProvenHashes.ChainHash.keyedFinalizer_projection_full_bound.{u_1, u_2, u_3} : ∀ {K : Type u_1} {F : Type u_2}
+  {A : Type u_3} [inst : Fintype.{u_1} K] [Nonempty.{u_1 + 1} K] [inst_2 : AddCommGroup.{u_2} F]
+  [inst_3 : Fintype.{u_2} F] [inst_4 : AddCommGroup.{u_3} A] [inst_5 : Fintype.{u_3} A] {N : Nat}
+  [inst_6 : NeZero.{0} N] (word : Equiv.{u_2 + 1, 1} F (ZMod N)) (f : K → F → F) (π : AddMonoidHom.{u_2, u_3} F A),
+  Function.Surjective.{u_2 + 1, u_3 + 1} ⇑π →
+    ∀ (s t : K → F) (M : Nat),
+      (∀ (k : K), LE.le.{0} (ProvenHashes.ChainHash.mixedDelta.{u_2} word (f k)) M) →
+        LE.le.{0}
+          (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+            Eq.{u_3 + 1} (π (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1))))
+              (π (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1)))))
+          (HAdd.hAdd.{0, 0, 0}
+            (ProvenHashes.uniformProb.{max u_1 u_2} fun k =>
+              Eq.{u_2 + 1} (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (s k.1)))
+                (f k.1 (ProvenHashes.ChainHash.integerTwist.{u_2} word k.2 (t k.1))))
+            (HDiv.hDiv.{0, 0, 0} ↑M ↑(Fintype.card.{u_3} A))) :=
+⋯
+'ProvenHashes.ChainHash.keyedFinalizer_projection_full_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.mixedFamilyDelta_bound.{u_1, u_2} {J : Type u_1} {G : Type u_2} [Fintype.{u_1} J]
+  [AddGroup.{u_2} G] [Fintype.{u_2} G] {N : Nat} [NeZero.{0} N] (word : Equiv.{u_2 + 1, 1} G (ZMod N)) (f : J → G → G)
+  (j : J) :
+  LE.le.{0} (ProvenHashes.ChainHash.mixedDelta.{u_2} word (f j))
+    (Finset.sup.{0, u_1} Finset.univ.{u_1} fun k => ProvenHashes.ChainHash.mixedDelta.{u_2} word (f k))
+theorem ProvenHashes.ChainHash.mixedFamilyDelta_bound.{u_1, u_2} : ∀ {J : Type u_1} {G : Type u_2}
+  [inst : Fintype.{u_1} J] [inst_1 : AddGroup.{u_2} G] [inst_2 : Fintype.{u_2} G] {N : Nat} [inst_3 : NeZero.{0} N]
+  (word : Equiv.{u_2 + 1, 1} G (ZMod N)) (f : J → G → G) (j : J),
+  LE.le.{0} (ProvenHashes.ChainHash.mixedDelta.{u_2} word (f j))
+    (Finset.sup.{0, u_1} Finset.univ.{u_1} fun k => ProvenHashes.ChainHash.mixedDelta.{u_2} word (f k)) :=
+⋯
+'ProvenHashes.ChainHash.mixedFamilyDelta_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.finalizerMixedDelta_bound (c : Fin 5 → ProvenHashes.ChainHash.F) :
+  LE.le.{0}
+    (ProvenHashes.ChainHash.mixedDelta.{0} ProvenHashes.ChainHash.fieldIntegerEquiv
+      (ProvenHashes.ChainHash.chain5.{0} c))
+    ProvenHashes.ChainHash.finalizerMixedDelta
+theorem ProvenHashes.ChainHash.finalizerMixedDelta_bound : ∀ (c : Fin 5 → ProvenHashes.ChainHash.F),
+  LE.le.{0}
+    (ProvenHashes.ChainHash.mixedDelta.{0} ProvenHashes.ChainHash.fieldIntegerEquiv
+      (ProvenHashes.ChainHash.chain5.{0} c))
+    ProvenHashes.ChainHash.finalizerMixedDelta :=
+⋯
+'ProvenHashes.ChainHash.finalizerMixedDelta_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.mixed_projection_compare_message.{u_1} {A : Type u_1} [AddCommGroup.{u_1} A] [Fintype.{u_1} A]
+  (π : AddMonoidHom.{0, u_1} ProvenHashes.ChainHash.F A) (hπ : Function.Surjective.{1, u_1 + 1} ⇑π)
+  (m m' : ProvenHashes.ChainHash.Message) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{0} fun k =>
+      Eq.{u_1 + 1} (π (ProvenHashes.ChainHash.chainHash k m)) (π (ProvenHashes.ChainHash.chainHash k m')))
+    (HAdd.hAdd.{0, 0, 0}
+      (ProvenHashes.uniformProb.{0} fun k =>
+        Eq.{1} (ProvenHashes.ChainHash.chainHash k m) (ProvenHashes.ChainHash.chainHash k m'))
+      (HDiv.hDiv.{0, 0, 0} ↑ProvenHashes.ChainHash.finalizerMixedDelta ↑(Fintype.card.{u_1} A)))
+theorem ProvenHashes.ChainHash.mixed_projection_compare_message.{u_1} : ∀ {A : Type u_1} [inst : AddCommGroup.{u_1} A]
+  [inst_1 : Fintype.{u_1} A] (π : AddMonoidHom.{0, u_1} ProvenHashes.ChainHash.F A),
+  Function.Surjective.{1, u_1 + 1} ⇑π →
+    ∀ (m m' : ProvenHashes.ChainHash.Message),
+      LE.le.{0}
+        (ProvenHashes.uniformProb.{0} fun k =>
+          Eq.{u_1 + 1} (π (ProvenHashes.ChainHash.chainHash k m)) (π (ProvenHashes.ChainHash.chainHash k m')))
+        (HAdd.hAdd.{0, 0, 0}
+          (ProvenHashes.uniformProb.{0} fun k =>
+            Eq.{1} (ProvenHashes.ChainHash.chainHash k m) (ProvenHashes.ChainHash.chainHash k m'))
+          (HDiv.hDiv.{0, 0, 0} ↑ProvenHashes.ChainHash.finalizerMixedDelta ↑(Fintype.card.{u_1} A))) :=
+⋯
+'ProvenHashes.ChainHash.mixed_projection_compare_message' depends on axioms: [propext, Classical.choice, Quot.sound]
+ProvenHashes.ChainHash.mixed_projection_compare (s : Nat)
+  (π : LinearMap.{0, 0, 0, 0} (RingHom.id.{0} (ZMod 2)) ProvenHashes.ChainHash.F (ProvenHashes.ChainHash.Word s))
+  (hπ : Function.Surjective.{1, 1} ⇑π) (m m' : List.{0} UInt8) :
+  LE.le.{0}
+    (ProvenHashes.uniformProb.{0} fun k =>
+      Eq.{1}
+        (π
+          (ProvenHashes.ChainHash.chainHash
+            (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+            (ProvenHashes.ChainHash.bytesToMessage m)))
+        (π
+          (ProvenHashes.ChainHash.chainHash
+            (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+            (ProvenHashes.ChainHash.bytesToMessage m'))))
+    (HAdd.hAdd.{0, 0, 0}
+      (ProvenHashes.uniformProb.{0} fun k =>
+        Eq.{1} (ProvenHashes.ChainHash.chainHashBytes k m) (ProvenHashes.ChainHash.chainHashBytes k m'))
+      (HDiv.hDiv.{0, 0, 0} (↑ProvenHashes.ChainHash.finalizerMixedDelta) (HPow.hPow.{0, 0, 0} 2 s)))
+theorem ProvenHashes.ChainHash.mixed_projection_compare : ∀ (s : Nat)
+  (π : LinearMap.{0, 0, 0, 0} (RingHom.id.{0} (ZMod 2)) ProvenHashes.ChainHash.F (ProvenHashes.ChainHash.Word s)),
+  Function.Surjective.{1, 1} ⇑π →
+    ∀ (m m' : List.{0} UInt8),
+      LE.le.{0}
+        (ProvenHashes.uniformProb.{0} fun k =>
+          Eq.{1}
+            (π
+              (ProvenHashes.ChainHash.chainHash
+                (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+                (ProvenHashes.ChainHash.bytesToMessage m)))
+            (π
+              (ProvenHashes.ChainHash.chainHash
+                (ProvenHashes.ChainHash.decodeKey (ProvenHashes.ChainHash.decodeKeyBytes 8 k))
+                (ProvenHashes.ChainHash.bytesToMessage m'))))
+        (HAdd.hAdd.{0, 0, 0}
+          (ProvenHashes.uniformProb.{0} fun k =>
+            Eq.{1} (ProvenHashes.ChainHash.chainHashBytes k m) (ProvenHashes.ChainHash.chainHashBytes k m'))
+          (HDiv.hDiv.{0, 0, 0} (↑ProvenHashes.ChainHash.finalizerMixedDelta) (HPow.hPow.{0, 0, 0} 2 s))) :=
+⋯
+'ProvenHashes.ChainHash.mixed_projection_compare' depends on axioms: [propext, Classical.choice, Quot.sound]

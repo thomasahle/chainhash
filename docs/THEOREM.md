@@ -75,6 +75,52 @@ guarantee about the collision probability of fixed messages under a
 random key, not an estimate of attack work and not 63 bits of
 cryptographic security.
 
+## Output bits and bucket indices
+
+A hash table uses only part of the digest. For any subset of `s` output
+bit positions, or more generally any surjective GF(2)-linear map `pi` from
+the 64 output bits onto `s` bits, and any two distinct messages fixed
+independently of the key,
+
+```text
+Pr[ pi(H(m)) = pi(H(m')) ]  <=  epsilon(L) + 2^-s.
+```
+
+Low-bit masking and high-bit selection receive the same guarantee. The
+exact identity is `alpha + (1 - alpha) * 2^-s`, where `alpha` is the
+probability that the two values agree before the finalizer; `alpha <=
+epsilon(L)` because full-output equality has probability
+`alpha + (1 - alpha) * 2^-64`.
+
+The reason is the finalizer's last multiplication. Writing `v`, `w` for
+the two field elements entering the finalizer,
+`f(v) XOR f(w) = A XOR (v XOR w) * c3` with `A` independent of `c3`; when
+`v != w` this is a bijection of the uniform key word `c3`, so the output
+difference is uniform on the field and a rank-`s` projection of it
+vanishes with probability exactly `2^-s`. The integer twist adds the same
+`tau` to both values and so preserves `v != w`.
+
+Conditionally on distinct finalizer inputs the two digests are independent
+and uniform (the map from `(c3, c4)` to the pair of digests is an
+invertible affine map), so the same holds for any fixed bucket map `g`
+into `m` buckets, power of two or not:
+`Pr[g(H(m)) = g(H(m'))] = alpha + (1 - alpha) * sum_j (n_j / 2^64)^2` with
+`n_j` the number of digests sent to bucket `j`. For fastrange or reduction
+modulo `m`, writing `2^64 = a*m + r`, this is
+`alpha + (1 - alpha) * (1/m + r*(m - r)/(m * 2^128))`, essentially `1/m`.
+
+Lean: `projection_collision_bound` (any surjective linear `pi`),
+`bit_subset_collision_bound` (any set of `s` bit positions) and
+`chain5_projection_exact` (the exact conditional identity) in
+[Projection.lean](../lean/ProvenHashes/ChainHash/Projection.lean);
+signatures and axiom audits in
+[ProjectionAudit.txt](../lean/ProjectionAudit.txt).
+[MixedDifferential.lean](../lean/ProvenHashes/ChainHash/MixedDifferential.lean)
+records the fixed-parameter differential quantities of the finalizer,
+which these bounds do not need. The bucket-map corollary is a stated
+consequence of the proved conditional independence, not a separate Lean
+endpoint.
+
 ## Proof outline
 
 The function is defined on 39 field words `kappa[0..31], y, c0..c4, tau`
@@ -161,5 +207,6 @@ checks `include/chainhash.h` against a separately executable Lean
 reference across both key forms, every available backend, strides 1–8
 and eager/lazy evaluation; it is evidence that the C code computes the
 formalized function, not a formal refinement proof of C, the compiler or
-the SIMD paths. Truncated outputs, bucket indices and messages adapted to
-earlier hash values need separate analysis.
+the SIMD paths. Messages adapted to earlier hash values need separate analysis;
+truncated outputs and bucket indices are covered by the projection
+theorem above.

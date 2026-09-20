@@ -570,6 +570,141 @@ theorem evaluation_independence (k : ℕ) (hk : 0 < k) :
     scheduledHash k = hash ∧ lazyHash = hash
 ```
 
+## [ChainHash/MixedDifferential.lean](ProvenHashes/ChainHash/MixedDifferential.lean)
+
+`ProvenHashes.ChainHash.mixedDifferentialCount_le_delta`
+
+```lean
+theorem mixedDifferentialCount_le_delta {F : Type*} [AddGroup F] [Fintype F]
+    {N : ℕ} [NeZero N] (word : F ≃ ZMod N) (f : F → F)
+    (D : ZMod N) (hD : D ≠ 0) (c : F) :
+    mixedDifferentialCount word f D c ≤ mixedDelta word f
+```
+
+`ProvenHashes.ChainHash.mixed_projection_count_bound`
+
+```lean
+theorem mixed_projection_count_bound {F A : Type*} [AddCommGroup F] [Fintype F]
+    [AddCommGroup A] {N : ℕ} [NeZero N] (word : F ≃ ZMod N)
+    (f : F → F) (π : F →+ A) (D : ZMod N) (hD : D ≠ 0) :
+    (Finset.univ.filter fun v => π (f v) = π (f (word.symm (word v + D)))).card ≤
+      (Finset.univ.filter fun c => π c = 0).card * mixedDelta word f
+```
+
+`ProvenHashes.ChainHash.mixed_projection_uniform_bound`
+
+```lean
+theorem mixed_projection_uniform_bound {F A : Type*} [AddCommGroup F] [Fintype F]
+    [AddCommGroup A] {N : ℕ} [NeZero N] (word : F ≃ ZMod N)
+    (f : F → F) (π : F →+ A) (D : ZMod N) (hD : D ≠ 0) :
+    uniformProb (fun v => π (f v) = π (f (word.symm (word v + D)))) ≤
+      (mixedDelta word f : ℚ≥0) *
+        (Finset.univ.filter fun c => π c = 0).card / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.fixedFinalizer_projection_twist_bound`
+
+```lean
+theorem fixedFinalizer_projection_twist_bound {F A : Type*}
+    [AddCommGroup F] [Fintype F] [AddCommGroup A] {N : ℕ} [NeZero N]
+    (word : F ≃ ZMod N) (f : F → F) (π : F →+ A)
+    (v w : F) (hne : v ≠ w) :
+    uniformProb (fun τ => π (f (integerTwist word τ v)) =
+      π (f (integerTwist word τ w))) ≤
+      (mixedDelta word f : ℚ≥0) *
+        (Finset.univ.filter fun c => π c = 0).card / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.fixedFinalizer_projection_composition_bound`
+
+```lean
+theorem fixedFinalizer_projection_composition_bound {K F A : Type*}
+    [Fintype K] [Nonempty K] [AddCommGroup F] [Fintype F] [AddCommGroup A]
+    {N : ℕ} [NeZero N] (word : F ≃ ZMod N) (f : F → F) (π : F →+ A)
+    (s t : K → F) :
+    uniformProb (fun k : K × F => π (f (integerTwist word k.2 (s k.1))) =
+      π (f (integerTwist word k.2 (t k.1)))) ≤
+      uniformProb (fun k => s k = t k) + (mixedDelta word f : ℚ≥0) *
+        (Finset.univ.filter fun c => π c = 0).card / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.fixedFinalizer_projection_full_bound`
+
+```lean
+theorem fixedFinalizer_projection_full_bound {K F A : Type*}
+    [Fintype K] [Nonempty K] [AddCommGroup F] [Fintype F] [AddCommGroup A]
+    {N : ℕ} [NeZero N] (word : F ≃ ZMod N) (f : F → F) (π : F →+ A)
+    (s t : K → F) :
+    uniformProb (fun k : K × F => π (f (integerTwist word k.2 (s k.1))) =
+      π (f (integerTwist word k.2 (t k.1)))) ≤
+      uniformProb (fun k : K × F => f (integerTwist word k.2 (s k.1)) =
+        f (integerTwist word k.2 (t k.1))) + (mixedDelta word f : ℚ≥0) *
+        (Finset.univ.filter fun c => π c = 0).card / Fintype.card F
+```
+
+`ProvenHashes.ChainHash.fixedFinalizer_projection_twist_surjective_bound`
+
+```lean
+theorem fixedFinalizer_projection_twist_surjective_bound {F A : Type*}
+    [AddCommGroup F] [Fintype F] [AddCommGroup A] [Fintype A]
+    {N : ℕ} [NeZero N] (word : F ≃ ZMod N) (f : F → F)
+    (π : F →+ A) (hπ : Function.Surjective π) (v w : F) (hne : v ≠ w) :
+    uniformProb (fun τ => π (f (integerTwist word τ v)) =
+      π (f (integerTwist word τ w))) ≤ (mixedDelta word f : ℚ≥0) / Fintype.card A
+```
+
+`ProvenHashes.ChainHash.keyedFinalizer_projection_full_bound`
+
+```lean
+theorem keyedFinalizer_projection_full_bound {K F A : Type*}
+    [Fintype K] [Nonempty K] [AddCommGroup F] [Fintype F]
+    [AddCommGroup A] [Fintype A] {N : ℕ} [NeZero N]
+    (word : F ≃ ZMod N) (f : K → F → F) (π : F →+ A)
+    (hπ : Function.Surjective π) (s t : K → F) (M : ℕ)
+    (hM : ∀ k, mixedDelta word (f k) ≤ M) :
+    uniformProb (fun k : K × F => π (f k.1 (integerTwist word k.2 (s k.1))) =
+      π (f k.1 (integerTwist word k.2 (t k.1)))) ≤
+      uniformProb (fun k : K × F => f k.1 (integerTwist word k.2 (s k.1)) =
+        f k.1 (integerTwist word k.2 (t k.1))) + (M : ℚ≥0) / Fintype.card A
+```
+
+`ProvenHashes.ChainHash.mixedFamilyDelta_bound`
+
+```lean
+theorem mixedFamilyDelta_bound {J G : Type*} [Fintype J] [AddGroup G] [Fintype G]
+    {N : ℕ} [NeZero N] (word : G ≃ ZMod N) (f : J → G → G) (j : J) :
+    mixedDelta word (f j) ≤ Finset.univ.sup (fun k => mixedDelta word (f k))
+```
+
+`ProvenHashes.ChainHash.finalizerMixedDelta_bound`
+
+```lean
+theorem finalizerMixedDelta_bound (c : Fin 5 → F) :
+    mixedDelta fieldIntegerEquiv (chain5 c) ≤ finalizerMixedDelta
+```
+
+`ProvenHashes.ChainHash.mixed_projection_compare_message`
+
+```lean
+theorem mixed_projection_compare_message {A : Type*} [AddCommGroup A] [Fintype A]
+    (π : F →+ A) (hπ : Function.Surjective π) (m m' : Message) :
+    uniformProb (fun k : Key => π (chainHash k m) = π (chainHash k m')) ≤
+      uniformProb (fun k : Key => chainHash k m = chainHash k m') +
+        (finalizerMixedDelta : ℚ≥0) / Fintype.card A
+```
+
+`ProvenHashes.ChainHash.mixed_projection_compare`
+
+```lean
+theorem mixed_projection_compare (s : ℕ) (π : F →ₗ[ZMod 2] Word s)
+    (hπ : Function.Surjective π) (m m' : List UInt8) :
+    uniformProb (fun k : Fin 64 → Byte =>
+      π (chainHash (decodeKey (decodeKeyBytes 8 k)) (bytesToMessage m)) =
+      π (chainHash (decodeKey (decodeKeyBytes 8 k)) (bytesToMessage m'))) ≤
+      uniformProb (fun k : Fin 64 → Byte => chainHashBytes k m = chainHashBytes k m') +
+        (finalizerMixedDelta : ℚ≥0) / (2 : ℚ≥0)^s
+```
+
 ## [ChainHash/Model.lean](ProvenHashes/ChainHash/Model.lean)
 
 `ProvenHashes.ChainHash.idealKey_card`
@@ -695,6 +830,113 @@ theorem reducedPH_difference_uniform {K : Type*} [Field K] [Fintype K]
     (hne : ∃ j : Slot, j.1 ∈ a ∧ m j ≠ m' j) (z : K) :
     uniformProb (fun k : Slot → K => reducedPH a m k - reducedPH a m' k = z) =
       1 / Fintype.card K
+```
+
+## [ChainHash/Projection.lean](ProvenHashes/ChainHash/Projection.lean)
+
+`ProvenHashes.ChainHash.projection_uniform`
+
+```lean
+theorem projection_uniform {A B : Type*} [AddCommGroup A] [AddCommGroup B]
+    [Fintype A] [Fintype B] (π : A →+ B) (hπ : Function.Surjective π) (b : B) :
+    uniformProb (fun a => π a = b) = 1 / Fintype.card B
+```
+
+`ProvenHashes.ChainHash.uniformProb_event_update`
+
+```lean
+theorem uniformProb_event_update {I V : Type*}
+    [Fintype I] [Fintype V] [Nonempty V] [DecidableEq I]
+    (f : (I → V) → V) (i : I)
+    (h : ∀ k, Function.Bijective (fun v => f (Function.update k i v)))
+    (E : V → Prop) : uniformProb (fun k => E (f k)) = uniformProb E
+```
+
+`ProvenHashes.ChainHash.chain5_difference_event`
+
+```lean
+theorem chain5_difference_event {K : Type*} [Field K] [Fintype K]
+    (v w : K) (hne : v ≠ w) (E : K → Prop) :
+    uniformProb (fun c : Fin 5 → K => E (chain5 c v - chain5 c w)) =
+      uniformProb E
+```
+
+`ProvenHashes.ChainHash.chain5_projection_exact`
+
+```lean
+theorem chain5_projection_exact {K B : Type*} [Field K] [Fintype K]
+    [AddCommGroup B] [Fintype B] (π : K →+ B) (hπ : Function.Surjective π)
+    (v w : K) (hne : v ≠ w) :
+    uniformProb (fun c : Fin 5 → K => π (chain5 c v) = π (chain5 c w)) =
+      1 / Fintype.card B
+```
+
+`ProvenHashes.ChainHash.uniformProb_prod_compare`
+
+```lean
+theorem uniformProb_prod_compare {K J : Type*} [Fintype K] [Fintype J]
+    [Nonempty K] (E D : K × J → Prop) (b : ℚ≥0)
+    (h : ∀ k, uniformProb (fun j => E (k,j)) ≤
+      uniformProb (fun j => D (k,j)) + b) :
+    uniformProb E ≤ uniformProb D + b
+```
+
+`ProvenHashes.ChainHash.chain5_projection_compare`
+
+```lean
+theorem chain5_projection_compare {K B : Type*} [Field K] [Fintype K]
+    [AddCommGroup B] [Fintype B] (π : K →+ B) (hπ : Function.Surjective π)
+    (v w : K) :
+    uniformProb (fun c : Fin 5 → K => π (chain5 c v) = π (chain5 c w)) ≤
+      uniformProb (fun c : Fin 5 → K => chain5 c v = chain5 c w) + 1 / Fintype.card B
+```
+
+`ProvenHashes.ChainHash.projection_compare_message`
+
+```lean
+theorem projection_compare_message {B : Type*} [AddCommGroup B] [Fintype B]
+    (π : F →+ B) (hπ : Function.Surjective π) (m m' : Message) :
+    uniformProb (fun k : Key => π (chainHash k m) = π (chainHash k m')) ≤
+      uniformProb (fun k : Key => chainHash k m = chainHash k m') + 1 / Fintype.card B
+```
+
+`ProvenHashes.ChainHash.projection_collision_bound`
+
+```lean
+theorem projection_collision_bound (s L : ℕ)
+    (π : F →ₗ[ZMod 2] Word s) (hπ : Function.Surjective π)
+    (hL : 0 < L) (hcap : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Fin 64 → Byte =>
+      π (chainHash (decodeKey (decodeKeyBytes 8 k)) (bytesToMessage m)) =
+      π (chainHash (decodeKey (decodeKeyBytes 8 k)) (bytesToMessage m'))) ≤
+      epsilon L + 1 / (2 : ℚ≥0)^s
+```
+
+`ProvenHashes.ChainHash.bitProjection_surjective`
+
+```lean
+theorem bitProjection_surjective {s : ℕ} (positions : Fin s ↪ Fin 64) :
+    Function.Surjective (bitProjection positions)
+```
+
+`ProvenHashes.ChainHash.bit_subset_collision_bound`
+
+```lean
+theorem bit_subset_collision_bound {s : ℕ} (positions : Fin s ↪ Fin 64)
+    (L : ℕ) (hL : 0 < L) (hcap : 8*L < 2^64)
+    (m m' : List UInt8) (hm : m.length ≤ 8*L) (hm' : m'.length ≤ 8*L) (hne : m ≠ m') :
+    uniformProb (fun k : Fin 64 → Byte =>
+      bitProjection positions (chainHash (decodeKey (decodeKeyBytes 8 k)) (bytesToMessage m)) =
+      bitProjection positions (chainHash (decodeKey (decodeKeyBytes 8 k)) (bytesToMessage m'))) ≤
+      epsilon L + 1 / (2 : ℚ≥0)^s
+```
+
+`ProvenHashes.ChainHash.chain5_zero_not_injective`
+
+```lean
+theorem chain5_zero_not_injective {K : Type*} [Field K] [CharP K 2] :
+    ¬ Function.Injective (chain5 (fun _ : Fin 5 => (0 : K)))
 ```
 
 ## [ChainHash/Scores.lean](ProvenHashes/ChainHash/Scores.lean)

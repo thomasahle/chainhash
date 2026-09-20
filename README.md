@@ -35,7 +35,11 @@ means the bound never exceeds `2L/2^64` (`2L/2^128`).
 "Fixed messages, random key" is the universal-hashing guarantee: it holds
 for every pair of messages, but only when the key is random and the
 messages do not depend on it. It is not a cryptographic digest or a MAC,
-and messages chosen after seeing hash values are outside it. The exact
+and messages chosen after seeing hash values are outside it. The
+guarantee extends to any subset of output bits and to any bucket map:
+for `s` selected bits the bound is `epsilon(L) + 2^-s`, and for `m`
+buckets, power of two or not, essentially `1/m`
+([docs/THEOREM.md](docs/THEOREM.md#output-bits-and-bucket-indices)). The exact
 statements, the definitions of p and d and the proofs are in
 [docs/THEOREM.md](docs/THEOREM.md) and [docs/THEOREM-128.md](docs/THEOREM-128.md).
 

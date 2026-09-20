@@ -10,7 +10,10 @@ the strength score. Every theorem depends only on the standard axioms
 `propext`, `Classical.choice` and `Quot.sound`.
 
 The 64-bit theorems are in namespace `ProvenHashes.ChainHash`, files
-[`ProvenHashes/ChainHash/*.lean`](ProvenHashes/ChainHash) (89 theorems); the
+[`ProvenHashes/ChainHash/*.lean`](ProvenHashes/ChainHash) (89 theorems for the
+collision bound, evaluation and scores, plus [Projection.lean](ProvenHashes/ChainHash/Projection.lean)
+and [MixedDifferential.lean](ProvenHashes/ChainHash/MixedDifferential.lean) for the
+bound on any subset of output bits, audited in [ProjectionAudit.txt](ProjectionAudit.txt)); the
 128-bit theorems in namespace `ProvenHashes.ChainHash128`, files
 [`ProvenHashes/ChainHash128/*.lean`](ProvenHashes/ChainHash128) (116 theorems).
 The full catalogue of exported signatures is
