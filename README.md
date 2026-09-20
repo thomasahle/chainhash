@@ -151,7 +151,7 @@ registers with no round trips through general registers.
 | --- | ---: | ---: |
 | **ChainHash** | **28.31** | **26.26** |
 | XXH3-64 | 19.90 | 13.04 |
-| UMASH-64 | 11.33 | not run |
+| UMASH-64 | 11.33 | 14.43 |
 | **ChainHash-128** | **14.43** | **10.26** |
 | XXH3-128 | 19.82 | 12.53 |
 | UMASH-128 | 6.02 | 7.52 |
