@@ -52,8 +52,12 @@ d(L) = 1                       if L <= 16
 | 4 KiB | 512 | 8 | 32 | 40 |
 | 1 MiB | 131072 | 2048 | 32 | 2080 |
 
-These are certificates (upper bounds), not claims that some pair attains
-them. The SplitMix64 seed constructor is a different key distribution and
+These are certificates (upper bounds). At L = 1 the bound is attained: the
+one-byte messages `"\x00"` and `"\x01"` differ before the finalizer by `s^2`,
+which vanishes only at `s = 0`, and the empty message and `"\x00"` differ by
+`y + s^3`; either pair collides with probability exactly `(2q - 1)/q^2`,
+`q = 2^128`, so the score of 127 bits is exact. For larger L the numerators
+are not claimed to be attained. The SplitMix64 seed constructor is a different key distribution and
 the bound is not asserted for it.
 
 ## Score

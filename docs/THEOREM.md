@@ -57,8 +57,12 @@ for "at most 8L bytes" is the bound at the larger length limit.
 | 1 MiB | 131072 | 4096 | 32 | 4128 |
 
 For L = 1..20 the numerators are `2,3,4,4,5,5,6,6,8,8,8,8,8,8,8,8,10,12,12,12`.
-These are certificates (upper bounds), not claims that some pair attains
-them. The SplitMix64 seed constructor is a different key distribution and
+These are certificates (upper bounds). At L = 1 the bound is attained: the
+one-byte messages `"\x00"` and `"\x01"` differ before the finalizer by `s^2`,
+which vanishes only at `s = 0`, and the empty message and `"\x00"` differ by
+`y + s^3`; either pair collides with probability exactly `(2q - 1)/q^2`,
+`q = 2^64`, so the score of 63 bits is exact. For larger L the numerators
+are not claimed to be attained. The SplitMix64 seed constructor is a different key distribution and
 the bound is not asserted for it.
 
 ## Score
