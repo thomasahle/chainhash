@@ -309,6 +309,9 @@ static inline void ph1x_points(const ph512v1_key *k, const uint8_t *p, int nch, 
 typedef __m512i ph1Z;
 #define PH1_TZD __attribute__((target("avx512f,avx512bw,avx512vl,avx512dq,vpclmulqdq,pclmul,sse4.1")))
 #define ZI PH1_TZD static inline __attribute__((always_inline))
+#undef ZX       /* ZX, ZCL and ZLD are also chainhash192.h's: either header may come first */
+#undef ZCL
+#undef ZLD
 #define ZX(a,b) _mm512_xor_si512(a,b)
 #define ZX3(a,b,c) _mm512_ternarylogic_epi64(a,b,c,0x96)
 #define ZCL(a,b,i) _mm512_clmulepi64_epi128(a,b,i)
@@ -461,6 +464,9 @@ PH1_TZD static void ph1z_hash(const ph512v1_key *k, const uint8_t *p, size_t n, 
     } else { uint64_t w[8] __attribute__((aligned(64))); ph1z_bulkV(k,p,n,w); V=ZLD(w); }
     ph1z_final(k,V,out);
 }
+#undef ZX
+#undef ZCL
+#undef ZLD
 #undef PB
 #undef PBT
 #undef PB_POINTS

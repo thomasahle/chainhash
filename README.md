@@ -219,7 +219,7 @@ hash for 1–31-byte inputs, against 29 for XXH3-64;
 
 ## Version 2 family
 
-Three more widths, each a separate function with its own header and its own digests, built from
+Four more widths, each a separate function with its own header and its own digests, built from
 one construction ([docs/FAMILY.md](docs/FAMILY.md)): the block formula in a larger algebra, then an
 outer stage that applies the same formula to the block values, eight at a time, before a
 length-leading Horner chain, and ChainHash's twist and finalizer. The outer formula has two pairing
@@ -238,6 +238,14 @@ over `GF(2^128)`. Bulk throughput is 72 GB/s on a Xeon 8375C (Ice Lake), about 1
 for ChainHash-128 ([SPEC-128v2.md](docs/SPEC-128v2.md), [THEOREM-128v2.md](docs/THEOREM-128v2.md),
 [results/128v2](results/128v2/README.md)).
 
+**ChainHash-192** ([`include/chainhash192.h`](include/chainhash192.h)). A pseudo-dot-product over
+`GF(2^192)` with a power key (216-byte key), 4 KiB blocks stored contiguously, and ChainHash-256's outer
+stage and finalizer; Karatsuba-3 takes 6 carry-less products per 48-byte pair, against ChainHash-256's 9
+per 64 bytes. 43 GB/s on the Xeon, 45 GB/s on Zen 4 and 48 GB/s on the M2 at 1 MiB: 1.10–1.17×
+ChainHash-256 in the same binary on every host, and 1.25–1.34× on the PCLMUL backend. Score 191; the
+collision numerator for 1 MiB messages is 216 ([SPEC-192.md](docs/SPEC-192.md),
+[THEOREM-192.md](docs/THEOREM-192.md), [results/192](results/192/README.md)).
+
 **ChainHash-256** ([`include/chainhash256.h`](include/chainhash256.h)). A pseudo-dot-product over
 `GF(2^256)` with 4 KiB blocks and a power key (the 128 block masks are the powers of one element),
 so the key is 288 bytes ([SPEC-256.md](docs/SPEC-256.md)). 38 GB/s on the Xeon, about 40 GB/s on
@@ -250,22 +258,22 @@ a 576-byte key. 24 GB/s on the Xeon, 27 GB/s on the M2, 23 GB/s on Zen 4. Score 
 numerator for 1 MiB messages is 272 ([SPEC-512.md](docs/SPEC-512.md),
 [THEOREM-512.md](docs/THEOREM-512.md), [results/512](results/512/README.md)).
 
-All three have a separate schedule for inputs of at most one block (same digests): SMHasher3-style
+All four have a separate schedule for inputs of at most one block (same digests): SMHasher3-style
 latency on 1–31-byte inputs is 125 (ChainHash-128 v2), 132 (ChainHash-256) and 236 (ChainHash-512)
-core cycles on Zen 4, against 116 for ChainHash-128 and 33 for XXH3-128
-([docs/FAMILY.md](docs/FAMILY.md#speed)).
+core cycles on Zen 4, against 116 for ChainHash-128 and 33 for XXH3-128; ChainHash-192 measured 111
+against ChainHash-256's 143 in its own harness ([docs/FAMILY.md](docs/FAMILY.md#speed)).
 
 **Proof status: paper proofs and machine-checked certificates; not yet in Lean.** The exact
 computations the proofs use (field irreducibility, level-1 exponent classes or ranks, the region
 lemma's bookkeeping, the numerators and the scores) run with `make certs`; the Lean development
 covers ChainHash and ChainHash-128 only.
 
-The three headers share one interface: `*_key_from_bytes`, `*_key_from_words` and
+The four headers share one interface: `*_key_from_bytes`, `*_key_from_words` and
 `*_key_from_seed` (tests and benchmarks only) initialize a key in place, at any 8-byte-aligned
 address (the key aligns its own tables); the one-shot hash;
 `*_init`, `*_update`, `*_final` for streaming; `*_backend` and `*_has_backend`; and
 `*_reference`, the definition evaluated literally. ChainHash-128 v2 returns a `ch128_word` like
-ChainHash-128 and takes the backend per call; ChainHash-256 and ChainHash-512 write 32 or 64 bytes
+ChainHash-128 and takes the backend per call; ChainHash-192, -256 and -512 write 24, 32 or 64 bytes
 and fix the backend when the key is initialized.
 
 ```c
@@ -276,7 +284,7 @@ uint8_t digest[64];
 chainhash512(&key, data, len, digest);
 ```
 
-`make test-128v2 test-256 test-512` checks each against its independent Python oracle's vectors,
+`make test-128v2 test-192 test-256 test-512` checks each against its independent Python oracle's vectors,
 every backend against the reference (one-shot and streaming, random raw keys with edge limbs, the
 fast finalizers on crafted carry patterns, inputs flush against unmapped pages), and builds with
 and without ISA flags and portable-only; `make test-all` runs these and the ChainHash and
@@ -290,12 +298,13 @@ Python.
 include/chainhash.h       ChainHash, single header
 include/chainhash128.h    ChainHash-128, single header
 include/chainhash128v2.h  ChainHash-128 v2 (includes chainhash128.h)
+include/chainhash192.h    ChainHash-192, single header
 include/chainhash256.h    ChainHash-256, single header
 include/chainhash512.h    ChainHash-512, with chainhash512_body.inc
 docs/                     SPEC*.md (definitions), THEOREM*.md (bounds), FAMILY.md (the construction), DESIGN.md (why)
 test/, test/128/          independent evaluators, frozen vectors, guards, property and schedule tests
-test/128v2/, 256/, 512/   the version 2 suites: Python oracles, frozen vectors, certificates
-test/family/              all headers in one translation unit (C and C++), page-edge test
+test/128v2/, 192/, 256/, 512/  the version 2 suites: Python oracles, frozen vectors, certificates
+test/family/              all headers in one translation unit (C and C++), page-edge and key-placement tests
 lean/                     Lean 4 proofs, verification records and C/Lean vectors
 smhasher3/                SMHasher3 registration
 results/                  measurements, object-code audits and validation logs from both hosts

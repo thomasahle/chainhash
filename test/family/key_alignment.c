@@ -2,7 +2,7 @@
  * plain malloc, every backend this machine has, one-shot and streaming (the stream object at the same offsets),
  * against the reference digest; then the key relocated by memcpy to another offset (the 64- and 128-bit keys are
  * values; the v2-family keys stay valid when copied, ChainHash-256's possibly on its portable backend).
- * usage: key_alignment [64|128|128v2|256|512|all] */
+ * usage: key_alignment [64|128|128v2|256|512|192|all] */
 #define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +12,7 @@
 #include "chainhash128v2.h"
 #include "chainhash256.h"
 #include "chainhash512.h"
+#include "chainhash192.h"
 
 typedef struct {
     const char *name; size_t ksz, ssz, osz; int nbe, be[5];
@@ -57,7 +58,15 @@ static void s512(void *s, const void *k, int be, const uint8_t *m, size_t n, uin
     chainhash512_stream *st = (chainhash512_stream *)s; size_t c = n / 3; (void)be;
     chainhash512_init(st, (const chainhash512_key *)k); chainhash512_update(st, m, c); chainhash512_update(st, m + c, n - c); chainhash512_final(st, o); }
 
-static hdesc H[5];
+/* ChainHash-192 */
+static void i192(void *k, int be) { chainhash192_key_from_seed_with_backend((chainhash192_key *)k, SEED, be); }
+static void r192(const void *k, const uint8_t *m, size_t n, uint8_t *o) { chainhash192_reference((const chainhash192_key *)k, m, n, o); }
+static void h192(const void *k, int be, const uint8_t *m, size_t n, uint8_t *o) { (void)be; chainhash192((const chainhash192_key *)k, m, n, o); }
+static void s192(void *s, const void *k, int be, const uint8_t *m, size_t n, uint8_t *o) {
+    chainhash192_stream *st = (chainhash192_stream *)s; size_t c = n / 3; (void)be;
+    chainhash192_init(st, (const chainhash192_key *)k); chainhash192_update(st, m, c); chainhash192_update(st, m + c, n - c); chainhash192_final(st, o); }
+
+static hdesc H[6];
 static int nh;
 static void add(hdesc d, int (*has)(int), int lo, int hi) {
     int b; d.nbe = 0;
@@ -114,6 +123,7 @@ int main(int argc, char **argv) {
     { hdesc d = {"128v2", sizeof(chainhash128v2_key), sizeof(chainhash128v2_stream), 16, 0, {0}, i128v2, r128v2, h128v2, s128v2}; add(d, has128v2, 0, 4); }
     { hdesc d = {"256", sizeof(chainhash256_key), sizeof(chainhash256_stream), 32, 0, {0}, i256, r256, h256, s256}; add(d, chainhash256_has_backend, 0, 3); }
     { hdesc d = {"512", sizeof(chainhash512_key), sizeof(chainhash512_stream), 64, 0, {0}, i512, r512, h512, s512}; add(d, chainhash512_has_backend, 0, 3); }
+    { hdesc d = {"192", sizeof(chainhash192_key), sizeof(chainhash192_stream), 24, 0, {0}, i192, r192, h192, s192}; add(d, chainhash192_has_backend, 0, 3); }
     for (h = 0; h < nh; h++) if (!strcmp(only, "all") || !strcmp(only, H[h].name)) { run(&H[h]); ran++; }
     if (!ran) { printf("unknown header %s\n", only); return 2; }
     printf("key placement (%s: keys and streams at 64k+0..56 and malloc, relocated keys, every backend): %ld checks, %ld mismatches -> %s\n",

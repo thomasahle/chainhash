@@ -6,5 +6,6 @@
 #include "chainhash128v2.h"
 #include "chainhash256.h"
 #include "chainhash512.h"
+#include "chainhash192.h"
 #endif
 int main(void) { return 0; }

@@ -26,7 +26,7 @@ BINS_128 = $(addprefix build/128-,$(TESTS_128))
 # family-wide key-placement test; defined before the first rule that lists it as a prerequisite
 KEYALIGN = build/family-key_alignment build/family-key_alignment-portable
 
-.PHONY: all test test-128 test-128v2 test-256 test-512 test-all cxx certs sanitize sanitize-128 vectors speed calibrate clean
+.PHONY: all test test-128 test-128v2 test-256 test-512 test-192 test-all cxx certs sanitize sanitize-128 vectors speed calibrate clean
 all: build/64-compile build/64-cpp build/128-compile build/128-cpp build/speed build/family-compile build/family-cpp
 build:
 	mkdir -p build
@@ -110,7 +110,7 @@ sanitize-128: | build
 	$(CC) $(CPPFLAGS) -std=c99 -Wno-overlength-strings $(SANITIZE) $(ARCH_FLAGS) test/128/schedule_knobs.c -o build/128-schedule_knobs-sanitize
 	./build/128-schedule_knobs-sanitize 1500
 
-# Version 2 family: ChainHash-128 v2, ChainHash-256, ChainHash-512 (docs/FAMILY.md).
+# Version 2 family: ChainHash-128 v2, ChainHash-256, ChainHash-512, ChainHash-192 (docs/FAMILY.md).
 # Each is built natively, with no ISA flags (run-time dispatch only) and portable-only.
 # The 256- and 512-bit headers use GNU C (statement expressions, __int128): no -Wpedantic.
 CFLAGS_V2 = $(filter-out -Wpedantic,$(CFLAGS))
@@ -118,29 +118,36 @@ RANDOM_CASES_V2 ?= 20000
 ifeq ($(ARCH),x86_64)
 X86_TESTS_128V2 = build/128v2-test-karatsuba build/128v2-test-schoolbook build/128v2-test-noavx2 build/128v2-test-prebc build/128v2-test-noprebc
 X86_TESTS_256 = build/256-test-zen0 build/256-test-zen1
-# the 256-bit reference's 64x64 carry-less product by PCLMULQDQ (same arithmetic; speed only)
+# the 256- and 192-bit references' 64x64 carry-less product by PCLMULQDQ (same arithmetic; speed only)
 REF256 = -msse4.1 -DCH256_HW_CLMUL
+REF192 = -msse4.1 -DCH192_HW_CLMUL
+# ChainHash-192 schedule variants (same digests): prefetch forced off / on, Karatsuba-3 finalizer multiply, two-block sweep
+SCHED_TESTS_192 = build/192-test-pf0 build/192-test-pf1 build/192-test-finm build/192-test-sw2
 else
 REF256 = -DCH256_HW_CLMUL
+REF192 = -DCH192_HW_CLMUL
+# ChainHash-192 schedule variants (same digests): GPR twist, no sweep step barrier, no inline assembly
+SCHED_TESTS_192 = build/192-test-gpr build/192-test-nosbar build/192-test-noasm
 endif
 H128V2 = include/chainhash128v2.h include/chainhash128.h
 H256 = include/chainhash256.h
 H512 = include/chainhash512.h include/chainhash512_body.inc
-build/family-compile: test/family/compile.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
+H192 = include/chainhash192.h
+build/family-compile: test/family/compile.c include/chainhash.h $(H128V2) $(H256) $(H512) $(H192) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -Wno-overlength-strings $(ARCH_FLAGS) $< -o $@
-build/family-compile-portable: test/family/compile.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
-	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -DCHAINHASH_PORTABLE -DCHAINHASH128_PORTABLE -DCHAINHASH256_PORTABLE -DCHAINHASH512_PORTABLE $< -o $@
-build/family-cpp: test/family/compile.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
+build/family-compile-portable: test/family/compile.c include/chainhash.h $(H128V2) $(H256) $(H512) $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -DCHAINHASH_PORTABLE -DCHAINHASH128_PORTABLE -DCHAINHASH256_PORTABLE -DCHAINHASH512_PORTABLE -DCHAINHASH192_PORTABLE $< -o $@
+build/family-cpp: test/family/compile.c include/chainhash.h $(H128V2) $(H256) $(H512) $(H192) | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
 # inputs flush against unmapped pages on both sides (the short-input paths use masked/overlapping loads)
-build/family-page: test/family/page.c $(H128V2) $(H256) $(H512) | build
+build/family-page: test/family/page.c $(H128V2) $(H256) $(H512) $(H192) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $< -o $@
 # every header's key (and stream) in place at 64k+0..56 and at plain malloc, and relocated by memcpy, every backend;
-# run per width by each suite (argument: 64, 128, 128v2, 256, 512)
-build/family-key_alignment: test/family/key_alignment.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
+# run per width by each suite (argument: 64, 128, 128v2, 256, 512, 192)
+build/family-key_alignment: test/family/key_alignment.c include/chainhash.h $(H128V2) $(H256) $(H512) $(H192) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -Wno-overlength-strings $(ARCH_FLAGS) $< -o $@
-build/family-key_alignment-portable: test/family/key_alignment.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
-	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -DCHAINHASH_PORTABLE -DCHAINHASH128_PORTABLE -DCHAINHASH256_PORTABLE -DCHAINHASH512_PORTABLE $< -o $@
+build/family-key_alignment-portable: test/family/key_alignment.c include/chainhash.h $(H128V2) $(H256) $(H512) $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -DCHAINHASH_PORTABLE -DCHAINHASH128_PORTABLE -DCHAINHASH256_PORTABLE -DCHAINHASH512_PORTABLE -DCHAINHASH192_PORTABLE $< -o $@
 build/128v2-test: test/128v2/test.c $(H128V2) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_128) $(ARCH_FLAGS) $< -o $@
 build/128v2-test-noarch: test/128v2/test.c $(H128V2) | build
@@ -209,34 +216,80 @@ test-512: build/512-test build/512-test-noarch build/512-test-portable $(KEYALIG
 	./build/family-key_alignment 512
 	./build/family-key_alignment-portable 512
 	python3 test/512/pyref512.py | cmp - test/512/vectors.txt && echo "PASS Python oracle reproduces test/512/vectors.txt"
+# ChainHash-192: the reference uses the hardware 64x64 product where the build has it (REF192; same arithmetic).
+build/192-test: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) $< -o $@
+build/192-test-noarch: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $< -o $@
+build/192-test-portable: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -DCHAINHASH192_PORTABLE $< -o $@
+build/192-test-pf0: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) -DC192X_PF_FORCE=0 $< -o $@
+build/192-test-pf1: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) -DC192X_PF_FORCE=1 $< -o $@
+build/192-test-finm: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) -DC192X_FINM=1 $< -o $@
+# (the two-block sweep leaves the one-block sweep's helpers unused)
+build/192-test-sw2: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) -DC192X_SW=2 -Wno-unused-parameter -Wno-unused-function $< -o $@
+build/192-test-gpr: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) -DC192N_FIN_GPR=1 $< -o $@
+build/192-test-nosbar: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) -DC192N_SBAR=0 $< -o $@
+build/192-test-noasm: test/192/test.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) -DC192_NOASM $< -o $@
+# random raw keys with edge limbs; the fast finalizers on crafted twist-carry patterns; keys in place at malloc + 0..63
+# and relocated by memcpy
+build/192-xcheck: test/192/xcheck.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) $< -o $@
+build/192-ftest: test/192/ftest.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $< -o $@
+build/192-align: test/192/align.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF192) $< -o $@
+build/192-mkvec: test/192/mkvec.c $(H192) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $< -o $@
+test-192: build/192-test build/192-test-noarch build/192-test-portable build/192-xcheck build/192-ftest build/192-align $(SCHED_TESTS_192) $(KEYALIGN)
+	./build/192-test test/192/vectors.txt
+	./build/192-test-noarch test/192/vectors.txt
+	./build/192-test-portable test/192/vectors.txt
+	for t in $(SCHED_TESTS_192); do ./$$t test/192/vectors.txt || exit 1; done
+	./build/192-xcheck
+	./build/192-ftest
+	./build/192-align
+	./build/family-key_alignment 192
+	./build/family-key_alignment-portable 192
+	python3 test/192/pyref.py test/192/vectors.txt
 # Every header as C++11 and C++17 (SMHasher harnesses are C++), alone and all together, with warnings as errors.
-CXX_HEADERS = chainhash.h chainhash128.h chainhash128v2.h chainhash256.h chainhash512.h
+CXX_HEADERS = chainhash.h chainhash128.h chainhash128v2.h chainhash256.h chainhash512.h chainhash192.h
 CXX_STDS = c++11 c++17
 CXX_WERROR ?= -Werror
-cxx: test/family/cxx.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
+cxx: test/family/cxx.c include/chainhash.h $(H128V2) $(H256) $(H512) $(H192) | build
 	for std in $(CXX_STDS); do \
 	  for h in $(CXX_HEADERS); do \
 	    $(CXX) $(CPPFLAGS) -std=$$std -O2 -Wall -Wextra $(CXX_WERROR) $(ARCH_FLAGS) -x c++ -include $$h -c $< -o build/cxx.o || exit 1; \
 	  done; \
 	  $(CXX) $(CPPFLAGS) -std=$$std -O2 -Wall -Wextra $(CXX_WERROR) $(ARCH_FLAGS) -DCHAINHASH_ALL -x c++ -c $< -o build/cxx.o || exit 1; \
-	  $(CXX) $(CPPFLAGS) -std=$$std -O2 -Wall -Wextra $(CXX_WERROR) -DCHAINHASH_PORTABLE -DCHAINHASH128_PORTABLE -DCHAINHASH256_PORTABLE -DCHAINHASH512_PORTABLE -DCHAINHASH_ALL -x c++ -c $< -o build/cxx.o || exit 1; \
-	  echo "PASS C++ ($$std, $(CXX)): each header alone, all five together, native and portable"; \
+	  $(CXX) $(CPPFLAGS) -std=$$std -O2 -Wall -Wextra $(CXX_WERROR) -DCHAINHASH_PORTABLE -DCHAINHASH128_PORTABLE -DCHAINHASH256_PORTABLE -DCHAINHASH512_PORTABLE -DCHAINHASH192_PORTABLE -DCHAINHASH_ALL -x c++ -c $< -o build/cxx.o || exit 1; \
+	  echo "PASS C++ ($$std, $(CXX)): each header alone, all six together, native and portable"; \
 	done
-test-all: test test-128 cxx test-128v2 test-256 test-512
-# Machine-checked certificates behind docs/THEOREM-128v2.md, THEOREM-256.md and THEOREM-512.md.
+test-all: test test-128 cxx test-128v2 test-256 test-512 test-192
+# Machine-checked certificates behind docs/THEOREM-128v2.md, THEOREM-256.md, THEOREM-512.md and THEOREM-192.md.
 certs:
 	python3 test/128v2/cert128p.py
 	CC="$(CC)" sh test/256/certs.sh
 	python3 test/512/cert512.py
+	CC="$(CC)" sh test/192/cert/certs.sh
 
 # Regenerate the frozen vectors with the independent evaluators and compare them
 # with the archives. The archives are never overwritten.
-vectors: build/64-vectors build/64-vectors-portable build/128-vectors build/128-vectors-portable
+vectors: build/64-vectors build/64-vectors-portable build/128-vectors build/128-vectors-portable build/192-mkvec
 	python3 test/check_vectors.py
 	python3 test/128/check_vectors.py
 	python3 test/128v2/check_vectors.py --full
 	python3 test/256/pyref.py test/256/vectors.txt 300000
 	python3 test/512/pyref512.py | cmp - test/512/vectors.txt && echo "PASS Python oracle reproduces test/512/vectors.txt"
+	./build/192-mkvec | cmp - test/192/vectors.txt && echo "PASS the reference reproduces test/192/vectors.txt"
+	python3 test/192/pyref.py test/192/vectors.txt
 
 # Print this CPU's calibrated schedules as C initializers (include/chainhash_calibrate.h).
 build/calibrate: test/calibrate.c include/chainhash_calibrate.h include/chainhash.h include/chainhash128.h | build

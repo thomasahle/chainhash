@@ -1,4 +1,4 @@
-/* Page-edge test for ChainHash-128 v2, -256 and -512: inputs that end at the last byte before an unmapped page
+/* Page-edge test for ChainHash-128 v2, -256, -512 and -192: inputs that end at the last byte before an unmapped page
  * or start at the first byte after one (the short-input paths use masked or overlapping loads), n = 0..2100,
  * every backend this machine has (explicitly selected) against the bit-serial reference. POSIX (mmap). */
 #define _DEFAULT_SOURCE
@@ -10,9 +10,11 @@
 #include "chainhash128v2.h"
 #include "chainhash256.h"
 #include "chainhash512.h"
+#include "chainhash192.h"
 static chainhash128v2_key K1;
 static chainhash256_key K2[5];
 static chainhash512_key K3[5];
+static chainhash192_key K4[5];
 static const char *const NAME[] = {"portable", "pclmul-sse4.1", "avx512-vpclmulqdq", "neon-pmull"};
 static const char *const NAME128[] = {"portable", "xmm", "?", "zmm", "neon"};
 int main(void) {
@@ -49,6 +51,14 @@ int main(void) {
         for (b = 1; b < nb; b++) { chainhash512(&K3[b], p, n, g); tot++;
             if (memcmp(r, g, 64)) { if (bad < 5) printf("MISMATCH 512 %s n=%zu end=%d\n", NAME[bk[b]], n, i); bad++; } } }
 
-    printf("page-edge (128v2, 256, 512; n = 0..2100 at both guard pages): %ld hashes, %ld mismatches -> %s\n", tot, bad, bad ? "FAIL" : "PASS");
+    /* ChainHash-192: one key per backend */
+    nb = 0; for (b = 0; b < 4; b++) if (chainhash192_has_backend(b)) { chainhash192_key_from_seed_with_backend(&K4[nb], 2026, b); bk[nb++] = b; }
+    for (n = 0; n <= 2100; n++) for (i = 0; i < 2; i++) {
+        const uint8_t *p = i ? mid + span - n : mid; uint8_t r[24], g[24];
+        chainhash192_reference(&K4[0], p, n, r);
+        for (b = 1; b < nb; b++) { chainhash192(&K4[b], p, n, g); tot++;
+            if (memcmp(r, g, 24)) { if (bad < 5) printf("MISMATCH 192 %s n=%zu end=%d\n", NAME[bk[b]], n, i); bad++; } } }
+
+    printf("page-edge (128v2, 256, 512, 192; n = 0..2100 at both guard pages): %ld hashes, %ld mismatches -> %s\n", tot, bad, bad ? "FAIL" : "PASS");
     return bad != 0;
 }
