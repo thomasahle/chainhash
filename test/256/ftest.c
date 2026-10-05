@@ -14,9 +14,9 @@ static uint64_t edge(void){ switch(rnd()%6){ case 0: return 0; case 1: return ~0
 #pragma GCC push_options
 #pragma GCC target("avx512f,avx512vl,avx512bw,avx512dq,avx512vbmi2,vpclmulqdq,gfni,pclmul,avx2,sse4.1")
 #endif
-static void fin_all(const ph256_key*H,ph_el v,uint8_t o1[32],uint8_t o2[32]){ phq q=phq_ld(&v); phq_st(phq_final(q,&H->x.QF),o1); phq_st(phq_final_i(q,&H->x.QF),o2); }
+static void fin_all(const ph256_key*H,ph_el v,uint8_t o1[32],uint8_t o2[32]){ phq q=phq_ld(&v); phq_st(phq_final(q,&PH256_XK(H)->QF),o1); phq_st(phq_final_i(q,&PH256_XK(H)->QF),o2); }
 #elif defined(PH256_ARM)
-static void fin_all(const ph256_key*H,ph_el v,uint8_t o1[32],uint8_t o2[32]){ ph_el r=phv_st(phw_final(phv_ld(v),&H->n.WF)); memcpy(o1,r.w,32); memcpy(o2,r.w,32); }
+static void fin_all(const ph256_key*H,ph_el v,uint8_t o1[32],uint8_t o2[32]){ ph_el r=phv_st(phw_final(phv_ld(v),&PH256_NK(H)->WF)); memcpy(o1,r.w,32); memcpy(o2,r.w,32); }
 #endif
 int main(void){ static ph256_key H; static ph_key K; long bad=0, cnt=0;
     if(ph256_backend()==PH256_PORTABLE){ printf("[ftest] no fast backend: skipped\n"); return 0; }

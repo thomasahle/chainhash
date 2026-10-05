@@ -261,7 +261,8 @@ lemma's bookkeeping, the numerators and the scores) run with `make certs`; the L
 covers ChainHash and ChainHash-128 only.
 
 The three headers share one interface: `*_key_from_bytes`, `*_key_from_words` and
-`*_key_from_seed` (tests and benchmarks only) initialize a key in place; the one-shot hash;
+`*_key_from_seed` (tests and benchmarks only) initialize a key in place, at any 8-byte-aligned
+address (the key aligns its own tables); the one-shot hash;
 `*_init`, `*_update`, `*_final` for streaming; `*_backend` and `*_has_backend`; and
 `*_reference`, the definition evaluated literally. ChainHash-128 v2 returns a `ch128_word` like
 ChainHash-128 and takes the backend per call; ChainHash-256 and ChainHash-512 write 32 or 64 bytes
@@ -269,7 +270,7 @@ and fix the backend when the key is initialized.
 
 ```c
 #include "chainhash512.h"
-static chainhash512_key key;                  /* about 110 KiB of tables; initialized in place */
+static chainhash512_key key;                  /* about 43 KiB of tables; initialized in place */
 chainhash512_key_from_bytes(&key, random);    /* CHAINHASH512_KEY_BYTES = 576 random bytes */
 uint8_t digest[64];
 chainhash512(&key, data, len, digest);

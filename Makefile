@@ -23,6 +23,8 @@ TESTS = compile frozen schedule vectors guard key_alignment property schedule_kn
 TESTS_128 = compile frozen schedule arithmetic vectors edges guard short property schedule_knobs
 BINS = $(addprefix build/64-,$(TESTS))
 BINS_128 = $(addprefix build/128-,$(TESTS_128))
+# family-wide key-placement test; defined before the first rule that lists it as a prerequisite
+KEYALIGN = build/family-key_alignment build/family-key_alignment-portable
 
 .PHONY: all test test-128 test-128v2 test-256 test-512 test-all cxx certs sanitize sanitize-128 vectors speed calibrate clean
 all: build/64-compile build/64-cpp build/128-compile build/128-cpp build/speed build/family-compile build/family-cpp
@@ -37,7 +39,7 @@ build/64-%-portable: test/%.c include/chainhash.h include/chainhash_calibrate.h 
 build/64-cpp: test/compile.c include/chainhash.h include/chainhash128.h | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
 build/64-compile build/64-compile-portable: include/chainhash128.h
-test: $(BINS) $(addsuffix -portable,$(BINS)) build/64-cpp
+test: $(BINS) $(addsuffix -portable,$(BINS)) build/64-cpp $(KEYALIGN)
 	./build/64-compile
 	./build/64-compile-portable
 	./build/64-cpp
@@ -50,6 +52,8 @@ test: $(BINS) $(addsuffix -portable,$(BINS)) build/64-cpp
 	./build/64-guard-portable
 	./build/64-key_alignment
 	./build/64-key_alignment-portable
+	./build/family-key_alignment 64
+	./build/family-key_alignment-portable 64
 	./build/64-property $(RANDOM_CASES) 123456789
 	./build/64-property-portable $(RANDOM_CASES) 123456789
 	./build/64-schedule_knobs $(RANDOM_CASES)
@@ -72,7 +76,7 @@ build/128-%-portable: test/128/%.c include/chainhash128.h include/chainhash_cali
 build/128-cpp: test/128/compile.c include/chainhash128.h include/chainhash.h | build
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(ARCH_FLAGS) -x c++ $< -o $@
 build/128-compile build/128-compile-portable: include/chainhash.h
-test-128: $(BINS_128) $(addsuffix -portable,$(BINS_128)) build/128-cpp
+test-128: $(BINS_128) $(addsuffix -portable,$(BINS_128)) build/128-cpp $(KEYALIGN)
 	./build/128-compile
 	./build/128-compile-portable
 	./build/128-cpp
@@ -88,6 +92,8 @@ test-128: $(BINS_128) $(addsuffix -portable,$(BINS_128)) build/128-cpp
 	./build/128-edges-portable
 	./build/128-guard
 	./build/128-guard-portable
+	./build/family-key_alignment 128
+	./build/family-key_alignment-portable 128
 	./build/128-short
 	./build/128-short-portable
 	./build/128-property $(RANDOM_CASES_128)
@@ -129,6 +135,12 @@ build/family-cpp: test/family/compile.c include/chainhash.h $(H128V2) $(H256) $(
 # inputs flush against unmapped pages on both sides (the short-input paths use masked/overlapping loads)
 build/family-page: test/family/page.c $(H128V2) $(H256) $(H512) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $< -o $@
+# every header's key (and stream) in place at 64k+0..56 and at plain malloc, and relocated by memcpy, every backend;
+# run per width by each suite (argument: 64, 128, 128v2, 256, 512)
+build/family-key_alignment: test/family/key_alignment.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -Wno-overlength-strings $(ARCH_FLAGS) $< -o $@
+build/family-key_alignment-portable: test/family/key_alignment.c include/chainhash.h $(H128V2) $(H256) $(H512) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -DCHAINHASH_PORTABLE -DCHAINHASH128_PORTABLE -DCHAINHASH256_PORTABLE -DCHAINHASH512_PORTABLE $< -o $@
 build/128v2-test: test/128v2/test.c $(H128V2) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_128) $(ARCH_FLAGS) $< -o $@
 build/128v2-test-noarch: test/128v2/test.c $(H128V2) | build
@@ -148,11 +160,13 @@ build/128v2-test-noprebc: test/128v2/test.c $(H128V2) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_128) $(ARCH_FLAGS) -DCHAINHASH128V2_NO_PREBC $< -o $@
 build/128v2-test-nonpf: test/128v2/test.c $(H128V2) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_128) $(ARCH_FLAGS) -DCHAINHASH128V2_NO_NPF $< -o $@
-test-128v2: build/128v2-test build/128v2-test-noarch build/128v2-test-portable build/128v2-test-nonpf $(X86_TESTS_128V2) build/family-compile build/family-compile-portable build/family-cpp build/family-page
+test-128v2: build/128v2-test build/128v2-test-noarch build/128v2-test-portable build/128v2-test-nonpf $(X86_TESTS_128V2) build/family-compile build/family-compile-portable build/family-cpp build/family-page $(KEYALIGN)
 	./build/family-compile
 	./build/family-compile-portable
 	./build/family-cpp
 	./build/family-page
+	./build/family-key_alignment 128v2
+	./build/family-key_alignment-portable 128v2
 	./build/128v2-test $(RANDOM_CASES_V2)
 	./build/128v2-test-noarch 3000
 	./build/128v2-test-portable 3000
@@ -172,12 +186,14 @@ build/256-ftest: test/256/ftest.c $(H256) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF256) $< -o $@
 build/256-xcheck: test/256/xcheck.c $(H256) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $(ARCH_FLAGS) $(REF256) $< -o $@
-test-256: build/256-test build/256-test-noarch build/256-test-portable build/256-ftest build/256-xcheck $(X86_TESTS_256)
+test-256: build/256-test build/256-test-noarch build/256-test-portable build/256-ftest build/256-xcheck $(X86_TESTS_256) $(KEYALIGN)
 	./build/256-test $(RANDOM_CASES_V2)
 	./build/256-test-noarch 200 50 300
 	./build/256-test-portable
 	./build/256-ftest
 	./build/256-xcheck
+	./build/family-key_alignment 256
+	./build/family-key_alignment-portable 256
 	for t in $(X86_TESTS_256); do ./$$t 3000 500 || exit 1; done
 	python3 test/256/pyref.py test/256/vectors.txt 300000
 build/512-test: test/512/test.c $(H512) | build
@@ -186,10 +202,12 @@ build/512-test-noarch: test/512/test.c $(H512) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) $< -o $@
 build/512-test-portable: test/512/test.c $(H512) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS_V2) -DCHAINHASH512_PORTABLE $< -o $@
-test-512: build/512-test build/512-test-noarch build/512-test-portable
+test-512: build/512-test build/512-test-noarch build/512-test-portable $(KEYALIGN)
 	./build/512-test 16000 100000
 	./build/512-test-noarch 3000 100000
 	./build/512-test-portable 200 60000
+	./build/family-key_alignment 512
+	./build/family-key_alignment-portable 512
 	python3 test/512/pyref512.py | cmp - test/512/vectors.txt && echo "PASS Python oracle reproduces test/512/vectors.txt"
 # Every header as C++11 and C++17 (SMHasher harnesses are C++), alone and all together, with warnings as errors.
 CXX_HEADERS = chainhash.h chainhash128.h chainhash128v2.h chainhash256.h chainhash512.h

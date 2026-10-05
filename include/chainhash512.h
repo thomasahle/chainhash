@@ -4,7 +4,8 @@
  *
  * Key: 576 uniformly random bytes (CHAINHASH512_KEY_BYTES), chainhash512_key_from_bytes.
  * chainhash512_key_from_seed expands a 64-bit seed; it is for benchmarks and tests.
- * The expanded key (about 110 KiB of tables) is initialized in place: make it static or allocate it.
+ * The expanded key (about 43 KiB of tables) is initialized in place, at any 8-byte-aligned address (static, stack,
+ * malloc; the tables are aligned inside the key); a copy made with memcpy stays valid.
  * Hash: chainhash512(&key, data, len, out) writes 64 canonical little-endian bytes. Streaming:
  * chainhash512_init, chainhash512_update, chainhash512_final.
  * Backends (identical digests; chosen when the key is initialized): CH512_AVX512 (AVX-512 F/BW/DQ/VL
@@ -69,20 +70,28 @@ static inline void ph1_pair(const uint8_t *p, size_t n, size_t g, uint64_t *u, u
 typedef struct {
     uint64_t s[8], y[8], tau[8], c[5][8], z[8];                  /* the 576-byte key (9 words)          */
     uint64_t yp[9][8];                                           /* y^0..y^8                            */
-    uint64_t kz_u[PH1_CPB][8][8] __attribute__((aligned(64)));   /* pair keys, limb-major (kernels)     */
-    uint64_t kz_v[PH1_CPB][8][8] __attribute__((aligned(64)));
-    uint64_t km_u[PH1_CPB][4][8] __attribute__((aligned(64)));   /* kz[j]^kz[j+4] (3-pass mix pass)     */
-    uint64_t km_v[PH1_CPB][4][8] __attribute__((aligned(64)));
-    uint64_t kup[PH1_PAIRS][8] __attribute__((aligned(64)));     /* pair keys, pair-major (tail pairs)  */
-    uint64_t kvp[PH1_PAIRS][8] __attribute__((aligned(64)));
-    uint64_t ezv[3][5][2] __attribute__((aligned(16)));          /* Karatsuba points of z, vector order */
+    uint64_t kz_u[PH1_CPB][8][8];   /* pair keys, limb-major (kernels)     */
+    uint64_t kz_v[PH1_CPB][8][8];
+    uint64_t km_u[PH1_CPB][4][8];   /* kz[j]^kz[j+4] (3-pass mix pass)     */
+    uint64_t km_v[PH1_CPB][4][8];
+    uint64_t kup[PH1_PAIRS][8];     /* pair keys, pair-major (tail pairs)  */
+    uint64_t kvp[PH1_PAIRS][8];
+    uint64_t ezv[3][5][2];          /* Karatsuba points of z, vector order */
+    uint64_t pad_[2];
     /* v1.1 latency caches (derived from the key; no new key material) */
-    uint64_t w0[8][8] __attribute__((aligned(64)));              /* kv_0 x^(64i) mod P, i = 0..7          */
-    uint64_t k00[8] __attribute__((aligned(64)));                /* ku_0 kv_0 mod P                       */
-    uint64_t w0s[8][8] __attribute__((aligned(64)));             /* w0 with the two words of each 128-bit half swapped */
-    uint64_t zs[8] __attribute__((aligned(64)));                 /* z, halves swapped                     */
+    uint64_t w0[8][8];              /* kv_0 x^(64i) mod P, i = 0..7          */
+    uint64_t k00[8];                /* ku_0 kv_0 mod P                       */
+    uint64_t w0s[8][8];             /* w0 with the two words of each 128-bit half swapped */
+    uint64_t zs[8];                 /* z, halves swapped                     */
     int backend;
 } ph512v1_key;
+/* The expanded key has no alignment requirement beyond its uint64_t words (the kernels load it unaligned).  Its
+ * 64-byte tables sit at multiples of 64 bytes from its start; chainhash512_key below places it at a 64-byte-aligned
+ * address inside the key object. */
+#define PH1_OFF64(f) (offsetof(ph512v1_key,f)%64==0)
+typedef char ph1_key_layout_check[(PH1_OFF64(kz_u) && PH1_OFF64(kz_v) && PH1_OFF64(km_u) && PH1_OFF64(km_v) && PH1_OFF64(kup) && PH1_OFF64(kvp)
+    && offsetof(ph512v1_key,ezv)%16==0 && PH1_OFF64(w0) && PH1_OFF64(k00) && PH1_OFF64(w0s) && PH1_OFF64(zs)) ? 1 : -1];
+#undef PH1_OFF64
 #define PH1_KU(k,q) ((k)->kup[q])
 #define PH1_KV(k,q) ((k)->kvp[q])
 /* vector order of the 27 points per 4-limb group g: X0=(p0,p1) X1=(p3,p4) S=(p6,p7) T=(p2,p5) U=(p8,-) */
@@ -164,8 +173,8 @@ static inline int ph512v1_detect(void){
 #define Z1ACC(A,a,b) A=_mm512_ternarylogic_epi64(A,_mm512_clmulepi64_epi128(a,b,0x00),_mm512_clmulepi64_epi128(a,b,0x11),0x96)
 #define Z1P2(A,i,a0,a1,b0,b1) do{ Z1ACC(A[i],a0,b0); Z1ACC(A[i+1],a1,b1); Z1ACC(A[i+2],Z1X(a0,a1),Z1X(b0,b1)); }while(0)
 #define Z1P4(A,a0,a1,a2,a3,b0,b1,b2,b3) do{ Z1P2(A,0,a0,a1,b0,b1); Z1P2(A,3,a2,a3,b2,b3); Z1P2(A,6,Z1X(a0,a2),Z1X(a1,a3),Z1X(b0,b2),Z1X(b1,b3)); }while(0)
-#define Z1L(o,kk) Z1X(_mm512_loadu_si512(q+(o)),_mm512_load_si512(kk))
-#define Z1M(o,kk) _mm512_ternarylogic_epi64(_mm512_loadu_si512(q+(o)),_mm512_loadu_si512(q+(o)+256),_mm512_load_si512(kk),0x96)
+#define Z1L(o,kk) Z1X(_mm512_loadu_si512(q+(o)),_mm512_loadu_si512(kk))
+#define Z1M(o,kk) _mm512_ternarylogic_epi64(_mm512_loadu_si512(q+(o)),_mm512_loadu_si512(q+(o)+256),_mm512_loadu_si512(kk),0x96)
 PH1_TZ __attribute__((always_inline)) static inline void ph1z_pass(const ph512v1_key *k, const uint8_t *p, int c0, int c1, int which, __m512i *Aout){
     __m512i A[9]; for(int i=0;i<9;i++) A[i]=Aout[i];
     for(int c=c0;c<c1;c++){ const uint8_t *q=p+(size_t)c*PH1_CHUNK; __m512i a0,a1,a2,a3,b0,b1,b2,b3;
@@ -197,7 +206,9 @@ PH1_TZ __attribute__((noinline)) static void ph1z_points(const ph512v1_key *k, c
 #define X1X(a,b) _mm_xor_si128(a,b)
 #define X1C(A,a,b) do{ A=X1X(A,_mm_clmulepi64_si128(a,b,0x00)); A=X1X(A,_mm_clmulepi64_si128(a,b,0x11)); }while(0)
 #define X1LD(o) _mm_loadu_si128((const __m128i*)(q+(o)))
-#define X1K(kk) _mm_load_si128((const __m128i*)(kk))
+/* al = 1: the key is 16-byte aligned (in place; the usual case), so legacy-SSE xors take key rows as memory operands;
+ * al = 0: a relocated key (unaligned loads) */
+#define X1K(kk) (al ? _mm_load_si128((const __m128i*)(kk)) : _mm_loadu_si128((const __m128i*)(kk)))
 #define X1A(j) (w<2 ? X1X(X1LD(256*w+64*(j)+16*d),X1K(&k->kz_u[c][4*w+(j)][2*d])) : X1X(X1X(X1LD(64*(j)+16*d),X1LD(256+64*(j)+16*d)),X1K(&k->km_u[c][j][2*d])))
 #define X1B(j) (w<2 ? X1X(X1LD(512+256*w+64*(j)+16*d),X1K(&k->kz_v[c][4*w+(j)][2*d])) : X1X(X1X(X1LD(512+64*(j)+16*d),X1LD(768+64*(j)+16*d)),X1K(&k->km_v[c][j][2*d])))
 #if defined(__AVX__) && !defined(__AVX512VL__)
@@ -231,10 +242,10 @@ PH1_TZ __attribute__((noinline)) static void ph1z_points(const ph512v1_key *k, c
 typedef char ph1x_asm_layout_check[(offsetof(ph512v1_key,kz_v)==offsetof(ph512v1_key,kz_u)+8192 && offsetof(ph512v1_key,km_v)==offsetof(ph512v1_key,km_u)+4096) ? 1 : -1];
 #endif
 /* one pass (w = 0, 1, 2) over chunks c0..c1: Aio[0..8] += the pass's 9 point sums; pf: the next group's data to prefetch */
-PH1_TX __attribute__((always_inline)) static inline void ph1x_pass(const ph512v1_key *k, const uint8_t *p, int c0, int c1, const int w, __m128i *Aio, const uint8_t *pf){
+PH1_TX __attribute__((always_inline)) static inline void ph1x_pass(const ph512v1_key *k, const uint8_t *p, int c0, int c1, const int w, __m128i *Aio, const uint8_t *pf, const int al){
     __m128i A0=Aio[0],A1=Aio[1],A2=Aio[2],A3=Aio[3],A4=Aio[4],A5=Aio[5],A6=Aio[6],A7=Aio[7],A8=Aio[8];
 #if defined(__AVX__) && !defined(__AVX512VL__)
-    __m128i M[9]; M[7]=A7; M[8]=A8;
+    __m128i M[9]; M[7]=A7; M[8]=A8; (void)al;
 #endif
     for(int c=c0;c<c1;c++){ const uint8_t *q=p+(size_t)c*PH1_CHUNK;
         if(w<2 && pf){ const char *nx=(const char*)pf+(size_t)(c-c0)*PH1_CHUNK+512*w; for(int l=0;l<512;l+=64) _mm_prefetch(nx+l,_MM_HINT_T0); }
@@ -260,12 +271,16 @@ PH1_TX __attribute__((always_inline)) static inline void ph1x_pass(const ph512v1
 #endif
     Aio[0]=A0; Aio[1]=A1; Aio[2]=A2; Aio[3]=A3; Aio[4]=A4; Aio[5]=A5; Aio[6]=A6; Aio[7]=A7; Aio[8]=A8;
 }
-PH1_TX __attribute__((noinline)) static void ph1x_points(const ph512v1_key *k, const uint8_t *p, int nch, ph1_u128 *P){
+PH1_TX __attribute__((always_inline)) static inline void ph1x_points_t(const ph512v1_key *k, const uint8_t *p, int nch, ph1_u128 *P, const int al){
     __m128i A[27]; for(int i=0;i<27;i++) A[i]=_mm_setzero_si128();
     for(int s=0;s<nch;s+=8){ int e=s+8<nch?s+8:nch; const uint8_t *pf = e<nch ? p+(size_t)e*PH1_CHUNK : 0;
-        ph1x_pass(k,p,s,e,2,A+18,pf); ph1x_pass(k,p,s,e,0,A,pf); ph1x_pass(k,p,s,e,1,A+9,pf); }
+        ph1x_pass(k,p,s,e,2,A+18,pf,al); ph1x_pass(k,p,s,e,0,A,pf,al); ph1x_pass(k,p,s,e,1,A+9,pf,al); }
     for(int i=0;i<27;i++) _mm_storeu_si128((__m128i*)&P[i],A[i]);
 }
+PH1_TX __attribute__((noinline)) static void ph1x_points_a(const ph512v1_key *k, const uint8_t *p, int nch, ph1_u128 *P){ ph1x_points_t(k,p,nch,P,1); }
+PH1_TX __attribute__((noinline)) static void ph1x_points_u(const ph512v1_key *k, const uint8_t *p, int nch, ph1_u128 *P){ ph1x_points_t(k,p,nch,P,0); }
+static inline void ph1x_points(const ph512v1_key *k, const uint8_t *p, int nch, ph1_u128 *P){
+    if(((uintptr_t)k&15)==0) ph1x_points_a(k,p,nch,P); else ph1x_points_u(k,p,nch,P); }
 /* ---- 128-bit primitives (SSE) for the body ---- */
 #define PHV __m128i
 #define PVX(a,b) _mm_xor_si128(a,b)
@@ -693,24 +708,26 @@ static inline void ph1_mulx(const ph512v1_key *k, const uint64_t *a, const uint6
  * complete and adds l*z^m' at the end.  A full 16 KiB block has the same value whether or not it is
  * the last one, and a full region the same c, so both are folded as soon as they are complete.     */
 typedef struct {
-    const ph512v1_key *k; uint64_t W[8]; uint64_t b[PH1_R][8]; int nb; uint64_t nreg, n; size_t fill;
-    uint8_t buf[PH1_BLOCK] __attribute__((aligned(64)));
+    const ph512v1_key *k; uint64_t W[8]; uint64_t b[PH1_R][8]; int nb; uint64_t nreg, n; size_t fill, boff;
+    uint8_t bstore[PH1_BLOCK+64];   /* the block buffer at bstore + boff, 64-byte aligned where the stream was initialized */
 } ph512v1_stream;
-static inline void ph512v1_stream_init(ph512v1_stream *st, const ph512v1_key *k){ st->k=k; memset(st->W,0,64); st->nb=0; st->nreg=0; st->n=0; st->fill=0; }
+#define PH1_SBUF(st) ((st)->bstore+(st)->boff)
+static inline void ph512v1_stream_init(ph512v1_stream *st, const ph512v1_key *k){ st->k=k; memset(st->W,0,64); st->nb=0; st->nreg=0; st->n=0; st->fill=0;
+    st->boff=(64-((uintptr_t)st->bstore&63))&63; }
 static inline void ph1_stream_block(ph512v1_stream *st, const uint8_t *blk, size_t len){
     ph1_blockval(st->k,blk,len,st->b[st->nb++]);
     if(st->nb==PH1_R){ ph1_regionval(st->k,st->W,st->b,PH1_R); st->nb=0; st->nreg++; } }
 static inline void ph512v1_stream_update(ph512v1_stream *st, const void *data, size_t len){
     const uint8_t *p=(const uint8_t*)data; st->n+=len;
-    if(st->fill){ size_t m=PH1_BLOCK-st->fill; if(m>len) m=len; memcpy(st->buf+st->fill,p,m); st->fill+=m; p+=m; len-=m;
-        if(st->fill==PH1_BLOCK){ ph1_stream_block(st,st->buf,PH1_BLOCK); st->fill=0; } }
+    if(st->fill){ size_t m=PH1_BLOCK-st->fill; if(m>len) m=len; memcpy(PH1_SBUF(st)+st->fill,p,m); st->fill+=m; p+=m; len-=m;
+        if(st->fill==PH1_BLOCK){ ph1_stream_block(st,PH1_SBUF(st),PH1_BLOCK); st->fill=0; } }
     while(len>=PH1_BLOCK){ ph1_stream_block(st,p,PH1_BLOCK); p+=PH1_BLOCK; len-=PH1_BLOCK; }
-    if(len){ memcpy(st->buf,p,len); st->fill=len; }
+    if(len){ memcpy(PH1_SBUF(st),p,len); st->fill=len; }
 }
 static inline void ph512v1_stream_final(ph512v1_stream *st, uint8_t out[64]){
     const ph512v1_key *k=st->k;
-    if(st->nreg==0 && st->nb==0){ ph512v1(k,st->buf,st->fill,out); return; }    /* whole message still buffered */
-    if(st->fill) ph1_blockval(k,st->buf,st->fill,st->b[st->nb++]);  /* last (partial or empty) block */
+    if(st->nreg==0 && st->nb==0){ ph512v1(k,PH1_SBUF(st),st->fill,out); return; }    /* whole message still buffered */
+    if(st->fill) ph1_blockval(k,PH1_SBUF(st),st->fill,st->b[st->nb++]);  /* last (partial or empty) block */
     if(st->nb){ ph1_regionval(k,st->W,st->b,st->nb); st->nreg++; }
     uint64_t R[8]={1,0,0,0,0,0,0,0}, Z[8], N[8]={0}, T[8]; memcpy(Z,k->z,64); N[0]=st->n;       /* z^m' by square-and-multiply */
     for(uint64_t e=st->nreg;e;e>>=1){ if(e&1) ph1_mulx(k,R,Z,R); if(e>1) ph1_mulx(k,Z,Z,Z); }
@@ -722,14 +739,20 @@ static inline void ph512v1_stream_final(ph512v1_stream *st, uint8_t out[64]){
 #define CHAINHASH512_KEY_BYTES PH512V1_KEY_BYTES   /* 576 */
 #define CHAINHASH512_KEY_WORDS (CHAINHASH512_KEY_BYTES/8)
 enum { CH512_PORTABLE=PH512V1_PORTABLE, CH512_PCLMUL=PH512V1_PCLMUL, CH512_AVX512=PH512V1_AVX512, CH512_NEON=PH512V1_NEON };
-typedef ph512v1_key chainhash512_key;
+/* The key object: the expanded key at store + off, 64-byte aligned at the address where the key was initialized, so
+ * a key in place at any 8-byte-aligned address (malloc, new, the stack, static storage) has aligned tables.  A copy
+ * (memcpy) keeps off and computes the same digests; its tables may then be unaligned (slower on some backends). */
+typedef struct { uint64_t off; unsigned char store[sizeof(ph512v1_key) + 64]; } ph512v1_akey;
+static inline ph512v1_key *ph512v1_place(ph512v1_akey *k){ k->off = (64 - ((uintptr_t)k->store & 63)) & 63; return (ph512v1_key *)(void *)(k->store + k->off); }
+static inline const ph512v1_key *ph512v1_in(const ph512v1_akey *k){ return (const ph512v1_key *)(const void *)(k->store + k->off); }
+typedef ph512v1_akey chainhash512_key;
 typedef ph512v1_stream chainhash512_stream;
 static inline int chainhash512_backend(void) { return ph512v1_detect(); }
 static inline int chainhash512_has_backend(int b) { int h=ph512v1_detect(); return b==PH512V1_PORTABLE || b==h || (h==PH512V1_AVX512 && b==PH512V1_PCLMUL); }
 /* key = s || y || tau || c0..c4 || z, 64 bytes each, little endian (docs/SPEC-512.md section 1).
  * No key is rejected. The backend is fixed here (-1 or an unavailable backend: the best one available). */
 static inline void chainhash512_key_from_bytes_with_backend(chainhash512_key *k, const uint8_t p[CHAINHASH512_KEY_BYTES], int b) {
-    ph512v1_init_backend(k, p, (b >= 0 && chainhash512_has_backend(b)) ? b : ph512v1_detect());
+    ph512v1_init_backend(ph512v1_place(k), p, (b >= 0 && chainhash512_has_backend(b)) ? b : ph512v1_detect());
 }
 static inline void chainhash512_key_from_bytes(chainhash512_key *k, const uint8_t p[CHAINHASH512_KEY_BYTES]) { chainhash512_key_from_bytes_with_backend(k, p, -1); }
 /* the same 576 bytes as 72 little-endian 64-bit words */
@@ -750,11 +773,11 @@ static inline void chainhash512_key_from_seed_with_backend(chainhash512_key *k, 
     chainhash512_key_from_bytes_with_backend(k, p, b);
 }
 static inline void chainhash512_key_from_seed(chainhash512_key *k, uint64_t seed) { chainhash512_key_from_seed_with_backend(k, seed, -1); }
-static inline int chainhash512_key_backend(const chainhash512_key *k) { return k->backend; }
-static inline void chainhash512(const chainhash512_key *k, const void *data, size_t len, uint8_t out[64]) { ph512v1(k, data, len, out); }
+static inline int chainhash512_key_backend(const chainhash512_key *k) { return ph512v1_in(k)->backend; }
+static inline void chainhash512(const chainhash512_key *k, const void *data, size_t len, uint8_t out[64]) { ph512v1(ph512v1_in(k), data, len, out); }
 /* the definition, literally (bit-serial); for tests */
-static inline void chainhash512_reference(const chainhash512_key *k, const void *data, size_t len, uint8_t out[64]) { ph512v1_ref(k, data, len, out); }
-static inline void chainhash512_init(chainhash512_stream *s, const chainhash512_key *k) { ph512v1_stream_init(s, k); }
+static inline void chainhash512_reference(const chainhash512_key *k, const void *data, size_t len, uint8_t out[64]) { ph512v1_ref(ph512v1_in(k), data, len, out); }
+static inline void chainhash512_init(chainhash512_stream *s, const chainhash512_key *k) { ph512v1_stream_init(s, ph512v1_in(k)); }
 static inline void chainhash512_update(chainhash512_stream *s, const void *data, size_t len) { ph512v1_stream_update(s, data, len); }
 static inline void chainhash512_final(chainhash512_stream *s, uint8_t out[64]) { ph512v1_stream_final(s, out); }
 

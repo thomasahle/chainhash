@@ -4,7 +4,8 @@
  * Key: 288 uniformly random bytes (CHAINHASH256_KEY_BYTES), chainhash256_key_from_bytes; the 128 block
  * masks are powers of the key element s, derived when the key is initialized.
  * chainhash256_key_from_seed expands a 64-bit seed; it is for benchmarks and tests.
- * The expanded key is initialized in place and holds pointers into itself: do not copy it.
+ * The expanded key is initialized in place, at any 8-byte-aligned address (static, stack, malloc; the tables are
+ * aligned inside the key). Do not copy it: a copy computes the same digests but may run the portable backend.
  * Hash: chainhash256(&key, data, len, out) writes 32 canonical little-endian bytes. Streaming:
  * chainhash256_init, chainhash256_update, chainhash256_final.
  * Backends (identical digests; chosen when the key is initialized): CH256_AVX512
@@ -33,7 +34,8 @@
  * NEON kernels, and ph256_* the run-time dispatch and streaming layer under the public API at the end of the file.
  * Streaming folds every full region into V (V <- V z + c) as soon as it is complete, and final folds the tail region
  * and adds n z^{m'}; before any region completes, final applies the one-shot function to the buffered bytes.
- * The key holds pointers into itself in some backends: do not copy an initialized key. */
+ * The backend tables are placed 64-byte aligned inside the key when it is initialized (ph256_key): do not copy an
+ * initialized key. */
 #ifndef PH256_H
 #define PH256_H
 /* The specification as C (bit-serial reference), docs/SPEC-256.md.
@@ -1666,24 +1668,46 @@ static inline void ph256p_final2l(const ph_key*K,ph_el V,size_t nreg,const uint8
 static __attribute__((noinline)) void ph256p_hash(const ph_key*K,const uint8_t*m,size_t n,uint8_t out[32]){ ph2l_hash_ref(K,m,n,out); }
 static __attribute__((noinline)) void ph256p_fold_(const ph_key*K,ph_el*V,const uint8_t*msg,size_t nr){ ph256p_fold(K,V,msg,nr); }
 static __attribute__((noinline)) void ph256p_final2l_(const ph_key*K,ph_el V,size_t nreg,const uint8_t*T,size_t rem,size_t n,uint8_t out[32]){ ph256p_final2l(K,V,nreg,T,rem,n,out); }
+/* The backend's expanded key (phx_key, phs_key or phn_key) lives at tstore + toff, 64-byte aligned at the address
+ * where the key was initialized: a key in place at any 8-byte-aligned address (malloc, new, the stack, static
+ * storage) has aligned tables.  The tables are typed for that alignment, so a key that was copied is not run on
+ * them unless they are still 64-byte aligned: otherwise it runs the portable backend (same digests, much slower). */
+#if defined(PH256_X86)
+#define PH256_TSIZE (sizeof(phx_key) > sizeof(phs_key) ? sizeof(phx_key) : sizeof(phs_key))
+#elif defined(PH256_ARM)
+#define PH256_TSIZE sizeof(phn_key)
+#endif
 typedef struct {
     ph_key k; int backend;
-#if defined(PH256_X86)
-    phx_key x; phs_key s;
-#elif defined(PH256_ARM)
-    phn_key n;
+#ifdef PH256_TSIZE
+    unsigned toff; unsigned char tstore[PH256_TSIZE + 64];
 #endif
 } ph256_key;
+#ifdef PH256_TSIZE
+#define PH256_TAB(K) ((void*)((K)->tstore+(K)->toff))
+static inline int ph256_be(const ph256_key*K){ return ((uintptr_t)PH256_TAB(K)&63) ? PH256_PORTABLE : K->backend; }
+#else
+static inline int ph256_be(const ph256_key*K){ return K->backend; }
+#endif
+#if defined(PH256_X86)
+#define PH256_XK(K) ((const phx_key*)PH256_TAB(K))
+#define PH256_SK(K) ((const phs_key*)PH256_TAB(K))
+#elif defined(PH256_ARM)
+#define PH256_NK(K) ((const phn_key*)PH256_TAB(K))
+#endif
 static inline void ph256_init_key(ph256_key*K,const ph_key*raw,int backend){
     K->k=*raw; int best=ph256_backend();
     int ok= backend==PH256_PORTABLE || backend==best || (best==PH256_AVX512 && backend==PH256_PCLMUL);
     if(backend<0 || !ok) backend=best;
     K->backend=backend;
+#ifdef PH256_TSIZE
+    K->toff=(unsigned)((64-((uintptr_t)K->tstore&63))&63);
+#endif
 #if defined(PH256_X86)
-    if(backend==PH256_AVX512) phx_key_init(&K->x,&K->k);
-    if(backend==PH256_PCLMUL) phs_key_init(&K->s,&K->k);
+    if(backend==PH256_AVX512) phx_key_init((phx_key*)PH256_TAB(K),&K->k);
+    if(backend==PH256_PCLMUL) phs_key_init((phs_key*)PH256_TAB(K),&K->k);
 #elif defined(PH256_ARM)
-    if(backend==PH256_NEON){ phn_key_init(&K->n,&K->k); phw_key_init(&K->n); }
+    if(backend==PH256_NEON){ phn_key_init((phn_key*)PH256_TAB(K),&K->k); phw_key_init((phn_key*)PH256_TAB(K)); }
 #endif
 }
 #ifdef PH_V2
@@ -1733,12 +1757,12 @@ static inline void ph256_init_backend(ph256_key*K,uint64_t seed,int backend){ ph
 static inline void ph256_init(ph256_key*K,uint64_t seed){ ph256_init_backend(K,seed,-1); }
 static inline void ph256(const ph256_key*K,const void*msg,size_t n,uint8_t out[32]){
     const uint8_t*m=(const uint8_t*)msg;
-    switch(K->backend){
+    switch(ph256_be(K)){
 #if defined(PH256_X86)
-    case PH256_AVX512: phx_hash(&K->x,m,n,out); return;
-    case PH256_PCLMUL: phs_hash(&K->s,m,n,out); return;
+    case PH256_AVX512: phx_hash(PH256_XK(K),m,n,out); return;
+    case PH256_PCLMUL: phs_hash(PH256_SK(K),m,n,out); return;
 #elif defined(PH256_ARM)
-    case PH256_NEON:   phn_hash(&K->n,m,n,out); return;
+    case PH256_NEON:   phn_hash(PH256_NK(K),m,n,out); return;
 #endif
     default: ph256p_hash(&K->k,m,n,out); return; } }
 
@@ -1746,12 +1770,12 @@ static inline void ph256(const ph256_key*K,const void*msg,size_t n,uint8_t out[3
 typedef struct { const ph256_key*K; ph_el V; size_t total, nreg, blen; uint8_t buf[PH_REGION]; } ph256_stream;
 static inline void ph256_stream_init(ph256_stream*s,const ph256_key*K){ memset(&s->V,0,sizeof s->V); s->K=K; s->total=s->nreg=s->blen=0; }
 static inline void ph256_fold_(const ph256_key*K,ph_el*V,const uint8_t*p,size_t nr){
-    switch(K->backend){
+    switch(ph256_be(K)){
 #if defined(PH256_X86)
-    case PH256_AVX512: phx_fold(&K->x,V,p,nr); return;
-    case PH256_PCLMUL: phs_fold(&K->s,V,p,nr); return;
+    case PH256_AVX512: phx_fold(PH256_XK(K),V,p,nr); return;
+    case PH256_PCLMUL: phs_fold(PH256_SK(K),V,p,nr); return;
 #elif defined(PH256_ARM)
-    case PH256_NEON: phn_fold(&K->n,V,p,nr); return;
+    case PH256_NEON: phn_fold(PH256_NK(K),V,p,nr); return;
 #endif
     default: ph256p_fold_(&K->k,V,p,nr); return; } }
 static inline void ph256_update(ph256_stream*s,const void*data,size_t len){
@@ -1764,12 +1788,12 @@ static inline void ph256_update(ph256_stream*s,const void*data,size_t len){
 static inline void ph256_final(ph256_stream*s,uint8_t out[32]){
     const ph256_key*K=s->K; size_t n=s->total;
     if(!s->nreg){ ph256(K,s->buf,s->blen,out); return; }                 /* every byte is still buffered: one-shot */
-    switch(K->backend){
+    switch(ph256_be(K)){
 #if defined(PH256_X86)
-    case PH256_AVX512: phx_final2l(&K->x,s->V,s->nreg,s->buf,s->blen,n,out); return;
-    case PH256_PCLMUL: phs_final2l(&K->s,s->V,s->nreg,s->buf,s->blen,n,out); return;
+    case PH256_AVX512: phx_final2l(PH256_XK(K),s->V,s->nreg,s->buf,s->blen,n,out); return;
+    case PH256_PCLMUL: phs_final2l(PH256_SK(K),s->V,s->nreg,s->buf,s->blen,n,out); return;
 #elif defined(PH256_ARM)
-    case PH256_NEON: phn_final2l(&K->n,s->V,s->nreg,s->buf,s->blen,n,out); return;
+    case PH256_NEON: phn_final2l(PH256_NK(K),s->V,s->nreg,s->buf,s->blen,n,out); return;
 #endif
     default: ph256p_final2l_(&K->k,s->V,s->nreg,s->buf,s->blen,n,out); return; } }
 #endif
@@ -1798,7 +1822,7 @@ static inline void chainhash256_key_from_words(chainhash256_key *k, const uint64
  * not covered by the bound */
 static inline void chainhash256_key_from_seed_with_backend(chainhash256_key *k, uint64_t seed, int b) { ph256_init_backend(k,seed,b); }
 static inline void chainhash256_key_from_seed(chainhash256_key *k, uint64_t seed) { ph256_init(k,seed); }
-static inline int chainhash256_key_backend(const chainhash256_key *k) { return k->backend; }
+static inline int chainhash256_key_backend(const chainhash256_key *k) { return ph256_be(k); }
 static inline void chainhash256(const chainhash256_key *k, const void *data, size_t len, uint8_t out[32]) { ph256(k,data,len,out); }
 /* the definition, literally (bit-serial); for tests */
 static inline void chainhash256_reference(const chainhash256_key *k, const void *data, size_t len, uint8_t out[32]) { ph2l_hash_ref(&k->k,(const uint8_t*)data,len,out); }

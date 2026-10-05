@@ -43,7 +43,10 @@ investigate, never permission to replace a vector.
 
 `guard.c` places every length 0..4096 immediately before an inaccessible
 page and hashes `NULL` with length zero. `key_alignment.c` uses a key with
-only 8-byte alignment. `compile.c` runs the public self-test in C99 and,
+only 8-byte alignment; `family/key_alignment.c` does the same for every
+header (keys and streams at a 64-byte-aligned base + 0, 8, ..., 56 and at
+plain `malloc`, keys relocated by `memcpy`, every backend), and each suite
+runs it for its own width. `compile.c` runs the public self-test in C99 and,
 through `build/64-cpp`, in C++11, and includes both headers in one translation
 unit. `schedule.c` checks the exact-count coefficient-lane schedule with
 lookahead: `k=1..16`, `p=1..257`, `y=0/1/random`, exactly `p` field

@@ -3,7 +3,8 @@
  *
  * Key: 192 uniformly random bytes (CHAINHASH128V2_KEY_BYTES), chainhash128v2_key_from_bytes.
  * chainhash128v2_key_from_seed expands a 64-bit seed; it is for benchmarks and tests.
- * The expanded key (about 7 KiB of tables; 15 KiB on x86) is initialized in place.
+ * The expanded key (about 7 KiB of tables; 15 KiB on x86) is initialized in place, at any 8-byte-aligned address
+ * (static, stack, malloc; the tables are aligned inside the key); a copy made with memcpy stays valid.
  * Hash: chainhash128v2(&key, data, len) returns a ch128_word (two uint64_t limbs);
  * chainhash128_store writes its 16 canonical little-endian bytes. Streaming:
  * chainhash128v2_init, chainhash128v2_update, chainhash128v2_final.
@@ -55,7 +56,8 @@ typedef struct {
     ch128_word yr[16];              /* yr[i] = y^(7-i) for i<8, 0 after: lane powers of a c-block tail start at yr+8-c */
     ch128p_outer outer;             /* y^0..8, 0x87*y^0..8, c0..c4, tau */
 #if defined(CHAINHASH128V2_PREBC) && defined(CH128_X86)
-    ch128_word mzb[CH128P_W][4] __attribute__((aligned(64)));    /* mask[a] pre-broadcast to 64 bytes (ZMM: plain loads, no lane broadcast) */
+    ch128_word mzb_pad;             /* (puts mzb at a multiple of 64 bytes; the struct asks for no alignment beyond 8) */
+    ch128_word mzb[CH128P_W][4];    /* mask[a] pre-broadcast to 64 bytes (ZMM: plain loads, no lane broadcast) */
 #endif
 } ch128p_key;
 #define CH128P_SMP(k, m, nr) ((nr) < 8 ? &(k)->sm[m][(nr) - 1] : &(k)->zero)
@@ -1231,6 +1233,11 @@ typedef struct {
     ch128_word ym[8];             /* ym[e-1] = y^e: pair i (0-based) masks a_i with y^(2i+1), a_(h+i) with y^(2i+2) */
     ch128_word ylo[4], yhi[4];    /* ZMM lanes: (y^1, y^3, y^5, y^7) and (y^2, y^4, y^6, y^8) */
 } ch128p2l_key;
+#if defined(CHAINHASH128V2_PREBC) && defined(CH128_X86)
+/* the 64-byte tables at multiples of 64 bytes from the start of the expanded key (chainhash128v2_key places it at a
+ * 64-byte-aligned address) */
+typedef char ch128p2l_key_layout_check[(offsetof(ch128p_key, mzb) % 64 == 0 && offsetof(ch128p2l_key, ylo) % 64 == 0 && offsetof(ch128p2l_key, yhi) % 64 == 0) ? 1 : -1];
+#endif
 
 static inline void ch128p2l_key_from_bytes(ch128p2l_key *k, const uint8_t key[CH128P2L_KEY_BYTES]) {
     unsigned i;
@@ -1907,25 +1914,31 @@ static inline ch128_word ch128p2l_final(ch128p2l_stream *s) {
 /* ================= public API ================= */
 #define CHAINHASH128V2_KEY_BYTES 192
 #define CHAINHASH128V2_KEY_WORDS 12
-typedef ch128p2l_key chainhash128v2_key;
+/* The key object: the expanded key at store + off, 64-byte aligned at the address where the key was initialized, so
+ * a key in place at any 8-byte-aligned address (malloc, new, the stack, static storage) has aligned tables.  A copy
+ * (memcpy) keeps off and computes the same digests; its tables may then be unaligned (slower on some backends). */
+typedef struct { uint64_t off; unsigned char store[sizeof(ch128p2l_key) + 64]; } ch128p2l_akey;
+static inline ch128p2l_key *ch128p2l_place(ch128p2l_akey *k) { k->off = (64 - ((uintptr_t)k->store & 63)) & 63; return (ch128p2l_key *)(void *)(k->store + k->off); }
+static inline const ch128p2l_key *ch128p2l_in(const ch128p2l_akey *k) { return (const ch128p2l_key *)(const void *)(k->store + k->off); }
+typedef ch128p2l_akey chainhash128v2_key;
 typedef ch128p2l_stream chainhash128v2_stream;
 /* key = s (bytes 0..63) || y || c0..c4 || tau || z (16 bytes each); docs/SPEC-128v2.md section 1 */
-static inline void chainhash128v2_key_from_bytes(chainhash128v2_key *k, const uint8_t p[CHAINHASH128V2_KEY_BYTES]) { ch128p2l_key_from_bytes(k, p); }
+static inline void chainhash128v2_key_from_bytes(chainhash128v2_key *k, const uint8_t p[CHAINHASH128V2_KEY_BYTES]) { ch128p2l_key_from_bytes(ch128p2l_place(k), p); }
 /* the same 192 bytes as 12 words; word i is bytes 16i..16i+15 (lo = bytes 16i..16i+7) */
 static inline void chainhash128v2_key_from_words(chainhash128v2_key *k, const ch128_word w[CHAINHASH128V2_KEY_WORDS]) {
     uint8_t p[CHAINHASH128V2_KEY_BYTES]; unsigned i;
     for (i = 0; i < CHAINHASH128V2_KEY_WORDS; i++) chainhash128_store(p + 16 * i, w[i]);
-    ch128p2l_key_from_bytes(k, p);
+    ch128p2l_key_from_bytes(ch128p2l_place(k), p);
 }
 /* SplitMix64 expansion of a seed: for benchmarks and tests, not covered by the bound */
-static inline void chainhash128v2_key_from_seed(chainhash128v2_key *k, uint64_t seed) { ch128p2l_key_from_seed(k, seed); }
+static inline void chainhash128v2_key_from_seed(chainhash128v2_key *k, uint64_t seed) { ch128p2l_key_from_seed(ch128p2l_place(k), seed); }
 static inline int chainhash128v2_backend(void) { return ch128p_backend(); }
 static inline int chainhash128v2_has_backend(int b) { return ch128p_has_backend(b); }
-static inline ch128_word chainhash128v2_with_backend(const chainhash128v2_key *k, const void *data, size_t len, int b) { return ch128p2l_with_backend(k, data, len, b); }
-static inline ch128_word chainhash128v2(const chainhash128v2_key *k, const void *data, size_t len) { return ch128p2l(k, data, len); }
+static inline ch128_word chainhash128v2_with_backend(const chainhash128v2_key *k, const void *data, size_t len, int b) { return ch128p2l_with_backend(ch128p2l_in(k), data, len, b); }
+static inline ch128_word chainhash128v2(const chainhash128v2_key *k, const void *data, size_t len) { return ch128p2l(ch128p2l_in(k), data, len); }
 /* the definition, literally (bit-serial field arithmetic); for tests */
-static inline ch128_word chainhash128v2_reference(const chainhash128v2_key *k, const void *data, size_t len) { return ch128p2l_ref(k, data, len); }
-static inline void chainhash128v2_init(chainhash128v2_stream *s, const chainhash128v2_key *k, int b) { ch128p2l_init(s, k, b); }
+static inline ch128_word chainhash128v2_reference(const chainhash128v2_key *k, const void *data, size_t len) { return ch128p2l_ref(ch128p2l_in(k), data, len); }
+static inline void chainhash128v2_init(chainhash128v2_stream *s, const chainhash128v2_key *k, int b) { ch128p2l_init(s, ch128p2l_in(k), b); }
 static inline void chainhash128v2_update(chainhash128v2_stream *s, const void *data, size_t len) { ch128p2l_update(s, data, len); }
 static inline ch128_word chainhash128v2_final(chainhash128v2_stream *s) { return ch128p2l_final(s); }
 
