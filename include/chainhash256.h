@@ -1413,7 +1413,8 @@ static inline phv phv_mul64(uint64_t n,phv y){ pq nq=vdupq_n_u64(n), z=vdupq_n_u
     return phv_red(r0,r1,r2,z); }
 /* X = v + tau as 256-bit integers */
 static inline phv phv_addint(phv v,const ph_el*t){
-    uint64_t a0=vgetq_lane_u64(v.a,0),a1=vgetq_lane_u64(v.a,1),a2=vgetq_lane_u64(v.b,0),a3=vgetq_lane_u64(v.b,1), c;
+    uint64_t a0=vgetq_lane_u64(v.a,0),a1=vgetq_lane_u64(v.a,1),a2=vgetq_lane_u64(v.b,0),a3=vgetq_lane_u64(v.b,1);
+    long long unsigned int c;
     uint64_t s0=__builtin_addcll(a0,t->w[0],0,&c), s1=__builtin_addcll(a1,t->w[1],c,&c), s2=__builtin_addcll(a2,t->w[2],c,&c), s3=__builtin_addcll(a3,t->w[3],c,&c);
     phv r={vcombine_u64(vcreate_u64(s0),vcreate_u64(s1)),vcombine_u64(vcreate_u64(s2),vcreate_u64(s3))}; return r; }
 static inline phv phv_final2(const phn_key*x,phv v){
