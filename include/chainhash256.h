@@ -1059,10 +1059,10 @@ static inline ph_el phs_region2l(const phs_key*x,const uint8_t*R){        /* c o
     ph_el a[8]; for(int c=0;c<4;c++) phs_bpair(x,R,c,&a[2*c],&a[2*c+1]);
     ph_el v={{0,0,0,0}}; for(int i=1;i<=4;i++) v=ph_xor(v,phs_mul(ph_xor(a[i-1],x->yp[2*i-1]),ph_xor(a[3+i],x->yp[2*i]))); return v; }
 static inline ph_el phs_tailregion(const phs_key*x,const uint8_t*T,size_t rem){
-    int q=(int)((rem+PH_BLOCK-1)/PH_BLOCK), h=(q+1)/2, f=q/2; ph_el a[8];
-    for(int b=0;b<q;b++) a[b]=phs_tblk(x,T+(size_t)b*PH_BLOCK,rem-(size_t)b*PH_BLOCK);
+    unsigned q=(unsigned)((rem+PH_BLOCK-1)/PH_BLOCK), h=(q+1)/2, f=q/2; ph_el a[8];
+    for(unsigned b=0;b<q;b++) a[b]=phs_tblk(x,T+(size_t)b*PH_BLOCK,rem-(size_t)b*PH_BLOCK);
     ph_el c= (q&1)? a[h-1] : (ph_el){{0,0,0,0}};
-    for(int i=1;i<=f;i++) c=ph_xor(c,phs_mul(ph_xor(a[i-1],x->yp[2*i-1]),ph_xor(a[h+i-1],x->yp[2*i])));
+    for(unsigned i=1;i<=f;i++) c=ph_xor(c,phs_mul(ph_xor(a[i-1],x->yp[2*i-1]),ph_xor(a[h+i-1],x->yp[2*i])));
     return c; }
 static inline void phs_fold(const phs_key*x,ph_el*V,const uint8_t*msg,size_t nr){
     for(size_t r=0;r<nr;r++) *V=ph_xor(phs_mul(*V,x->K.z),phs_region2l(x,msg+r*PH_REGION)); }
